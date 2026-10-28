@@ -63,8 +63,14 @@ final class MessageTextSelectionTests: XCTestCase {
 
     private func checkPartialCopy(legacy: Bool) {
         let app = launchChat(legacy: legacy)
-        let text = openSelection(in: app)
         XCUIDevice.shared.orientation = .landscapeLeft
+        let landscape = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            app.frame.width > app.frame.height
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [landscape], timeout: 10), .completed)
+        // Present in the final orientation. XCTest can misplace element-relative
+        // touches when UIKit's form sheet has just rotated after presentation.
+        let text = openSelection(in: app)
         // Double-tap the first word in the real UITextView to select "Alpha".
         text.coordinate(withNormalizedOffset: .zero)
             .withOffset(CGVector(dx: 28, dy: 28)).doubleTap()
