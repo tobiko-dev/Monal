@@ -803,6 +803,23 @@ class SwiftuiInterface : NSObject {
         return host
     }
     
+    @objc(makeMessageTextSelectionForText:)
+    static func makeMessageTextSelection(for text: String) -> UIViewController {
+        let host = UIHostingController(rootView: MessageTextSelectionView(text: text))
+        host.modalPresentationStyle = .formSheet
+        return host
+    }
+
+#if DEBUG && targetEnvironment(simulator)
+    // The UI tests use the real chat screen with an offline, seeded account.
+    @objc(makeMessageSelectionTestChatFor:)
+    static func makeMessageSelectionTestChat(for contact: MLContact) -> UIViewController {
+        UIHostingController(rootView: NavigationStack {
+            ChatView(contact: ObservableKVOWrapper(contact))
+        })
+    }
+#endif
+
     @objc(makeAccountPickerForContacts:andCallType:)
     func makeAccountPicker(for contacts: [MLContact], and callType: UInt) -> UIViewController {
         let delegate = SheetDismisserProtocol()

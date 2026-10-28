@@ -2470,6 +2470,32 @@ enum msgSentState {
     }
 }
 
+-(UIContextMenuConfiguration*) tableView:(UITableView*) tableView contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*) indexPath point:(CGPoint) point
+{
+    if(indexPath.section != messagesSection || (NSUInteger)indexPath.row >= self.messageList.count)
+        return nil;
+
+    MLMessage* message = self.messageList[indexPath.row];
+    if(message.retracted || message.messageText.length == 0 ||
+        (![message.messageType isEqualToString:kMessageTypeText] && ![message.messageType isEqualToString:kMessageTypeUrl]))
+        return nil;
+
+    NSString* text = [message.messageText copy];
+    weakify(self);
+    return [UIContextMenuConfiguration configurationWithIdentifier:nil previewProvider:nil actionProvider:^UIMenu* (NSArray<UIMenuElement*>* suggestedActions) {
+        UIAction* selectTextAction = [UIAction actionWithTitle:NSLocalizedString(@"Select Text", @"Chat message action") image:[UIImage systemImageNamed:@"text.cursor"] identifier:nil handler:^(__kindof UIAction* action) {
+            strongify(self);
+            [self.chatInput resignFirstResponder];
+            UIViewController* selection = [SwiftuiInterface makeMessageTextSelectionForText:text];
+            [self presentViewController:selection animated:YES completion:nil];
+        }];
+        UIAction* copyAction = [UIAction actionWithTitle:NSLocalizedString(@"Copy", @"Chat msg action") image:[UIImage systemImageNamed:@"doc.on.doc"] identifier:nil handler:^(__kindof UIAction* action) {
+            UIPasteboard.generalPasteboard.string = text;
+        }];
+        return [UIMenu menuWithTitle:@"" children:@[selectTextAction, copyAction]];
+    }];
+}
+
 -(void) closePhotos
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];

@@ -18,6 +18,7 @@ jobs:
   run_tests:
     runs-on: macos-15
     name: Run automated tests
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
         with:
@@ -38,6 +39,42 @@ jobs:
       - name: Install pods
         working-directory: Monal
         run: pod install --repo-update
+      - name: Choose an available iPad simulator
+        run: |
+          xcrun simctl list devices available --json > "$RUNNER_TEMP/simulators.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          devices = json.loads(Path(os.environ["RUNNER_TEMP"], "simulators.json").read_text())["devices"]
+          runtimes = sorted(
+              (runtime for runtime in devices if ".iOS-" in runtime),
+              key=lambda runtime: tuple(map(int, runtime.split(".iOS-")[1].split("-"))),
+              reverse=True,
+          )
+          ipad = next(device for runtime in runtimes for device in devices[runtime]
+                      if device["name"].startswith("iPad"))
+          with open(os.environ["GITHUB_ENV"], "a") as environment:
+              environment.write(f"IPAD_SIMULATOR_ID={ipad['udid']}\n")
+          print(f"Testing on {ipad['name']} ({ipad['udid']})")
+          PY
+      - name: Use the standard allocator for simulator automation
+        run: |
+          # Guard Malloc is useful for local memory debugging, but makes UI
+          # automation and cold simulator launches extremely slow on CI.
+          # Change only this checkout; retain the developer scheme in git.
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          path = Path("Monal/Monal.xcodeproj/xcshareddata/xcschemes/Monal.xcscheme")
+          scheme = ET.parse(path)
+          for variable in scheme.findall("./TestAction/EnvironmentVariables/EnvironmentVariable"):
+              if variable.get("key") == "DYLD_INSERT_LIBRARIES" and variable.get("value") == "/usr/lib/libgmalloc.dylib":
+                  variable.set("isEnabled", "NO")
+          scheme.write(path, encoding="UTF-8", xml_declaration=True)
+          PY
       - name: Run tests
         working-directory: Monal
         run: |
@@ -47,17 +84,25 @@ jobs:
             -workspace Monal.xcworkspace \
             -scheme Monal \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -destination "platform=iOS Simulator,id=$IPAD_SIMULATOR_ID" \
+            -parallel-testing-enabled NO \
+            -maximum-concurrent-test-simulator-destinations 1 \
             -resultBundlePath "$RUNNER_TEMP/test-artifacts/TestResults.xcresult" \
             test \
             2>&1 | \
-          tee "$RUNNER_TEMP/test-artifacts/xcodebuild.log" | \
-          stdbuf -oL -eL xcbeautify --renderer github-actions | \
-          while IFS= read -r line; do \
-            echo "$line"; \
-            if [[ "$line" =~ "✔" ]]; then \
-              echo "::notice ::${line}"; \
-            fi; \
-          done
+          tee "$RUNNER_TEMP/test-artifacts/xcodebuild.log"
+      - name: Export test results and screenshots
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          if [ -d "$RUNNER_TEMP/test-artifacts/TestResults.xcresult" ]; then
+            xcrun xcresulttool get test-results summary \
+              --path "$RUNNER_TEMP/test-artifacts/TestResults.xcresult" \
+              > "$RUNNER_TEMP/test-artifacts/summary.json"
+            xcrun xcresulttool export attachments \
+              --path "$RUNNER_TEMP/test-artifacts/TestResults.xcresult" \
+              --output-path "$RUNNER_TEMP/test-artifacts/attachments"
+          fi
       - name: Collect crash reports
         if: ${{ !cancelled() }}
         run: |
