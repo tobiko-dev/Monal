@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A0280000000000000000003 /* MessageSelectionTestAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A0280000000000000000004 /* MessageSelectionTestAppDelegate.m */; };
+		9A0280000000000000000006 /* MessageTextSelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0280000000000000000007 /* MessageTextSelectionTests.swift */; };
 		08CAF17FA202CF3CB760D93C /* Pods_NotificationService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B7A5555D807EE78C95217FD /* Pods_NotificationService.framework */; };
 		1D3623260D0F684500981E51 /* MonalAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MonalAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -365,6 +367,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9A0280000000000000000004 /* MessageSelectionTestAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageSelectionTestAppDelegate.m; sourceTree = "<group>"; };
+		9A0280000000000000000005 /* MessageSelectionTestAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageSelectionTestAppDelegate.h; sourceTree = "<group>"; };
+		9A0280000000000000000007 /* MessageTextSelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSelectionTests.swift; sourceTree = "<group>"; };
 		061EF1BEDEE7A71FDF9AB402 /* Pods-shareSheet.appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-shareSheet.appstore.xcconfig"; path = "Target Support Files/Pods-shareSheet/Pods-shareSheet.appstore.xcconfig"; sourceTree = "<group>"; };
 		0D0362F6B26B9407BE313F36 /* Pods-NotificaionService.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificaionService.debug.xcconfig"; path = "Target Support Files/Pods-NotificaionService/Pods-NotificaionService.debug.xcconfig"; sourceTree = "<group>"; };
 		0EC0A5305E72C0F7F9E1CDEF /* Pods-shareSheet.adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-shareSheet.adhoc.xcconfig"; path = "Target Support Files/Pods-shareSheet/Pods-shareSheet.adhoc.xcconfig"; sourceTree = "<group>"; };
@@ -1561,6 +1566,9 @@
 			isa = PBXGroup;
 			children = (
 				C1850EB725F38A2D003D506A /* MonalUITests.swift */,
+				9A0280000000000000000004 /* MessageSelectionTestAppDelegate.m */,
+				9A0280000000000000000005 /* MessageSelectionTestAppDelegate.h */,
+				9A0280000000000000000007 /* MessageTextSelectionTests.swift */,
 				C1850EB925F38A2D003D506A /* Info.plist */,
 				C1850EC525F3C5EB003D506A /* TestHelper.swift */,
 			);
@@ -2283,6 +2291,7 @@
 				84558DBF2DF04C3100F8357F /* OneClickRegistration.swift in Sources */,
 				847311232C893D2600739CC6 /* ChatView.swift in Sources */,
 				9A0280000000000000000001 /* MessageTextSelectionView.swift in Sources */,
+				9A0280000000000000000003 /* MessageSelectionTestAppDelegate.m in Sources */,
 				3D06A515281FFCC000DDAE90 /* NotificationDebugging.swift in Sources */,
 				845D636B2AD4AEDA0066EFFB /* MediaViewer.swift in Sources */,
 				2636C43F177BD58C001CA71F /* XMPPEdit.m in Sources */,
@@ -2428,6 +2437,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1850EB825F38A2D003D506A /* MonalUITests.swift in Sources */,
+				9A0280000000000000000006 /* MessageTextSelectionTests.swift in Sources */,
 				C1850EC625F3C5EB003D506A /* TestHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -2486,7 +2486,7 @@ enum msgSentState {
         UIAction* selectTextAction = [UIAction actionWithTitle:NSLocalizedString(@"Select Text", @"Chat message action") image:[UIImage systemImageNamed:@"text.cursor"] identifier:nil handler:^(__kindof UIAction* action) {
             strongify(self);
             [self.chatInput resignFirstResponder];
-            UIViewController* selection = [[SwiftuiInterface new] makeMessageTextSelectionForText:text];
+            UIViewController* selection = [SwiftuiInterface makeMessageTextSelectionForText:text];
             [self presentViewController:selection animated:YES completion:nil];
         }];
         UIAction* copyAction = [UIAction actionWithTitle:NSLocalizedString(@"Copy", @"Chat msg action") image:[UIImage systemImageNamed:@"doc.on.doc"] identifier:nil handler:^(__kindof UIAction* action) {

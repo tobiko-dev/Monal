@@ -38,6 +38,26 @@ jobs:
       - name: Install pods
         working-directory: Monal
         run: pod install --repo-update
+      - name: Choose an available iPad simulator
+        run: |
+          xcrun simctl list devices available --json > "$RUNNER_TEMP/simulators.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          devices = json.loads(Path(os.environ["RUNNER_TEMP"], "simulators.json").read_text())["devices"]
+          runtimes = sorted(
+              (runtime for runtime in devices if ".iOS-" in runtime),
+              key=lambda runtime: tuple(map(int, runtime.split(".iOS-")[1].split("-"))),
+              reverse=True,
+          )
+          ipad = next(device for runtime in runtimes for device in devices[runtime]
+                      if device["name"].startswith("iPad"))
+          with open(os.environ["GITHUB_ENV"], "a") as environment:
+              environment.write(f"IPAD_SIMULATOR_ID={ipad['udid']}\n")
+          print(f"Testing on {ipad['name']} ({ipad['udid']})")
+          PY
       - name: Run tests
         working-directory: Monal
         run: |
@@ -47,6 +67,8 @@ jobs:
             -workspace Monal.xcworkspace \
             -scheme Monal \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -destination "platform=iOS Simulator,id=$IPAD_SIMULATOR_ID" \
+            -parallel-testing-enabled NO \
             -resultBundlePath "$RUNNER_TEMP/test-artifacts/TestResults.xcresult" \
             test \
             2>&1 | \

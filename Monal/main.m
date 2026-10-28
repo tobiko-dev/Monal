@@ -11,6 +11,9 @@
 #import "MonalAppDelegate.h"
 #import <monalxmpp/DataLayer.h>
 #import <monalxmpp/MLConstants.h>
+#if DEBUG && TARGET_OS_SIMULATOR
+#import "MonalUITests/MessageSelectionTestAppDelegate.h"
+#endif
 
 int main(int argc, char *argv[]) {
     @autoreleasepool {
@@ -49,6 +52,10 @@ int main(int argc, char *argv[]) {
         if([NSProcessInfo.processInfo.arguments containsObject:@"--invalidateAccountStates"])
             [[DataLayer sharedInstance] invalidateAllAccountStates];
         
+#if DEBUG && TARGET_OS_SIMULATOR
+        if([NSProcessInfo.processInfo.arguments containsObject:@"--ui-test-message-selection"])
+            return UIApplicationMain(argc, argv, nil, NSStringFromClass([MessageSelectionTestAppDelegate class]));
+#endif
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([MonalAppDelegate class]));
     }
 }
