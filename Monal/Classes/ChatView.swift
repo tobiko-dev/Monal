@@ -102,6 +102,7 @@ struct ChatView: View {
     @StateObject var voipProcessor: ObservableKVOWrapper<MLVoIPProcessor>
     @StateObject var contact: ObservableKVOWrapper<MLContact>
     @State private var selectedContactForContactDetails: ObservableKVOWrapper<MLContact>?
+    @State private var textToSelect: String?
     @State private var alertPrompt: AlertPrompt?
     @State private var confirmationPrompt: ConfirmationPrompt?
     @StateObject private var overlay = LoadingOverlayState()
@@ -130,12 +131,14 @@ struct ChatView: View {
     }
 
     enum MessageAction: MessageMenuAction {
-        case copy, edit, retract, moderate, delete, resend
+        case copy, selectText, edit, retract, moderate, delete, resend
 
         func title() -> String {
             switch self {
                 case .copy:
                     "Copy"
+                case .selectText:
+                    NSLocalizedString("Select Text", comment: "Chat message action")
                 case .edit:
                     "Edit"
                 case .retract:
@@ -153,6 +156,8 @@ struct ChatView: View {
             switch self {
                 case .copy:
                     Image(systemName: "doc.on.doc")
+                case .selectText:
+                    Image(systemName: "text.cursor")
                 case .edit:
                     if #available(iOS 18.0, macCatalyst 18.0, *) {
                         Image(systemName: "bubble.and.pencil")
@@ -181,6 +186,7 @@ struct ChatView: View {
             var availableActions: [MessageAction] = []
             if message.hasText {
                 availableActions.append(.copy)
+                availableActions.append(.selectText)
             }
 
             if !mlMessage.inbound && DataLayer.sharedInstance().checkLMCEligible(mlMessage.messageDBId, encrypted: mlMessage.encrypted || contact.isEncrypted, historyBaseID: nil) {
@@ -496,6 +502,11 @@ struct ChatView: View {
             switch action {
                 case .copy:
                     defaultActionClosure(message, .copy)
+                case .selectText:
+                    // Let the chat library dismiss its full-screen message menu first.
+                    DispatchQueue.main.async {
+                        textToSelect = message.text
+                    }
                 case .edit:
                     defaultActionClosure(message, .edit { editedText in
                         Task { @MainActor in
@@ -653,6 +664,11 @@ struct ChatView: View {
         )
         .sheet(item: $selectedContactForContactDetails) { selectedContact in
             AnyView(AddTopLevelNavigation(withDelegate:nil, to:ContactDetails(delegate:nil, contact:selectedContact)))
+        }
+        .sheet(isPresented: $textToSelect.optionalMappedToBool()) {
+            if let text = textToSelect {
+                MessageTextSelectionView(text: text)
+            }
         }
         //TODO: modernize action sheet usage in all other swiftui files to be in line with this implementation here
         //TODO: e.g. same usage like alert prompt below

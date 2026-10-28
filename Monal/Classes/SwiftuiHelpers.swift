@@ -803,6 +803,13 @@ class SwiftuiInterface : NSObject {
         return host
     }
     
+    @objc(makeMessageTextSelectionForText:)
+    func makeMessageTextSelection(for text: String) -> UIViewController {
+        let host = UIHostingController(rootView: MessageTextSelectionView(text: text))
+        host.modalPresentationStyle = .formSheet
+        return host
+    }
+
     @objc(makeAccountPickerForContacts:andCallType:)
     func makeAccountPicker(for contacts: [MLContact], and callType: UInt) -> UIViewController {
         let delegate = SheetDismisserProtocol()
