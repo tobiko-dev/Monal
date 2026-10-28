@@ -40,7 +40,11 @@ final class MessageTextSelectionTests: XCTestCase {
     }
 
     private func openSelection(in app: XCUIApplication) -> XCUIElement {
-        let bubble = app.staticTexts[message].firstMatch
+        // UILabel flattens line breaks in its accessibility label; SwiftUI Text
+        // preserves them. Still verify the exact original text in the sheet.
+        let messageLabel = NSPredicate(format: "label == %@ OR label == %@",
+                                       message, message.replacingOccurrences(of: "\n", with: " "))
+        let bubble = app.staticTexts.matching(messageLabel).firstMatch
         XCTAssertTrue(bubble.waitForExistence(timeout: 20), app.debugDescription)
         bubble.press(forDuration: 1)
         tapMenuAction("Select Text", in: app)
@@ -84,15 +88,17 @@ final class MessageTextSelectionTests: XCTestCase {
     private func pasteAndCheck(_ expected: String, in app: XCUIApplication) {
         // Read back the clipboard through the real composer, not a test-only
         // pasteboard bridge. This also checks that opening the sheet kept the draft.
-        let draftValue = NSPredicate(format: "value == %@", draft)
-        let textView = app.textViews.matching(draftValue).firstMatch
-        let textField = app.textFields.matching(draftValue).firstMatch
-        let composer = textView.waitForExistence(timeout: 3) ? textView : textField
+        let textView = app.textViews["NewChatMessageTextField"]
+        let composer = textView.waitForExistence(timeout: 3) ? textView : app.textFields.firstMatch
         XCTAssertTrue(composer.waitForExistence(timeout: 5), app.debugDescription)
         XCTAssertEqual(composer.value as? String, draft)
         composer.tap()
-        composer.doubleTap()
-        tapMenuAction("Select All", in: app)
+        // Put the caret after the short draft and clear it without changing the
+        // clipboard. Double-tapping selects a word, whose iOS 26 edit menu does
+        // not offer Select All consistently across device sizes.
+        composer.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        composer.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: draft.count))
+        composer.press(forDuration: 1)
         tapMenuAction("Paste", in: app)
         let pastedValue = NSPredicate(format: "value == %@", expected)
         let pasted = app.descendants(matching: .any).matching(pastedValue).firstMatch
