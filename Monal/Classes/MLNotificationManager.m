@@ -731,9 +731,7 @@ typedef NS_ENUM(NSUInteger, MLNotificationState) {
 
 -(void) donateInteractionForOutgoingDBId:(NSNumber*) messageDBId
 {
-#ifdef MONAL_SIDELOAD
-    return;
-#endif
+#ifndef MONAL_SIDELOAD
     MLMessage* message = [MLMessage createMessageFromHistoryID:messageDBId];
     INSendMessageIntent* intent = [self makeIntentForMessage:message havingReaction:nil usingText:@"dummyText" andAudioAttachment:nil direction:INInteractionDirectionOutgoing];
     INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent response:nil];
@@ -743,6 +741,7 @@ typedef NS_ENUM(NSUInteger, MLNotificationState) {
         if(error)
             DDLogError(@"Could not donate outgoing interaction: %@", error);
     }];
+#endif
 }
 
 -(void) donateInteractionForIncomingDBId:(NSNumber*) messageDBId
