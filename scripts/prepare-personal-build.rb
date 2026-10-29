@@ -40,7 +40,7 @@ app.build_configurations.each do |configuration|
   settings.keys.grep(/\APRODUCT_BUNDLE_IDENTIFIER\[/).each { |key| settings.delete(key) }
   settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
   settings['INFOPLIST_FILE'] = 'build/personal/Monal-Personal-Info.plist'
-  settings['INFOPLIST_KEY_CFBundleDisplayName'] = 'Monal Personal'
+  settings['INFOPLIST_KEY_CFBundleDisplayName'] = 'Monal (modified)'
   settings['CURRENT_PROJECT_VERSION'] = build_number
 end
 project.targets.select { |target| target.name.end_with?('Tests') }.each do |target|
@@ -53,7 +53,7 @@ attributes.each_value { |value| value['SystemCapabilities'] = {} if value.key?('
 project.save
 
 info = Xcodeproj::Plist.read_from_path(File.join(root, 'Monal/Monal-Info.plist'))
-info['CFBundleDisplayName'] = 'Monal Personal'
+info['CFBundleDisplayName'] = 'Monal (modified)'
 info['UIBackgroundModes'] -= ['remote-notification', 'voip']
 # Leave xmpp links with the user's regular client while testing this fork.
 info.delete('CFBundleURLTypes')

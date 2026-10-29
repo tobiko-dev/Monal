@@ -1,4 +1,4 @@
-# Install Monal Personal on your iPad for free
+# Install Monal (modified) on your iPad for free
 
 This fork can produce an unsigned **device** app for personal signing. It
 includes the Select Text improvement. It is not an App Store or TestFlight build.
@@ -18,13 +18,13 @@ GitHub Actions secrets, or a chat. Refresh SideStore itself once before adding M
 ## Install the app
 
 1. Open a successful **Build personal iPad app** run in this repository's Actions
-   tab and download the **Monal-Personal-iPad** artifact. Unzip it in Files.
-2. Keep `Monal-Personal-unsigned.ipa`. The artifact also includes its SHA-256
+   tab and download the **Monal-Modified-iPad** artifact. Unzip it in Files.
+2. Keep `Monal-Modified-unsigned.ipa`. The artifact also includes its SHA-256
    checksum and source commit in `build-info.json`.
 3. With Wi-Fi and LocalDevVPN connected, import the IPA into SideStore using the
    add-app control in My Apps. SideStore signs it with your free Apple account.
    Tapping an IPA directly in Files does not install it.
-4. Open **Monal Personal** and sign in with your existing full 5july XMPP address
+4. Open **Monal (modified)** and sign in with your existing full 5july XMPP address
    and password. Keep these credentials on your iPad.
 5. Open a conversation, long-press a text message, choose **Select Text**, and
    select/copy part of the message or use **Copy All**.

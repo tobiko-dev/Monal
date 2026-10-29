@@ -78,7 +78,7 @@ jobs:
       - name: Upload the personal app
         uses: actions/upload-artifact@v7
         with:
-          name: Monal-Personal-iPad
+          name: Monal-Modified-iPad
           path: ${{ runner.temp }}/personal-app
           if-no-files-found: error
           retention-days: 30

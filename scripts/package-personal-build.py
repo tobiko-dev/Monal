@@ -15,6 +15,8 @@ with (app / "Info.plist").open("rb") as stream:
     info = plistlib.load(stream)
 if info["CFBundleIdentifier"] != "dev.tobiko.monal.personal":
     raise SystemExit("Refusing to package an app with the upstream bundle identifier")
+if info.get("CFBundleDisplayName") != "Monal (modified)":
+    raise SystemExit("Expected the distinct Monal (modified) Home Screen name")
 if 2 not in info["UIDeviceFamily"] or info.get("CFBundleSupportedPlatforms") != ["iPhoneOS"]:
     raise SystemExit("Expected an iPad-compatible device build")
 if list(app.glob("PlugIns/*.appex")) or (app / "embedded.mobileprovision").exists():
@@ -41,7 +43,7 @@ if platform != 2:  # PLATFORM_IOS, not PLATFORM_IOSSIMULATOR (7)
     raise SystemExit(f"Expected iOS device platform, found {platform}")
 
 output.mkdir(parents=True, exist_ok=True)
-ipa = output.resolve() / "Monal-Personal-unsigned.ipa"
+ipa = output.resolve() / "Monal-Modified-unsigned.ipa"
 with tempfile.TemporaryDirectory() as temporary:
     payload = Path(temporary) / "Payload"
     payload.mkdir()
