@@ -25,7 +25,15 @@
         kEnabled: @NO, kDirectTLS: @NO,
     }];
     MLAssert(accountID != nil, @"Could not seed the test account");
-    [manager updatePassword:@"unused-offline-fixture" forAccount:accountID];
+    NSString* fixturePassword = [NSString stringWithFormat:@"unused-offline-fixture-%@", [NSUUID UUID].UUIDString];
+    [manager updatePassword:fixturePassword forAccount:accountID];
+#ifdef MONAL_SIDELOAD
+    // Exercise the real keychain API in the app, whose signing identity grants
+    // its private access group. Unhosted framework tests have no app identity.
+    // A fresh value each launch prevents a stale keychain item masking a failed write.
+    MLAssert([manager isValidPassword:fixturePassword forAccount:accountID],
+        @"Personal app could not store and retrieve its account password");
+#endif
     [manager connectAccount:accountID];  // Instantiates the disabled account without connecting.
     MLAssert([manager getEnabledAccountForID:accountID] != nil, @"Could not load the test account");
 

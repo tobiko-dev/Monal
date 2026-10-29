@@ -9,7 +9,6 @@
 import Testing
 import monalxmpp
 import Foundation
-import Security
 
 struct HelperToolsTest {
 
@@ -36,25 +35,6 @@ struct HelperToolsTest {
         #expect(defaults.object(forKey: key) as? Data == data)
     }
 
-    @Test("Personal keychain entries work without a shared access group")
-    func personalKeychainRoundTrip() throws {
-        let data = Data("offline-test-secret".utf8)
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "personal-test-\(UUID().uuidString)",
-            kSecAttrAccount as String: "offline-test",
-        ]
-        defer { SecItemDelete(query as CFDictionary) }
-        var item = query
-        item[kSecValueData as String] = data
-        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-        #expect(SecItemAdd(item as CFDictionary, nil) == errSecSuccess)
-        var lookup = query
-        lookup[kSecReturnData as String] = true
-        var result: CFTypeRef?
-        #expect(SecItemCopyMatching(lookup as CFDictionary, &result) == errSecSuccess)
-        #expect(result as? Data == data)
-    }
 #endif
 
     @Test("parseDateTime treats UTC XEP-0082 DateTimes as UTC", arguments: ["2026-08-09T19:51:11Z", "2026-08-09T19:51:11+00:00", "2026-08-09T19:51:11.000-00:00", "2026-08-09T19:51:11.000Z"])

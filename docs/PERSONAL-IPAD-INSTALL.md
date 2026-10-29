@@ -48,7 +48,9 @@ expired app or invalidated device pairing may require the computer again. See
 - Refresh/update the installed app using the same Apple account and bundle ID.
   Deleting it removes its local message database and encryption state.
 - CI checks the actual arm64/iPhoneOS executable and runs offline iPad simulator
-  tests. A successful CI run does not verify free Apple signing on your device,
+  tests. The chat fixture verifies password storage through Monal's real keychain
+  API inside the app, because unhosted framework tests lack an app identity.
+  A successful CI run does not verify free Apple signing on your device,
   live 5july login, push delivery, or hardware trackpad behavior.
 
 ## Rebuild

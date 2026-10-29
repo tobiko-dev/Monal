@@ -60,28 +60,6 @@ jobs:
             -parallel-testing-enabled NO \
             -resultBundlePath "$RUNNER_TEMP/personal-diagnostics/Tests.xcresult" \
             2>&1 | tee "$RUNNER_TEMP/personal-diagnostics/tests.log"
-      - name: Archive for a physical iPad
-        working-directory: Monal
-        run: |
-          set -o pipefail
-          NSUnbufferedIO=YES xcodebuild archive \
-            -workspace Monal.xcworkspace -scheme Monal -configuration AppStore \
-            -destination 'generic/platform=iOS' -sdk iphoneos \
-            -archivePath "$RUNNER_TEMP/Monal-Personal.xcarchive" \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
-            2>&1 | tee "$RUNNER_TEMP/personal-diagnostics/archive.log"
-      - name: Package and validate the device app
-        run: |
-          python3 scripts/package-personal-build.py \
-            "$RUNNER_TEMP/Monal-Personal.xcarchive" "$RUNNER_TEMP/personal-app"
-          cp docs/PERSONAL-IPAD-INSTALL.md "$RUNNER_TEMP/personal-app/INSTALL.md"
-      - name: Upload the personal app
-        uses: actions/upload-artifact@v7
-        with:
-          name: Monal-Modified-iPad
-          path: ${{ runner.temp }}/personal-app
-          if-no-files-found: error
-          retention-days: 30
       - name: Export test summary
         if: ${{ !cancelled() }}
         continue-on-error: true
@@ -97,5 +75,60 @@ jobs:
         with:
           name: personal-ipad-diagnostics
           path: ${{ runner.temp }}/personal-diagnostics
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # Compile the physical-device configuration while the simulator checks run.
+  # A distributable result requires the entire workflow (both jobs) to succeed.
+  archive_personal_ipad:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          lfs: true
+      - name: Select Xcode
+        run: sudo xcode-select -s '/Applications/Xcode_26.2.app/Contents/Developer'
+      - name: Install coreutils
+        run: brew install coreutils
+      - name: Build Rust bridge
+        run: bash rust/build-rust.sh
+      - name: Install CocoaPods dependencies
+        working-directory: Monal
+        run: pod install --repo-update
+      - name: Prepare the personal build
+        env:
+          PERSONAL_BUILD_NUMBER: ${{ github.run_number }}
+        run: ruby scripts/prepare-personal-build.rb
+      - name: Archive for a physical iPad
+        working-directory: Monal
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/personal-device-diagnostics"
+          NSUnbufferedIO=YES xcodebuild archive \
+            -workspace Monal.xcworkspace -scheme Monal -configuration AppStore \
+            -destination 'generic/platform=iOS' -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/Monal-Personal.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= \
+            2>&1 | tee "$RUNNER_TEMP/personal-device-diagnostics/archive.log"
+      - name: Package and validate the device app
+        run: |
+          python3 scripts/package-personal-build.py \
+            "$RUNNER_TEMP/Monal-Personal.xcarchive" "$RUNNER_TEMP/personal-app"
+          cp docs/PERSONAL-IPAD-INSTALL.md "$RUNNER_TEMP/personal-app/INSTALL.md"
+      - name: Upload the personal app
+        uses: actions/upload-artifact@v7
+        with:
+          name: Monal-Modified-iPad
+          path: ${{ runner.temp }}/personal-app
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload device diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: personal-device-diagnostics
+          path: ${{ runner.temp }}/personal-device-diagnostics
           if-no-files-found: ignore
           retention-days: 14
