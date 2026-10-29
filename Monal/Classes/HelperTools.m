@@ -1085,7 +1085,22 @@ static void notification_center_logging(CFNotificationCenterRef center, void* ob
     static NSURL* containerUrl;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+#ifdef MONAL_SIDELOAD
+        // Personal builds have no extensions or App Group entitlement. Keep
+        // their database, encryption state, and attachments in the app sandbox.
+        NSURL* support = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
+            inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:nil];
+        MLAssert(support != nil, @"Could not locate personal app storage");
+        containerUrl = [support URLByAppendingPathComponent:@"MonalPersonal" isDirectory:YES];
+        NSError* error = nil;
+        BOOL created = [[NSFileManager defaultManager] createDirectoryAtURL:containerUrl
+            withIntermediateDirectories:YES
+            attributes:@{NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication}
+            error:&error];
+        MLAssert(created, @"Could not create personal app storage", (@{@"error": nilWrapper(error)}));
+#else
         containerUrl = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kAppGroup];
+#endif
     });
     MLAssert(containerUrl != nil, @"Container URL should never be nil!");
     NSURL* retval = containerUrl;
@@ -2268,7 +2283,11 @@ static void notification_center_logging(CFNotificationCenterRef center, void* ob
     static NSUserDefaults* db;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+#ifdef MONAL_SIDELOAD
+        db = [[MonalUserDefaults alloc] initWithSuiteName:nil];
+#else
         db = [[MonalUserDefaults alloc] initWithSuiteName:kAppGroup];
+#endif
     });
     return db;
 }
@@ -3544,7 +3563,9 @@ a=%@\r\n", mid, candidate];
             @"User-Agent": [HelperTools appBuildVersionInfoFor:MLVersionTypeUserAgent],
         };
         sessionConfig.sessionSendsLaunchEvents = YES;
+#ifndef MONAL_SIDELOAD
         sessionConfig.sharedContainerIdentifier = kAppGroup;
+#endif
         sessionConfig.discretionary = NO;       //will be ignored by iOS for all transfers started in the background (appex or mainapp)
         //we don't need to make MLFileTransfer a singleton here, because this delegate will only be instanciated once per process
         session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:[MLFiletransfer new] delegateQueue:nil];

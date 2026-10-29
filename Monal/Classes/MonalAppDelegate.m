@@ -306,9 +306,15 @@ typedef NS_ENUM(NSUInteger, MLGracefulTimeoutType) {
                 }
                 
                 //activate push
+#ifdef MONAL_SIDELOAD
+                // Free personal signing cannot provide APNs. Local alerts can
+                // still be shown while the app is receiving messages.
+                [[MLXMPPManager sharedInstance] removeToken];
+#else
                 DDLogInfo(@"Registering for APNS...");
                 [[UIApplication sharedApplication] registerForRemoteNotifications];
                 [self->_voipProcessor voipRegistration];
+#endif
             }
             else
             {

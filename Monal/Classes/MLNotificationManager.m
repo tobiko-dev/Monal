@@ -581,6 +581,9 @@ typedef NS_ENUM(NSUInteger, MLNotificationState) {
     }
     content.body = msgText;
     
+#ifdef MONAL_SIDELOAD
+    [self publishNotificationContent:content withID:idval];
+#else
     INSendMessageIntent* intent = [self makeIntentForMessage:reactionInfo.message havingReaction:reactionInfo usingText:msgText andAudioAttachment:nil direction:INInteractionDirectionIncoming];
     
     INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent response:nil];
@@ -595,15 +598,21 @@ typedef NS_ENUM(NSUInteger, MLNotificationState) {
         DDLogDebug(@"Publishing communication notification with id %@", idval);
         [self publishNotificationContent:updatedContent withID:idval];
     }
+#endif
 }
 
 -(void) showNotificationForMessage:(MLMessage*) message withSound:(BOOL) sound
 {
+#ifdef MONAL_SIDELOAD
+    // Communication notifications require an entitlement this build does not request.
+    return [self showLegacyNotificationForMessage:message withSound:sound];
+#else
     // always use legacy notifications if we should only show a generic "New Message" notifiation without name or content
     if(self.notificationPrivacySetting == NotificationPrivacySettingOptionDisplayOnlyPlaceholder)
         return [self showLegacyNotificationForMessage:message withSound:sound];
     
     return [self showModernNotificationForMessage:message withSound:sound];
+#endif
 }
 
 -(void) showLegacyNotificationForMessage:(MLMessage*) message withSound:(BOOL) sound
@@ -722,6 +731,9 @@ typedef NS_ENUM(NSUInteger, MLNotificationState) {
 
 -(void) donateInteractionForOutgoingDBId:(NSNumber*) messageDBId
 {
+#ifdef MONAL_SIDELOAD
+    return;
+#endif
     MLMessage* message = [MLMessage createMessageFromHistoryID:messageDBId];
     INSendMessageIntent* intent = [self makeIntentForMessage:message havingReaction:nil usingText:@"dummyText" andAudioAttachment:nil direction:INInteractionDirectionOutgoing];
     INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent response:nil];
