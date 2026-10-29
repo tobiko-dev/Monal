@@ -14,6 +14,26 @@ final class MessageTextSelectionTests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
     }
 
+#if MONAL_SIDELOAD
+    func testPersonalBuildStartsNormally() {
+        let app = XCUIApplication()
+        // Exercise the real app delegate, database, and keychain startup rather
+        // than the offline chat fixture, then verify a second launch also works.
+        app.launchArguments = ["--reset"]
+        app.launch()
+        let welcome = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Welcome to Monal")).firstMatch
+        XCTAssertTrue(welcome.waitForExistence(timeout: 30), app.debugDescription)
+        app.terminate()
+        app.launchArguments = []
+        app.launch()
+        XCTAssertTrue(welcome.waitForExistence(timeout: 30), app.debugDescription)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Monal Personal startup"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+#endif
+
     func testSwiftUISelectAndCopyPartInLandscape() {
         checkPartialCopy(legacy: false)
     }

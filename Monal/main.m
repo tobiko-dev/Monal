@@ -43,7 +43,11 @@ int main(int argc, char *argv[]) {
             }
 
             // reset NSUserDefaults
+#ifdef MONAL_SIDELOAD
+            [[NSUserDefaults alloc] removePersistentDomainForName:[NSBundle mainBundle].bundleIdentifier];
+#else
             [[NSUserDefaults alloc] removePersistentDomainForName:kAppGroup];
+#endif
         }
         // invalidate account states
         if([NSProcessInfo.processInfo.arguments containsObject:@"--disableAnimations"])

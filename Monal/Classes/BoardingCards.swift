@@ -169,14 +169,19 @@ struct OnboardingView: View {
 
 @ViewBuilder
 func createOnboardingView(delegate: SheetDismisserProtocol) -> some View {
+#if MONAL_SIDELOAD
+    let introduction = Text("This is your personal Monal build. Sign in with your existing XMPP account. Keep the app open to receive messages; background push notifications and incoming call alerts are unavailable. This app stores its own data separately from App Store Monal. Refresh it in SideStore before its seven-day signing period expires.")
+#else
+    let introduction = Text("""
+    Modern iOS and macOS XMPP chat client.\n\nXMPP is a federated network: Just like email, you can register your account on many servers and still talk to anyone, even if they signed up on a different server.\n\nUsing Monal instead of a centralized chat app therefore increases your digital sovereignty.
+    """)
+#endif
     let cards = [
         OnboardingCard(
             title: Text("Welcome to Monal !"),
             description: Text("Become part of a worldwide decentralized chat network!"),
             imageName: "hand.wave",
-            articleText: Text("""
-            Modern iOS and macOS XMPP chat client.\n\nXMPP is a federated network: Just like email, you can register your account on many servers and still talk to anyone, even if they signed up on a different server.\n\nUsing Monal instead of a centralized chat app therefore increases your digital sovereignty.
-            """),
+            articleText: introduction,
             customView: nil,
             nextText: nil
         ),

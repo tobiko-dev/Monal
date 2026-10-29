@@ -42,6 +42,11 @@ struct NotificationDebugging: View {
     
     var body: some View {
         Form {
+#if MONAL_SIDELOAD
+            Section {
+                Text("This personal build receives messages while it is open. Background push notifications and incoming call alerts are unavailable. Reopen the app to reconnect and fetch messages.")
+            }
+#else
             Group {
                 Section(header: Text("Status").font(.title3)) {
                     VStack(alignment: .leading) {
@@ -148,6 +153,7 @@ struct NotificationDebugging: View {
                 }
 #endif
             }
+#endif
         }
         .navigationBarTitle(Text("Notifications"))
         .onAppear(perform: {

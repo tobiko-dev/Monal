@@ -5688,7 +5688,11 @@ static NSRegularExpression* fastTokenRemovalRegex;
 
 -(void) enablePush
 {
-#if TARGET_OS_SIMULATOR
+#ifdef MONAL_SIDELOAD
+    // Never register this separate personal app with upstream Monal's APNs service.
+    DDLogInfo(@"Push registration is unavailable in personal builds");
+    return;
+#elif TARGET_OS_SIMULATOR
     DDLogError(@"Not registering push on the simulator!");
     [self disablePush];
 #else
