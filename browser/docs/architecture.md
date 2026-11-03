@@ -51,3 +51,5 @@ Preserve copyrights/licenses with redistributed source and built artifacts; reco
 ## Existing evidence and limits
 
 The unchanged library built with GCC on native Python 3.12/Linux and passed all 8 upstream tests. Sixteen reviewed repository files matched their Git blob hashes. No browser persistence, live interoperability or physical iPad result is implied by this baseline.
+
+The reviewed paths, commits and blob hashes are in [the source manifest](evidence/source-review-manifest.json). Subsequent WebAssembly evidence is tracked in [validation](validation.md).

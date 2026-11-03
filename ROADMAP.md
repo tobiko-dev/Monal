@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-03. Status: foundation build in progress; no usable browser chat application yet.
+Updated: 2026-11-03. Status: encryption foundation builds and passes 14 WebAssembly checks; no usable browser chat application yet.
 
 ## Goal and scope
 
@@ -37,13 +37,16 @@ M0 does not establish browser encryption, live interoperability or iPad support.
 
 ### M1 — Browser encryption feasibility: in progress
 
-- [ ] Pin compatible Pyodide, Python, Emscripten and build tools; cross-compile the existing C extension without replacing its cryptography.
-- [ ] Package a reproducible local harness with source hashes and licenses. No account login or contact messaging.
-- [ ] Run upstream tests in WebAssembly and an actual browser.
-- [ ] Verify encrypted round trips/replies, tamper rejection, wrong-device rejection and duplicate handling with synthetic identities.
+- [x] Pin Pyodide 314.0.7 / Python 3.14.2 / Emscripten 5.0.3 and build tools; compile the unchanged C extension to WebAssembly.
+- [x] Package a local harness, pinned source/runtime hashes and licenses. No account login or contact messaging.
+- [x] Pass all 8 upstream tests in WebAssembly under Node 24.22.1.
+- [x] Pass 6 added WebAssembly checks: round trip/reply, altered payload/IV/wrapped key, missing device key and unavailable recipient. Upstream tests also cover reordered/missed/duplicate messages.
+- [ ] Complete the actual browser run. The current HTTP preview lacks the secure context required by the harness; no browser pass is claimed.
 - [ ] Record startup/memory observations and run the same harness in physical iPad Safari.
 
 Exit: executable evidence for the chosen runtime. Record concrete blockers before changing architecture.
+
+Evidence: [build and validation record](browser/docs/validation.md), [raw WebAssembly result](browser/docs/evidence/node-wasm.json). Durable identities and production trust policy are not implemented by the synthetic test fixture.
 
 ### M2 — Durable identity and sessions: pending
 

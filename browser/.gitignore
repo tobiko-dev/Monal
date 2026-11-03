@@ -1,0 +1,6 @@
+.build/
+dist/
+.venv/
+.openai/
+__pycache__/
+*.pyc

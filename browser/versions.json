@@ -1,0 +1,22 @@
+{
+  "pyodide": "314.0.7",
+  "pyodide_build": "0.39.3",
+  "host_python": "3.14",
+  "runtime_python": "3.14.2",
+  "emscripten": "5.0.3",
+  "abi": "2026_0",
+  "setuptools": "80.9.0",
+  "source": {
+    "name": "omemo-dr",
+    "version": "1.2.0",
+    "url": "https://files.pythonhosted.org/packages/4f/6c/2e024e615cca6f5e03261cf8fa9f584a5ecd59d3fb7ac7e7bf52f2d9cee1/omemo_dr-1.2.0.tar.gz",
+    "sha256": "18b6542b3bb7ed6dce34dd02f32b16401982ba24f0146ddae091dcb92c79a484"
+  },
+  "runtime_assets": {
+    "pyodide.mjs": "6f1d60f7bf529beb300f0f47983c921d3982363640ba20af0e38efdddbc66109",
+    "pyodide.asm.mjs": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635",
+    "pyodide.asm.wasm": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6",
+    "python_stdlib.zip": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a",
+    "pyodide-lock.json": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+  }
+}
