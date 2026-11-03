@@ -1,4 +1,6 @@
-# Web companion roadmap
+# Web companion — cancelled
+
+> **Cancelled at the owner’s request on 2026-11-03.** No further development or builds are planned. The roadmap below is a historical record, not an active plan. This cancellation concerns the separate web companion; the native Monal fork is retained.
 
 ## Goal
 Make the iPad web companion reliably deliver mandatory-OMEMO messages, preserve its encryption identity, and make verification and failures understandable.
