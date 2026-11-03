@@ -13,7 +13,8 @@ export async function runChecks(pyodide, readBytes, progress = () => {}) {
   await pyodide.loadPackage(["cryptography", "protobuf"]);
   pyodide.unpackArchive(await checked(manifest.wheel), "zip", { extractDir: "/experiment/site" });
   pyodide.unpackArchive(await checked("checks.zip"), "zip", { extractDir: "/experiment/checks" });
-  progress("Running upstream tests and negative encryption checks…");
+  pyodide.unpackArchive(await checked("port.zip"), "zip", { extractDir: "/experiment/site" });
+  progress("Running upstream encryption and Gajim storage checks…");
   const report = JSON.parse(await pyodide.runPythonAsync(`
 import io, json, logging, platform, sys, unittest
 sys.path[:0] = ["/experiment/site", "/experiment/checks"]
@@ -32,7 +33,7 @@ json.dumps({
     "cryptography": version("cryptography"), "protobuf": version("protobuf"),
     "tests": result.testsRun, "failures": len(result.failures),
     "errors": len(result.errors), "skipped": len(result.skipped),
-    "passed": result.wasSuccessful() and result.testsRun == 14 and not result.skipped,
+    "passed": result.wasSuccessful() and not result.skipped,
     "output": output.getvalue(),
 })
 `));
@@ -40,7 +41,10 @@ json.dumps({
   report.pyodide = pyodide.version;
   report.source_sha256 = manifest.source_sha256;
   report.wheel_sha256 = manifest.assets[manifest.wheel];
+  report.gajim_storage = manifest.gajim_storage;
+  report.port_sha256 = manifest.assets["port.zip"];
   report.passed = report.passed && report.platform === "emscripten" &&
-    report.pyodide === manifest.pyodide && report.python === manifest.python;
+    report.pyodide === manifest.pyodide && report.python === manifest.python &&
+    report.tests === manifest.expected_python_tests;
   return report;
 }

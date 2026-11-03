@@ -18,5 +18,11 @@
     "pyodide.asm.wasm": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6",
     "python_stdlib.zip": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a",
     "pyodide-lock.json": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+  },
+  "gajim_storage": {
+    "repository": "https://github.com/gajim/gajim",
+    "commit": "5a57abb2950886dd9cb8a73972ecc2dcc59f688a",
+    "path": "src/gajim/common/storage/omemo.py",
+    "sha256": "5f57337f29e1d3a889698a2f65aba4348754ac268aad49fe18f32f9e4d427260"
   }
 }

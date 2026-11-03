@@ -33,6 +33,10 @@ jobs:
           browser/.venv/bin/python -m pip install -r browser/requirements-build.txt
       - name: Build unchanged upstream encryption for WebAssembly
         run: browser/.venv/bin/python browser/scripts/build.py
+      - name: Install pinned storage test dependency
+        run: npm ci --ignore-scripts --no-audit --no-fund --prefix browser
+      - name: Exercise storage failures and concurrent access
+        run: npm test --prefix browser
       - name: Run upstream and negative tests in WebAssembly
         run: node browser/scripts/test-wasm.mjs
       - name: Reject altered test artifacts

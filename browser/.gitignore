@@ -4,3 +4,4 @@ dist/
 .openai/
 __pycache__/
 *.pyc
+node_modules/

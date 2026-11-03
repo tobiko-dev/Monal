@@ -1,0 +1,7 @@
+{
+  "name": "gajim-browser-foundation",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test tests/storage.test.mjs" },
+  "devDependencies": { "fake-indexeddb": "6.2.7" }
+}

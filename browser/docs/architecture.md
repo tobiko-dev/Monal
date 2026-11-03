@@ -17,7 +17,7 @@ The complete GTK application cannot run unchanged in Safari. Demonstrate compati
 | Gajim/nbxmpp messaging | Stanzas, conversations, carbons, history and actual receipt semantics |
 | Browser interface | Drafts, selection, images and sender/time/status presentation derived from real state |
 
-Introduce components when the milestone needs them. The first increment is a small executable test harness around the unchanged encryption library.
+Introduce components when the milestone needs them. The executable harness now covers the unchanged encryption library and an adaptation of Gajim's actual SQLite store. See [storage boundaries and patch ledger](storage.md).
 
 ## Send sequence
 

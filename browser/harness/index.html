@@ -8,11 +8,11 @@
 <main>
   <h1>Browser encryption experiment</h1>
   <p>Gajim’s unchanged omemo-dr library, compiled to WebAssembly. This is a local compatibility test, not a chat application.</p>
-  <p>The checks use temporary synthetic identities. There is no sign-in, contact messaging or saved encryption identity.</p>
+  <p>The checks use synthetic identities and a temporary test database, removed after the test. There is no XMPP sign-in or contact messaging.</p>
   <button type="button">Run encryption checks</button>
   <p id="status" role="status" aria-live="polite">Ready to test this browser.</p>
   <pre aria-label="Test results"></pre>
-  <p>A pass verifies these tests in this browser. It does not verify persistent keys, live interoperability or production security.</p>
+  <p>A pass covers these encryption and storage checks. Actual reloads, tab suspension, live interoperability and production security need separate verification.</p>
 </main>
 <script type="module" src="main.mjs"></script>
 </html>

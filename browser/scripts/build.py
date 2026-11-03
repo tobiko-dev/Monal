@@ -1,6 +1,7 @@
 """Build a same-origin, synthetic-only OMEMO WebAssembly test harness.
 
-Run with the pinned Python build environment. No upstream source is modified.
+Run with the pinned Python build environment. The crypto library is unchanged;
+Gajim's store has explicit, hash-checked browser compatibility patches.
 Runtime downloads occur at build time; the served harness only requests itself.
 """
 
@@ -17,6 +18,7 @@ import tarfile
 import tempfile
 import urllib.request
 import zipfile
+from prepare_port import files as port_files
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / "versions.json").read_text())
@@ -107,6 +109,7 @@ def build(source_archive=None):
 
         stage = temp / "dist"
         shutil.copytree(ROOT / "harness", stage)
+        shutil.copytree(ROOT / "platform", stage / "platform")
         (stage / "runtime").mkdir()
         (stage / "licenses").mkdir()
         (stage / "source").mkdir()
@@ -114,11 +117,17 @@ def build(source_archive=None):
         shutil.copy2(source / "LICENSE", stage / "licenses" / "omemo-dr-GPL-3.0.txt")
         shutil.copy2(ROOT / "licenses" / "Pyodide-MPL-2.0.txt", stage / "licenses" / "Pyodide-MPL-2.0.txt")
         shutil.copy2(wheel, stage / wheel.name)
+        shutil.copy2(ROOT / "vendor/gajim/omemo_storage.py", stage / "source/gajim-omemo-storage.py")
+        shutil.copy2(ROOT / "LICENSE", stage / "licenses/browser-GPL-3.0.txt")
+        with zipfile.ZipFile(stage / "port.zip", "w") as z:
+            for name, data in port_files():
+                add_zip(z, name, data)
         with zipfile.ZipFile(stage / "checks.zip", "w") as z:
             for path in sorted((source / "tests").rglob("*.py")):
                 add_zip(z, path.relative_to(source).as_posix(), path.read_bytes())
             add_zip(z, "port_tests/__init__.py", b"")
-            add_zip(z, "port_tests/test_browser_crypto.py", (ROOT / "tests" / "test_browser_crypto.py").read_bytes())
+            for path in sorted((ROOT / "tests").glob("*.py")):
+                add_zip(z, "port_tests/" + path.name, path.read_bytes())
 
         runtime = Path(config(pyodide, "dist_dir"))
         for name, expected in PINS["runtime_assets"].items():
@@ -146,7 +155,10 @@ def build(source_archive=None):
             "pyodide": PINS["pyodide"], "python": PINS["runtime_python"],
             "emscripten": PINS["emscripten"], "source_sha256": source_pin["sha256"],
             "wheel": wheel.name, "dependencies": dependency_versions,
-            "assets": assets, "upstream_patches": [],
+            "assets": assets, "crypto_upstream_patches": [],
+            "gajim_storage": PINS["gajim_storage"],
+            "gajim_storage_patches": ["remove desktop app import", "use stdlib logger adapter", "disable blind trust"],
+            "expected_python_tests": 23,
         }
         (stage / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
         # Replace only generated output after every check/download succeeds.

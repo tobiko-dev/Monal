@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-03. Status: encryption foundation builds and passes 14 WebAssembly checks; no usable browser chat application yet.
+Updated: 2026-11-03. Status: 23 WebAssembly tests and 16 simulated storage/concurrency tests pass, with three combined encrypted exchanges. M2 storage foundation is implemented; actual browser/iPad validation and a usable chat application are still pending.
 
 ## Goal and scope
 
@@ -20,7 +20,7 @@ Reusing `omemo-dr` alone is an encryption experiment, not a completed Gajim port
 - Persist outgoing work and session changes before transmission; preserve failed messages and prevent accidental duplicates.
 - Correct sender, conversation, times and receipt state survive history loading, chat switching and reused UI components.
 - Tests use synthetic identities first. Live tests are limited to Notes to self or the explicitly designated npc test account. Never message another contact for testing.
-- Linux, Node and desktop-browser results are not physical iPad passes. Deployment follows usable, verified functionality.
+- Linux, Node and desktop-browser results are not physical iPad passes. Application deployment follows usable, verified functionality. A private synthetic QA harness may be hosted separately for HTTPS browser verification.
 
 ## Milestones and acceptance criteria
 
@@ -41,22 +41,26 @@ M0 does not establish browser encryption, live interoperability or iPad support.
 - [x] Package a local harness, pinned source/runtime hashes and licenses. No account login or contact messaging.
 - [x] Pass all 8 upstream tests in WebAssembly under Node 24.22.1.
 - [x] Pass 6 added WebAssembly checks: round trip/reply, altered payload/IV/wrapped key, missing device key and unavailable recipient. Upstream tests also cover reordered/missed/duplicate messages.
-- [ ] Complete the actual browser run. The current HTTP preview lacks the secure context required by the harness; no browser pass is claimed.
+- [ ] Complete the actual browser run. A private HTTPS QA endpoint now exists; its authenticated browser run is pending. The original HTTP preview lacked secure Web Crypto. No browser pass is claimed.
 - [ ] Record startup/memory observations and run the same harness in physical iPad Safari.
 
 Exit: executable evidence for the chosen runtime. Record concrete blockers before changing architecture.
 
-Evidence: [build and validation record](browser/docs/validation.md), [raw WebAssembly result](browser/docs/evidence/node-wasm.json). Durable identities and production trust policy are not implemented by the synthetic test fixture.
+Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAssembly result](browser/docs/evidence/node-wasm.json), [M2 WebAssembly/storage result](browser/docs/evidence/node-wasm-storage.json). The M1 blind-trust fixture is separate from the adapted Gajim store, which disables blind trust. Production device/trust orchestration remains M3.
 
-### M2 — Durable identity and sessions: pending
+### M2 — Durable identity and sessions: in progress
 
-- [ ] Implement the upstream Store boundary with durable browser storage and explicit transactions.
-- [ ] Verify identity, trust, prekeys and sessions survive reload and restart.
-- [ ] Interrupt writes; simulate quota, denied-storage and corrupted-state failures; block unsafe continuation.
-- [ ] Serialize cryptographic work across tabs; test closure, suspension and handoff.
+- [x] Adapt Gajim's actual SQLite Store with hash-checked source, an explicit patch ledger, separate creation/restoration and snapshot validation.
+- [x] Implement IndexedDB snapshot transactions, revision checks and per-operation Web Locks. Results are withheld until commit completes.
+- [x] Verify identity, trust, prekeys and session continuation after reconstructing stores/managers in native Python and WASM; run three combined encrypted exchanges through the repository.
+- [x] Pass 16 simulated IndexedDB/Node Web Locks tests, including interrupted writes, quota, denied storage, corruption, concurrent writers and lock timeout.
+- [ ] Verify real browser reload/restart and storage failure behavior, including physical iPad Safari.
+- [ ] Verify real multi-tab closure, suspension and handoff; integrate the final worker/coordinator boundary.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 
 Exit: persistence/concurrency tests pass, including physical Safari lifecycle tests.
+
+Implementation and limits: [storage design](browser/docs/storage.md). There is no durable outbox yet; this storage API must not transmit user messages before M4's atomic session/ciphertext commit is implemented.
 
 ### M3 — Gajim protocol integration and 5july: pending
 

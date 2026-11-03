@@ -1,5 +1,6 @@
 import { loadPyodide } from "./runtime/pyodide.mjs";
 import { runChecks } from "./checks.mjs";
+import { runStorageChecks } from "./storage-checks.mjs";
 
 // No account credentials or network messaging API exists in this harness.
 try {
@@ -16,6 +17,12 @@ try {
     return new Uint8Array(await response.arrayBuffer());
   };
   const result = await runChecks(pyodide, read, (text) => self.postMessage({ type: "progress", text }));
+  if (result.passed) {
+    self.postMessage({ type: "progress", text: "Checking synthetic identities with browser storage…" });
+    result.storage_integration = await runStorageChecks(pyodide);
+    result.storage_integration.environment = "Browser IndexedDB and Web Locks";
+    result.passed &&= result.storage_integration.passed;
+  }
   self.postMessage({ type: "result", result: { ...result, startup_ms, user_agent: navigator.userAgent } });
 } catch (error) {
   self.postMessage({ type: "error", text: error.message });
