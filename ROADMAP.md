@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively and in WASM. Browser WebSocket transport, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. Browser WebSocket transport, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -127,7 +127,8 @@ Implementation and limits: [storage design](browser/docs/storage.md), [actual li
 - [x] Inspect the pinned nbxmpp package and reproduce the unchanged-client import blocker in WASM; record 12 desktop-dependent modules, retained upstream responsibilities and the incremental port plan. [Investigation and limits](browser/docs/nbxmpp-port.md).
 - [x] Package the pinned nbxmpp source and explicit runtime adapters; pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks natively and in WASM. Include real OMEMO XML exchange/restoration, malformed XML, SCRAM vectors, strict JID decoding and IQ cancellation. [Patch ledger and limits](browser/docs/nbxmpp-port.md).
 - [x] Retain all 50 JS and 28 WASM regression checks; reject altered protocol/test/dependency/source artifacts before execution/adaptation.
-- [ ] Verify the new protocol core in actual Chrome and physical iPad Safari; prior storage tests do not cover this increment.
+- [x] Verify the new protocol core in actual Chrome 155 over owner-private HTTPS, including the 28-test crypto baseline; all counts and artifact hashes match. [Browser result](browser/docs/evidence/chrome-nbxmpp.json). Fresh source CI also passes.
+- [ ] Verify the new protocol core on physical iPad Safari using **Run protocol checks** at the private QA `/protocol` page; expect 128 upstream, 20 adapter and eight timer checks. Prior storage tests do not cover this increment.
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
 - [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
 - [ ] Adapt Soup networking to browser WebSocket and test controlled-peer connection, subprotocol, malformed/binary/oversized input, backpressure, failed authentication, reconnect and late events. Disable SASL/stanza logging before any credential use. Assess BOSH/XEP-0206 only if actual endpoint capabilities require it.

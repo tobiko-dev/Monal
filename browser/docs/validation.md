@@ -229,11 +229,31 @@ The unchanged crypto wheel retains its earlier hash; port.zip now also includes
 three protocol adapters. Historical Safari passes are not relabeled as tests
 of this new bundle.
 
+Source `40060241047954057937fe890fd1dda7adaeeb10`, packaged as private QA
+source `711f7655a698bd156bc11ce99b32ba26102129b5`, passes the same **128 upstream,
+20 adapter and eight timer checks in actual Chrome 155 on Linux** over HTTPS.
+The page also passes the **28-test crypto baseline** first. The reported wheel,
+port and protocol hashes match the local Node artifacts. Total worker time is
+6,395 ms, with protocol loading/checks reporting 1,850 ms; these are single
+cloud Chrome observations, not iPad performance measurements.
+[Raw browser result](evidence/chrome-nbxmpp.json).
+
+The [fresh source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41808948358)
+passes build, 50 JS tests, the existing WASM/integration checks, the new protocol
+checks and altered-artifact rejection. Physical iPad Safari verification of
+this new protocol boundary is pending. Open the private QA
+[/protocol page](https://gajim-browser-qa.strongcaterpillar.chatgpt.site/protocol)
+and choose **Run protocol checks**; its expected counts are 128 / 20 / 8.
+No XMPP sign-in is involved.
+
+![Actual Chrome reports the upstream, adapter and timer checks passed](evidence/chrome-nbxmpp-pass.jpg)
+
 The protocol page is a synthetic test, with networking explicitly disabled.
-No actual-browser pass is claimed by these Node/native results. Live server
-authentication, device policy, network lifecycle, message dispatch and native
-Monal/Gajim interoperability remain pending. The outbox fixture is still
-separate from production XML preparation.
+Live server authentication, device policy, network lifecycle, message dispatch
+and native Monal/Gajim interoperability remain pending. The outbox fixture is
+still separate from production XML preparation. The next code increment is the
+browser WebSocket adapter with controlled-peer failure, reconnect, framing and
+backpressure tests, before any account credentials are used.
 
 ## Build issues resolved
 

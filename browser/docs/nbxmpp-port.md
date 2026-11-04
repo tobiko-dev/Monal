@@ -3,7 +3,7 @@
 ## Implemented offline protocol core
 
 The pinned nbxmpp client and protocol modules now run with explicit browser
-adapters. Native Python and Node-hosted WebAssembly each pass **128 unchanged
+adapters. Native Python, Node-hosted WebAssembly and actual Chrome each pass **128 unchanged
 upstream tests, 20 adapter/security tests and eight asynchronous checks**.
 The checks exercise real OMEMO bundle/message XML and the unchanged Gajim
 encryption library, including a reply after session restoration, altered
@@ -110,8 +110,8 @@ References: [RFC 7395 §§3, 6](https://www.rfc-editor.org/rfc/rfc7395.html),
    its protocol tests. Keep a file-by-file patch ledger; fail unsupported
    operations explicitly. Run upstream JID, XML, OMEMO parsing and SCRAM vectors
    natively and in WASM, plus timer cancellation/ordering checks. Preserve the
-   existing 28 WASM and 50 JS checks. **Implemented and passing natively and
-   in Node WASM.** Actual-browser evidence is recorded separately. A successful
+   existing 28 WASM and 50 JS checks. **Implemented and passing natively, in
+   Node WASM and actual Chrome.** Physical Safari verification is pending. A successful
    import alone is insufficient.
 2. **Implement and verify the WebSocket connection adapter.** Exercise actual
    nbxmpp client event flow against a controlled synthetic peer, including bad
