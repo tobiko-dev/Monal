@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs pass the encryption/storage baseline, saved-session continuation, competing-tab blocking, owner-close recovery and continuation after the directed close/reopen test. Further Safari lifecycle checks, the production worker boundary and a usable chat application remain pending.
+Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs pass the encryption/storage baseline, saved-session continuation, competing-tab blocking, owner-close recovery, close/reopen and lock/unlock continuation. Further Safari lifecycle checks, the production worker boundary and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -52,7 +52,7 @@ Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAsse
 
 Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.json), [lifecycle results](browser/docs/evidence/chrome-lifecycle.json), [lifecycle procedure and revision table](browser/docs/lifecycle.md). These establish the stated Chrome checks, not Safari or full browser-process crash correctness.
 
-Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). These cover the baseline, saved-session continuation, competing-tab blocking, reported owner-close recovery and the directed close/reopen test. Separate reload, suspension and commit-handoff scenarios stay open.
+Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). These cover the baseline, saved-session continuation, competing-tab blocking, reported owner-close recovery, close/reopen and lock/unlock continuation. Separate reload, confirmed OS suspension and commit-handoff scenarios stay open.
 
 ### M2 — Durable identity and sessions: in progress
 
@@ -68,7 +68,8 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 - [x] Confirm Safari competing-tab access is blocked without stealing the lock (user-reported).
 - [x] Recover from the prior committed revision after the reported Safari owner-close sequence; continue encrypted exchanges with unchanged identities.
 - [x] Restore saved identities and continue encrypted exchanges after the directed Safari close/reopen test (user-reported): inspect 12/11, then exchange to 14/13.
-- [ ] Verify Safari queued handoff after owner commit, a separate explicit reload and background/OS suspension.
+- [x] Continue encrypted exchanges after the directed app-switch and iPad lock/unlock test (user-reported), with unchanged identities.
+- [ ] Verify Safari queued handoff after owner commit, a separate explicit reload and confirmed OS suspension. A lock/unlock pass alone does not establish OS suspension.
 - [ ] Verify full browser-process restart/crash and actual-browser storage failure/eviction.
 - [ ] Integrate and verify the production worker/coordinator lifecycle, including suspended pages and queued drafts.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
