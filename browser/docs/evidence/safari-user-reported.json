@@ -148,7 +148,7 @@
     ]
   },
   "limits": [
-    "The lifecycle run restores an existing fixture. Reports do not identify whether navigation was a reload, tab reopening or another page.",
+    "The initial lifecycle report does not identify its navigation action. The later close/reopen report was supplied in response to explicit close/reopen instructions, but navigation itself was not independently instrumented. A separate explicit reload remains unreported.",
     "Contended access is confirmed. The reported owner-close sequence recovers the prior revision; no one-held/one-pending queue snapshot was supplied, and queued handoff after an owner commit has not been reported.",
     "OS suspension, browser-process crash and storage eviction are not established.",
     "Startup and elapsed fields are separate phases, not a combined end-to-end measurement. Network/cache effects were not isolated.",
@@ -199,6 +199,45 @@
         "before": {
           "alice": 10,
           "bob": 9
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "close_reopen": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied the same run URL and this fresh-runtime report in response to instructions to close the remaining tab, reopen its saved full URL, then resume the exchange. Recorded as user-reported close/reopen continuation; navigation itself was not independently observed.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 12,
+          "bob": 11
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 14,
+          "bob": 13
+        },
+        "before": {
+          "alice": 12,
+          "bob": 11
         },
         "encrypted_exchanges": 2,
         "passed": true

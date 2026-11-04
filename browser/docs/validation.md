@@ -28,12 +28,12 @@ The earlier HTTP preview at `http://terminal.local:4173/` stopped at the secure-
 
 The separate lifecycle harness retains synthetic data across visits until its explicit cleanup. Its actual Chrome run used source `3551c4d304f5be2fd0ac690d2878bafe1dbac771`, packaged as QA source `1403adae7a5b88cd40cd28a458144863ffb5b858`. Reload and close/reopen preserved saved identities and session state. One held/one pending lock was observed before both committed handoff and a repeated uncommitted owner closure. Worker termination before commit also preserved the prior revision, and a fresh worker decrypted subsequent messages. [Full lifecycle evidence and limitations](lifecycle.md).
 
-Explicit physical iPad Safari lifecycle scenarios, full browser-process restart/crash, storage eviction and background/OS suspension remain pending. The 16 fault-injection/concurrency tests still have Node evidence only. The [lifecycle source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708) passed its fresh build, all 16 JS and 23 WASM tests, both integration fixtures and altered-archive rejection.
+The physical iPad Safari reports below cover selected lifecycle scenarios. A separate reload, queued handoff after owner commit, full browser-process restart/crash, storage eviction and background/OS suspension remain pending. The 16 fault-injection/concurrency tests still have Node evidence only. The [lifecycle source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708) passed its fresh build, all 16 JS and 23 WASM tests, both integration fixtures and altered-archive rejection.
 
 ## User-reported physical iPad Safari results
 
-The user supplied two successful Safari 26.6 baseline reports and a lifecycle
-report; [selected fields and transcribed events](evidence/safari-user-reported.json)
+The user supplied two successful Safari 26.6 baseline reports and lifecycle
+reports; [selected fields and transcribed events](evidence/safari-user-reported.json)
 retain their provenance. Both baselines pass all 23 tests with zero failures,
 errors or skips, plus three encrypted exchanges through actual browser storage.
 The crypto wheel and adapter hashes match the tested Chrome/CI artifacts.
@@ -52,8 +52,16 @@ working-copy change was not persisted. This is user-reported owner-close
 evidence, not an independently controlled Safari run. No owner queue snapshot
 showing one held/one pending lock was supplied.
 
-Queued handoff after an owner commit, explicit reload/close-reopen and
-background/OS suspension scenarios remain open.
+In response to instructions to save the full test URL, close the remaining tab,
+reopen that URL and resume, the user supplied a fresh runtime report for the same
+run. Its startup inspection restores 12/11 with unchanged identities, followed
+by two successful encrypted exchanges reaching 14/13. This is recorded as
+user-reported continuation after the directed close/reopen test; the report
+does not independently instrument the navigation action.
+
+Queued handoff after an owner commit, a separate explicit reload and
+background/OS suspension scenarios remain open. The close/reopen result does
+not establish browser-process termination or OS suspension.
 
 Reported startup values are 68,848 ms and 37,989 ms; the separate elapsed fields
 are 184,792 ms and 2,900 ms. Python tests themselves take 0.365 and 0.366 seconds.
