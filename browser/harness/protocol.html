@@ -8,12 +8,12 @@
 <main>
   <h1>Gajim protocol checks</h1>
   <p>Runs nbxmpp’s upstream protocol tests with browser adapters, authentication test vectors and real encrypted XML exchanges between disposable identities.</p>
-  <p>No account sign-in or contact messaging. Network connections are disabled in this protocol build.</p>
+  <p>No account sign-in or contact messaging. This page runs offline protocol checks without enabling a network transport.</p>
   <button id="run" type="button">Run protocol checks</button>
   <p id="status" role="status" aria-live="polite">Ready.</p>
   <pre id="report" aria-label="Protocol check results"></pre>
   <p>The test worker and its temporary identities are discarded when the run finishes. A pass covers the protocol and timer checks; a real server connection and native-client interoperability need separate verification.</p>
-  <p><a href="index.html">Encryption baseline</a> · <a href="outbox.html">Durable outbox checks</a></p>
+  <p><a href="index.html">Encryption baseline</a> · <a href="outbox.html">Durable outbox checks</a> · <a href="transport.html">WebSocket connection checks</a></p>
 </main>
 <script type="module" src="protocol-main.mjs"></script>
 </html>

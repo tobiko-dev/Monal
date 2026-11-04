@@ -255,6 +255,32 @@ still separate from production XML preparation. The next code increment is the
 browser WebSocket adapter with controlled-peer failure, reconnect, framing and
 backpressure tests, before any account credentials are used.
 
+## Browser WebSocket adapter increment
+
+The actual nbxmpp client now connects through an explicitly configured WSS
+adapter. All 18 controlled-peer/configuration checks pass in Node 24.22.1 /
+Pyodide, with real local TLS and a native WebSocket client. The unchanged
+upstream client performs SCRAM-SHA-256, stream restart, resource binding and IQ
+reply processing, then reconnects with a fresh socket. Negative scenarios cover
+wrong subprotocol/domain, malformed/entity/binary/oversized input, authentication
+rejection, invalid server signatures, interruption and deadlines. Configuration
+changes, refused-write cleanup, bounded callback queues and disabled logging
+also pass. [Raw result](evidence/node-wasm-transport.json),
+[boundary and limits](transport.md).
+
+All 63 JS tests pass (50 existing plus 13 socket tests). The 128 upstream / 20
+adapter / eight timer protocol checks and the 28-test crypto/storage/worker/outbox
+regressions remain passing. Six altered runtime archives and the original
+nbxmpp source are rejected by their integrity boundaries. Browser verification
+of the new transport is recorded separately; neither local TLS nor prior Safari
+results establish a physical iPad connection pass.
+
+No real account, device publication or contact messaging is enabled. Required
+OMEMO must still be enforced at the production dispatcher boundary after Gajim
+device/trust orchestration is adapted. The synthetic server accepts only fixture
+credentials and cannot forward messages. No user credentials are requested by
+this increment.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.
@@ -263,6 +289,6 @@ backpressure tests, before any account credentials are used.
 
 ## Not implemented or proved
 
-The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. The offline nbxmpp protocol core is implemented as recorded above. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim device/trust orchestration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. The nbxmpp protocol core and controlled-peer WSS adapter are implemented as recorded above. There is no fingerprint-verification UI, real-account authentication, 5july connection, Gajim device/trust orchestration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
 No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; recipient-policy revalidation and delivery reconciliation still precede any network send.

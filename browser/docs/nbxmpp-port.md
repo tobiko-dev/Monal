@@ -9,17 +9,18 @@ The checks exercise real OMEMO bundle/message XML and the unchanged Gajim
 encryption library, including a reply after session restoration, altered
 ciphertext rejection and a message addressed to another device.
 
-This increment has no network transport. `Client.connect()` fails before
-changing stream state or resolving addresses. Actual-browser verification is
+The subsequent [WebSocket increment](transport.md) adds an explicitly configured
+connection adapter. Unconfigured `Client.connect()` still fails before changing
+stream state or resolving addresses. Actual-browser verification is
 tracked separately in [validation](validation.md); no live interoperability
 or physical Safari result is implied by the native/Node runs.
 
 The build verifies the complete original Git archive, packages 96 of its 99
-runtime modules and records **37 patch operations across nine files**.
+runtime modules and records **40 patch operations across nine files**.
 `connection.py`, `tcp.py` and `websocket.py` are excluded from the runtime;
 their originals remain in the source archive. The generated
-[patch](evidence/nbxmpp-browser.patch) and
-[adaptation manifest](evidence/nbxmpp-adaptation.json) make the boundary
+[patch](evidence/nbxmpp-transport.patch) and
+[adaptation manifest](evidence/nbxmpp-transport-adaptation.json) make the boundary
 reviewable. No `gi` facade is installed.
 
 | Adapter | Implemented behavior and limits |
@@ -118,7 +119,9 @@ References: [RFC 7395 §§3, 6](https://www.rfc-editor.org/rfc/rfc7395.html),
    subprotocol, malformed/binary/oversized frames, failed connect, interrupted
    authentication, reconnect, backpressure and late events. Disable stanza and
    SASL payload logging. Test the new path in actual browsers before requesting
-   account credentials.
+   account credentials. **Implemented: 18 controlled-peer/configuration checks
+   in Node WASM and 13 JS socket checks pass.** Actual browser results are
+   recorded separately in [validation](validation.md).
 3. **Connect account and device orchestration.** Restore or explicitly create
    and commit the local identity before publishing its device/bundle. Retain
    Gajim's device-list merge and bundle/session behavior. Fingerprint changes,

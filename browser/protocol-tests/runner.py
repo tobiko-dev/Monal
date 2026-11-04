@@ -30,4 +30,4 @@ async def run():
             "nbxmpp": nbxmpp.__version__, "idna": version("idna"),
             "precis_i18n": version("precis-i18n"), "omemo_dr": version("omemo-dr"),
             "upstream": upstream, "browser_adaptation": added, "async_integration": timers,
-            "network": "Disabled in this increment; no socket, sign-in or contact messaging"}
+            "network": "No transport configured by these offline tests; no socket, sign-in or contact messaging"}

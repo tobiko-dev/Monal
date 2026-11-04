@@ -2,6 +2,11 @@
   "name": "gajim-browser-foundation",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test tests/*.test.mjs" },
-  "devDependencies": { "fake-indexeddb": "6.2.7" }
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.7",
+    "ws": "8.22.1"
+  }
 }

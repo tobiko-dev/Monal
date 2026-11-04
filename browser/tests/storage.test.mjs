@@ -65,15 +65,21 @@ test("competing repository instances serialize whole read/modify/commit operatio
   const f = fixture();
   await f.repo.provision("alice", initial);
   let active = 0;
+  const mutationOrder = [];
   const values = await Promise.all(Array.from({ length: 8 }, () => f.another().update("alice", async (previous) => {
     assert.equal(active++, 0);
     await new Promise((resolve) => setTimeout(resolve, 2));
     const value = previous.snapshot[0] + 1;
+    mutationOrder.push(value);
     active--;
     return { ...previous, snapshot: new Uint8Array([value]), result: value };
   })));
-  assert.deepEqual(values, [1, 2, 3, 4, 5, 6, 7, 8]);
+  // Independent repositories hash the lock name asynchronously before requesting
+  // ownership. Invocation order is not a FIFO contract across those instances.
+  assert.deepEqual(values.toSorted((a, b) => a - b), [1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.deepEqual(mutationOrder, [1, 2, 3, 4, 5, 6, 7, 8]);
   assert.equal((await f.repo.inspect("alice")).revision, 9);
+  assert.equal(await f.repo.read("alice", record => record.snapshot[0]), 8);
 });
 
 test("a failed crypto operation discards its working copy", async () => {

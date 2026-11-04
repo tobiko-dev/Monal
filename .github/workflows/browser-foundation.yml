@@ -43,6 +43,8 @@ jobs:
         run: node browser/scripts/test-protocol-wasm.mjs
       - name: Reject altered test artifacts
         run: python browser/scripts/test-integrity.py
+      - name: Verify actual WebSocket and upstream connection state machine
+        run: node browser/scripts/test-transport-wasm.mjs
       - name: Compiler diagnostics on failure
         if: failure()
         run: test ! -f browser/.build/compiler.log || tail -150 browser/.build/compiler.log

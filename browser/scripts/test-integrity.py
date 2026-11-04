@@ -11,6 +11,7 @@ cases = [(name, "test-wasm.mjs") for name in ("checks.zip", "port.zip")]
 cases += [(name, "test-protocol-wasm.mjs") for name in (
     "nbxmpp.zip", "protocol-checks.zip", pins["precis_i18n"]["filename"],
 )]
+cases += [("transport-checks.zip", "test-transport-wasm.mjs")]
 for name, runner in cases:
     fixture = root / "dist" / name
     original = fixture.read_bytes()

@@ -142,6 +142,9 @@ def build(source_archive=None):
             for path in sorted((ROOT / "protocol-tests").glob("*.py")):
                 add_zip(z, "browser_protocol_tests/" + path.name, path.read_bytes())
         shutil.copy2(ROOT / "vendor/nbxmpp" / PINS["nbxmpp"]["archive"], stage / "source" / PINS["nbxmpp"]["archive"])
+        with zipfile.ZipFile(stage / "transport-checks.zip", "w") as z:
+            for path in sorted((ROOT / "transport-tests").glob("*.py")):
+                add_zip(z, "browser_transport_tests/" + path.name, path.read_bytes())
         (stage / "source/nbxmpp-browser.patch").write_text(protocol_diff)
         (stage / "licenses/nbxmpp-COPYING.txt").write_bytes(protocol_source["COPYING"])
         precis = PINS["precis_i18n"]
@@ -182,6 +185,7 @@ def build(source_archive=None):
             "expected_protocol_upstream_tests": 128,
             "expected_protocol_adaptation_tests": 20,
             "expected_protocol_async_checks": 8,
+            "expected_transport_checks": 18,
         }
         (stage / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
         # Replace only generated output after every check/download succeeds.

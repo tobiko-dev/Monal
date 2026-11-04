@@ -1,8 +1,8 @@
 """Prepare the pinned protocol core with explicit, reviewable browser patches.
 
 Original source is distributed alongside the adapted package. No GI facade is
-installed. Desktop connections are excluded; client.connect fails before state
-changes until a real browser transport is integrated in the next increment.
+installed. Desktop connections are excluded; client.connect requires an explicit
+WSS-only browser factory and endpoint before any state change.
 """
 
 import ast
@@ -115,10 +115,17 @@ def prepare():
     replace(p, "from nbxmpp.websocket import WebsocketConnection\n", "", "Exclude desktop Soup connection import")
     function(p, "Client._get_connection", '''
         def _get_connection(self, *args: Any) -> Any:
-            raise UnsupportedPlatformOperation("Browser network transport is not integrated")
-    ''', "Keep connection creation disabled until an actual browser transport exists")
-    replace(p, "    def connect(self) -> None:\n", '    def connect(self) -> None:\n        raise UnsupportedPlatformOperation("Browser network transport is not integrated")\n',
-            "Reject connect before touching stream state or resolving addresses")
+            from gajim_browser.nbxmpp_connection import create_connection
+            return create_connection(self, *args)
+    ''', "Use an explicitly configured browser connection factory")
+    replace(p, "    def connect(self) -> None:\n", '    def connect(self) -> None:\n        from gajim_browser.nbxmpp_connection import ensure_configured\n        ensure_configured(self)\n',
+            "Reject unconfigured or changed browser endpoints before any stream state change")
+    replace(p, "                self._stream_secure\n                or self.current_connection_type", "                self.is_stream_secure\n                or self.current_connection_type",
+            "Recognize validated direct WSS as secure when retaining the successful endpoint")
+    replace(p, "        self._con.send(stanza, now)\n        assert self._smacks", "        try:\n            self._con.send(stanza, now)\n        except Exception:\n            if callback is not None:\n                self._dispatcher.remove_iq_callback(id_)\n            raise\n        assert self._smacks",
+            "Remove an IQ callback if the bounded browser transport rejects its write")
+    replace(p, "    def destroy(self) -> None:\n", "    def destroy(self) -> None:\n        if self._con is not None:\n            self._con.destroy()\n            self._con = None\n",
+            "Dispose the current socket and late callbacks when the client is destroyed")
 
     p = "nbxmpp/sasl.py"
     replace(p, "from hashlib import pbkdf2_hmac", "from gajim_browser.nbxmpp_crypto import pbkdf2_hmac", "Use pinned cryptography PBKDF2 where the WASM hashlib build lacks it")

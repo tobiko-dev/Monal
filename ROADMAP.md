@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. Browser WebSocket transport, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and 13 JS socket checks. Actual-browser verification of this increment, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -40,8 +40,8 @@ Build in this order; source and security requirements above apply throughout:
    code for 5july authentication, device publication, recipient bundles and
    reconnects, with a source/patch ledger. The [source-boundary investigation](browser/docs/nbxmpp-port.md)
    now includes the implemented runtime helpers and passing upstream protocol
-   tests. Next adapt and test the WebSocket connection, then integrate
-   Gajim's device/trust orchestration.
+   tests. The WebSocket adapter now has controlled-peer checks; verify that
+   boundary in browsers, then integrate Gajim's device/trust orchestration.
 3. **Fingerprint verification:** expose real fingerprints and distinct
    unverified/changed/blocked states. Missing usable keys block every content
    send; no plaintext fallback. Revalidate queued work against current device
@@ -122,7 +122,7 @@ Exit: persistence/concurrency tests pass, including physical Safari lifecycle te
 
 Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md), [outbox boundary](browser/docs/outbox.md). The test harness uses separate workers/runtimes and real browser locks. Atomic outbox storage is implemented; it does not authorize network transmission before recipient-policy and dispatcher integration.
 
-### M3 — Gajim protocol integration and 5july: offline protocol core implemented
+### M3 — Gajim protocol integration and 5july: protocol and controlled-peer transport implemented
 
 - [x] Inspect the pinned nbxmpp package and reproduce the unchanged-client import blocker in WASM; record 12 desktop-dependent modules, retained upstream responsibilities and the incremental port plan. [Investigation and limits](browser/docs/nbxmpp-port.md).
 - [x] Package the pinned nbxmpp source and explicit runtime adapters; pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks natively and in WASM. Include real OMEMO XML exchange/restoration, malformed XML, SCRAM vectors, strict JID decoding and IQ cancellation. [Patch ledger and limits](browser/docs/nbxmpp-port.md).
@@ -131,7 +131,9 @@ Implementation and limits: [storage design](browser/docs/storage.md), [actual li
 - [ ] Verify the new protocol core on physical iPad Safari using **Run protocol checks** at the private QA `/protocol` page; expect 128 upstream, 20 adapter and eight timer checks. Prior storage tests do not cover this increment.
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
 - [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
-- [ ] Adapt Soup networking to browser WebSocket and test controlled-peer connection, subprotocol, malformed/binary/oversized input, backpressure, failed authentication, reconnect and late events. Disable SASL/stanza logging before any credential use. Assess BOSH/XEP-0206 only if actual endpoint capabilities require it.
+- [x] Adapt Soup networking to browser WebSocket. Pass 18 Node WASM controlled-peer/configuration checks and 13 JS socket checks, including actual SCRAM/binding, bad input, backpressure, failure/reconnect, disposal and logging. [Boundary and evidence](browser/docs/transport.md). No real account used.
+- [ ] Verify the new controlled-peer WSS checks in actual Chrome and physical iPad Safari.
+- [ ] Assess actual 5july endpoint capabilities and BOSH/XEP-0206 need before enabling account authentication.
 - [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
 - [ ] Enforce required OMEMO for every user-content send path and test at the transmitted-stanza boundary.
 - [ ] Exchange encrypted text both ways with native Monal/Gajim using authorized test identities.

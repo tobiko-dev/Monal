@@ -1,0 +1,176 @@
+{
+  "nbxmpp": {
+    "repository": "https://github.com/gajim/python-nbxmpp",
+    "commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "version": "7.5.0",
+    "archive": "python-nbxmpp-999ce885.tar.gz",
+    "sha256": "3e2b15dae70e995da375b9cad4843151488e2f911004879398b490aea90faf51"
+  },
+  "nbxmpp_patches": [
+    {
+      "path": "nbxmpp/__init__.py",
+      "change": "Remove desktop-only Soup initialization"
+    },
+    {
+      "path": "nbxmpp/const.py",
+      "change": "Remove unavailable GLib version, without fabricating one"
+    },
+    {
+      "path": "nbxmpp/const.py",
+      "change": "Remove desktop certificate flag table"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Use portable advertised channel-binding names and strict text helpers"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Use stdlib IP-address recognition"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Reject malformed escaped localpart without silently changing JID identity"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Reject malformed escaped resourcepart without silently changing JID identity"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Represent advertised channel binding as a portable enum"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Remove desktop imports from protocol value structs"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Use strict URI encoding"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Use portable channel-binding value type"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Reject desktop proxy resolver requests explicitly"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Remove desktop TLS/version imports"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Remove unavailable desktop capability constants"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: get_tls_error_phrase"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: convert_tls_error_flags"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: get_websocket_close_string"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Do not claim any GLib capability/version"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/dispatcher.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/dispatcher.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/task.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/task.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Remove desktop client annotations/imports"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsCertificateFlags"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsCertificate"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsChannelBindingType"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.SocketAddress"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Exclude raw TCP connection import"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Exclude desktop Soup connection import"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use an explicitly configured browser connection factory"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Reject unconfigured or changed browser endpoints before any stream state change"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Recognize validated direct WSS as secure when retaining the successful endpoint"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Remove an IQ callback if the bounded browser transport rejects its write"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Dispose the current socket and late callbacks when the client is destroyed"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Use pinned cryptography PBKDF2 where the WASM hashlib build lacks it"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Fail authentication cleanly when bounded KDF parameters are rejected"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Remove unused desktop TLS enum import"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Report unavailable TLS binding honestly; retain upstream non-PLUS SASL logic"
+    }
+  ],
+  "nbxmpp_excluded": [
+    "nbxmpp/connection.py",
+    "nbxmpp/tcp.py",
+    "nbxmpp/websocket.py"
+  ]
+}
