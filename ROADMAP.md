@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-03. Status: Chrome now preserves the same OMEMO identities and continued sessions across page reload, tab close/reopen, competing-tab handoff and worker termination. The 23 WebAssembly tests and 16 simulated storage/concurrency tests also pass in Node/CI. Physical iPad validation, the production worker boundary and a usable chat application are still pending.
+Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs also pass the 23-test baseline, storage integration and continued encrypted exchanges after loading saved identities and committing a held change. Safari contention/suspension checks, the production worker boundary and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -42,13 +42,17 @@ M0 does not establish browser encryption, live interoperability or iPad support.
 - [x] Pass all 8 upstream tests in WebAssembly under Node 24.22.1.
 - [x] Pass 6 added WebAssembly checks: round trip/reply, altered payload/IV/wrapped key, missing device key and unavailable recipient. Upstream tests also cover reordered/missed/duplicate messages.
 - [x] Complete the actual browser run: Chrome 155 on Linux over private HTTPS passed all 23 tests and three encrypted exchanges using real IndexedDB/Web Locks. Source and artifact hashes match the Node/CI baseline.
-- [ ] Record startup/memory observations and run the same harness in physical iPad Safari.
+- [x] Run the same baseline in physical iPad Safari: user reports 23 tests and three storage-integrated encrypted exchanges passing twice, with matching artifact hashes.
+- [x] Record iPad startup/check timings from both user-supplied reports.
+- [ ] Measure iPad memory use and isolate startup loading costs from network/cache effects.
 
 Exit: executable evidence for the chosen runtime. Record concrete blockers before changing architecture.
 
 Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAssembly result](browser/docs/evidence/node-wasm.json), [M2 WebAssembly/storage result](browser/docs/evidence/node-wasm-storage.json). The M1 blind-trust fixture is separate from the adapted Gajim store, which disables blind trust. Production device/trust orchestration remains M3.
 
 Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.json), [lifecycle results](browser/docs/evidence/chrome-lifecycle.json), [lifecycle procedure and revision table](browser/docs/lifecycle.md). These establish the stated Chrome checks, not Safari or full browser-process crash correctness.
+
+Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). Baseline and saved-session continuation pass; unobserved navigation, contention and suspension scenarios are not inferred from those reports.
 
 ### M2 — Durable identity and sessions: in progress
 
@@ -60,7 +64,9 @@ Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.j
 - [x] Reload the actual Chrome page and close/reopen its tab; retain identities and resume bidirectional encrypted exchanges from saved sessions.
 - [x] Verify real Chrome tab contention without lock stealing. A queued operation recovers the prior revision after uncommitted owner closure, and the next revision after owner commit.
 - [x] Terminate the test worker before commit, restart it and verify unchanged identity/revisions followed by successful encryption/decryption.
-- [ ] Verify full browser-process restart/crash, storage failure/eviction, OS suspension and physical iPad Safari.
+- [x] In user-reported iPad Safari results, load existing identities, continue encrypted exchanges and commit a held Alice change without losing either identity.
+- [ ] Verify explicit Safari reload/close-reopen scenarios, competing-tab interruption/handoff and OS suspension.
+- [ ] Verify full browser-process restart/crash and actual-browser storage failure/eviction.
 - [ ] Integrate and verify the production worker/coordinator lifecycle, including suspended pages and queued drafts.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 

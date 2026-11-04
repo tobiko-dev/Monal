@@ -1,0 +1,157 @@
+{
+  "recorded_date": "2026-11-04",
+  "provenance": "User-pasted reports from their physical iPad Safari; selected baseline fields and transcribed lifecycle events. Not an independently controlled Safari run.",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15",
+  "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+  "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+  "baseline_runs": [
+    {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": true,
+      "python_test_seconds": 0.365,
+      "startup_ms": 68848,
+      "elapsed_ms": 184792,
+      "storage_integration": {
+        "passed": true,
+        "encrypted_exchanges": 3,
+        "identity_preserved": true,
+        "environment": "Browser IndexedDB and Web Locks"
+      }
+    },
+    {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": true,
+      "python_test_seconds": 0.366,
+      "startup_ms": 37989,
+      "elapsed_ms": 2900,
+      "storage_integration": {
+        "passed": true,
+        "encrypted_exchanges": 3,
+        "identity_preserved": true,
+        "environment": "Browser IndexedDB and Web Locks"
+      }
+    }
+  ],
+  "lifecycle": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 3,
+          "bob": 3
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 5,
+          "bob": 5
+        },
+        "before": {
+          "alice": 3,
+          "bob": 3
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 7,
+          "bob": 7
+        },
+        "before": {
+          "alice": 5,
+          "bob": 5
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 7,
+          "bob": 7
+        }
+      },
+      {
+        "type": "held",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "held": true,
+        "committed": false,
+        "revision_before": 7
+      },
+      {
+        "type": "result",
+        "action": "hold",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 8,
+          "bob": 7
+        },
+        "previous_revision": 7,
+        "held_change_committed": true
+      },
+      {
+        "type": "lock_queue",
+        "held": 0,
+        "pending": 0
+      },
+      {
+        "type": "lock_queue",
+        "held": 0,
+        "pending": 0
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 10,
+          "bob": 9
+        },
+        "before": {
+          "alice": 8,
+          "bob": 7
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "limits": [
+    "The lifecycle run restores an existing fixture. Reports do not identify whether navigation was a reload, tab reopening or another page.",
+    "No contended or pending lock is shown; owner interruption and queued handoff are not established.",
+    "OS suspension, browser-process crash and storage eviction are not established.",
+    "Startup and elapsed fields are separate phases, not a combined end-to-end measurement. Network/cache effects were not isolated.",
+    "No production XMPP messaging, fingerprint-verification UI or durable outbox is exercised."
+  ]
+}
