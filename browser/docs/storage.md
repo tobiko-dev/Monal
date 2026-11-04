@@ -1,6 +1,7 @@
 # Identity storage increment
 
-This is M2 foundation code, not a completed browser lifecycle or sending API.
+This is M2 foundation code with the Chrome lifecycle evidence below. The
+production worker/coordinator and sending API are not complete.
 
 ## Actual source reuse
 
@@ -80,12 +81,20 @@ recover a crash between commit and transmission.
   SQLite snapshots and the repository, reconstructing objects between calls.
   The same fixture also passes in actual Chrome 155 over HTTPS with real
   IndexedDB and Web Locks; see [the browser result](evidence/chrome-browser.json).
-  This covers reconstructed objects in one worker, not a page/process restart.
+  That initial fixture covers reconstructed objects in one worker.
+- The separate [lifecycle harness](lifecycle.md) now passes actual Chrome page
+  reload, tab close/reopen, competing-tab lock timeout and queued handoff after
+  both owner commit and uncommitted owner closure. Stopping the worker before
+  commit retains the previous revision; a fresh worker resumes encrypted
+  exchanges with unchanged identities. The raw reports record saved revisions
+  and a one-held/one-pending queue before each explicitly verified handoff.
 
-Actual browser reload, process termination, tab closure/suspension, eviction,
-physical iPad Safari and explicit sign-out/reset behavior remain unverified.
-Tests use synthetic identities only and delete their own test database. The
-fixture's explicit synthetic trust decisions are not a production trust UI.
+Full browser-process termination, OS/tab suspension, storage eviction/failures in
+an actual browser, physical iPad Safari and explicit sign-out/reset behavior
+remain unverified. Tests use synthetic identities only and delete their own
+test databases. The fixture's explicit synthetic trust decisions are not a
+production trust UI, and its worker lifecycle does not complete the application
+coordinator.
 
 Platform references: [Web Locks](https://www.w3.org/TR/web-locks/),
 [IndexedDB](https://www.w3.org/TR/IndexedDB/),

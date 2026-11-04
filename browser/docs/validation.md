@@ -8,6 +8,7 @@
 - Passed all **16** JS repository tests against simulated IndexedDB and Node Web Locks, including quota/denied storage, concurrent writers, stale revisions, identity replacement attempts, lock timeout and an abort after the write request succeeds.
 - Completed **three encrypted exchanges** through WASM, the adapted Gajim store and the JS repository with reconstructed objects. These combined checks use synthetic identities and explicit synthetic trust; no XMPP transport exists yet.
 - Repeated all **23 WASM tests and three encrypted exchanges in actual Chrome 155 on Linux**, served over private HTTPS. Real browser IndexedDB and Web Locks were used. Zero failures/errors/skips; the device identities remained consistent through reconstructed stores/managers. [Raw browser result](evidence/chrome-browser.json).
+- Verified actual Chrome page reload, tab close/reopen, competing-tab handoff after owner commit or uncommitted closure, and worker termination/restart. The same identities and continued encrypted sessions survived every completed exchange; recorded revisions distinguish committed changes from discarded working copies. [Procedure and revision table](lifecycle.md), [raw captures](evidence/chrome-lifecycle.json).
 - Confirmed Python 3.14.2, cryptography 47.0.0, protobuf 7.34.1 and the loaded WASM curve-module path in the test result.
 - Source archive, runtime files and runtime package hashes are checked before packaging. The crypto source remains unchanged. Gajim's original SQLite file is hash-checked, then adapted with three explicit substitutions recorded in [the storage patch ledger](storage.md).
 - Fresh local builds and [the M1 GitHub Actions run](https://github.com/tobiko-dev/Monal/actions/runs/41624574387) produced the identical wheel SHA-256: `e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df`. The M2 local build retains that hash; storage code is packaged separately.
@@ -25,7 +26,9 @@ One observation: 4.10 seconds runtime startup, 3.30 seconds package loading plus
 
 The earlier HTTP preview at `http://terminal.local:4173/` stopped at the secure-context check. Moving this synthetic harness to private HTTPS resolved that environment limitation. The [earlier screenshot](evidence/secure-context-check-1793703790137.jpg) remains historical evidence.
 
-Actual iPad Safari, reload/process restart, real multi-tab contention and closure, storage eviction and background/resume behavior remain pending. The synthetic database is deleted after each complete harness run, so this pass does not demonstrate persistence across a page reload. The 16 fault-injection/concurrency tests still have Node evidence only.
+The separate lifecycle harness retains synthetic data across visits until its explicit cleanup. Its actual Chrome run used source `3551c4d304f5be2fd0ac690d2878bafe1dbac771`, packaged as QA source `1403adae7a5b88cd40cd28a458144863ffb5b858`. Reload and close/reopen preserved saved identities and session state. One held/one pending lock was observed before both committed handoff and a repeated uncommitted owner closure. Worker termination before commit also preserved the prior revision, and a fresh worker decrypted subsequent messages. [Full lifecycle evidence and limitations](lifecycle.md).
+
+Physical iPad Safari, full browser-process restart/crash, storage eviction and background/OS suspension remain pending. The 16 fault-injection/concurrency tests still have Node evidence only. The [lifecycle source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708) passed its fresh build, all 16 JS and 23 WASM tests, both integration fixtures and altered-archive rejection.
 
 ## Build issues resolved
 
@@ -35,6 +38,6 @@ Actual iPad Safari, reload/process restart, real multi-tab contention and closur
 
 ## Not implemented or proved
 
-The snapshot store and per-operation concurrency adapter are implemented and tested as described above, but real browser lifecycle validation and the production worker boundary are incomplete. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, durable outbox, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store and per-operation concurrency adapter are implemented and tested as described above. The demonstrated Chrome lifecycle checks do not complete the physical Safari gates or the production worker boundary. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, durable outbox, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
 No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes are not encrypted at rest by this increment. Prepared ciphertext and ratchet state still need a shared durable outbox transaction before a network send is implemented.

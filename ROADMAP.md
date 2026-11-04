@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-03. Status: 23 WebAssembly tests and three encrypted exchanges now pass in actual Chrome over HTTPS with real IndexedDB/Web Locks. The 16 simulated storage/concurrency tests also pass in Node/CI. M2 storage foundation is implemented; browser lifecycle, physical iPad validation and a usable chat application are still pending.
+Updated: 2026-11-03. Status: Chrome now preserves the same OMEMO identities and continued sessions across page reload, tab close/reopen, competing-tab handoff and worker termination. The 23 WebAssembly tests and 16 simulated storage/concurrency tests also pass in Node/CI. Physical iPad validation, the production worker boundary and a usable chat application are still pending.
 
 ## Goal and scope
 
@@ -48,7 +48,7 @@ Exit: executable evidence for the chosen runtime. Record concrete blockers befor
 
 Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAssembly result](browser/docs/evidence/node-wasm.json), [M2 WebAssembly/storage result](browser/docs/evidence/node-wasm-storage.json). The M1 blind-trust fixture is separate from the adapted Gajim store, which disables blind trust. Production device/trust orchestration remains M3.
 
-Browser evidence: [actual Chrome result](browser/docs/evidence/chrome-browser.json), [screenshot](browser/docs/evidence/chrome-browser-pass.jpg). This establishes execution and the tested storage operations in Chrome, not device reload or Safari lifecycle correctness.
+Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.json), [lifecycle results](browser/docs/evidence/chrome-lifecycle.json), [lifecycle procedure and revision table](browser/docs/lifecycle.md). These establish the stated Chrome checks, not Safari or full browser-process crash correctness.
 
 ### M2 — Durable identity and sessions: in progress
 
@@ -57,13 +57,16 @@ Browser evidence: [actual Chrome result](browser/docs/evidence/chrome-browser.js
 - [x] Verify identity, trust, prekeys and session continuation after reconstructing stores/managers in native Python and WASM; run three combined encrypted exchanges through the repository.
 - [x] Pass 16 simulated IndexedDB/Node Web Locks tests, including interrupted writes, quota, denied storage, corruption, concurrent writers and lock timeout.
 - [x] Run the combined storage/encryption fixture against actual Chrome IndexedDB and Web Locks; preserve identities through three exchanges and reconstructed stores/managers.
-- [ ] Verify real browser reload/restart and storage failure behavior, including physical iPad Safari.
-- [ ] Verify real multi-tab closure, suspension and handoff; integrate the final worker/coordinator boundary.
+- [x] Reload the actual Chrome page and close/reopen its tab; retain identities and resume bidirectional encrypted exchanges from saved sessions.
+- [x] Verify real Chrome tab contention without lock stealing. A queued operation recovers the prior revision after uncommitted owner closure, and the next revision after owner commit.
+- [x] Terminate the test worker before commit, restart it and verify unchanged identity/revisions followed by successful encryption/decryption.
+- [ ] Verify full browser-process restart/crash, storage failure/eviction, OS suspension and physical iPad Safari.
+- [ ] Integrate and verify the production worker/coordinator lifecycle, including suspended pages and queued drafts.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 
 Exit: persistence/concurrency tests pass, including physical Safari lifecycle tests.
 
-Implementation and limits: [storage design](browser/docs/storage.md). There is no durable outbox yet; this storage API must not transmit user messages before M4's atomic session/ciphertext commit is implemented.
+Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md). The test harness uses separate workers/runtimes and real browser locks. There is no durable outbox yet; this storage API must not transmit user messages before M4's atomic session/ciphertext commit is implemented.
 
 ### M3 — Gajim protocol integration and 5july: pending
 

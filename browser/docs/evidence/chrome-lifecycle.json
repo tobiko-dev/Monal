@@ -1,0 +1,1234 @@
+{
+  "source_commit": "3551c4d304f5be2fd0ac690d2878bafe1dbac771",
+  "qa_source_commit": "1403adae7a5b88cd40cd28a458144863ffb5b858",
+  "environment": "Chrome 155 on Linux; private HTTPS; real IndexedDB and Web Locks; synthetic identities only",
+  "actions": [
+    "Create fixture",
+    "Reload actual page and resume",
+    "Close actual tab and reopen same URL",
+    "Open second tab; confirm competing operation blocked",
+    "Queue exchange and close uncommitted owner tab",
+    "Queue exchange; observe one held and one pending lock; commit owner change",
+    "Repeat owner closure with explicit one-held/one-pending evidence",
+    "Terminate worker while holding an uncommitted change; restart, inspect and exchange",
+    "Delete only the completed synthetic run"
+  ],
+  "boundaries": [
+    "No full browser-process termination or OS suspension",
+    "No physical iPad Safari or storage-eviction test",
+    "No XMPP transport, production coordinator or durable outbox",
+    "First close capture preceded the async lock-queue report; the second close test captured the queue explicitly"
+  ],
+  "captures": [
+    {
+      "label": "initial_creation",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "create",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 3,
+              "bob": 3
+            },
+            "created": true,
+            "encrypted_exchanges": 2
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload_inspection",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 3,
+              "bob": 3
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload_exchange",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 3,
+              "bob": 3
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 5,
+              "bob": 5
+            },
+            "before": {
+              "alice": 3,
+              "bob": 3
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "reopen_inspection",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 5,
+              "bob": 5
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "reopen_exchange",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 5,
+              "bob": 5
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            },
+            "before": {
+              "alice": 5,
+              "bob": 5
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "second_tab_inspection",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "uncommitted_owner_before_close",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 5,
+              "bob": 5
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            },
+            "before": {
+              "alice": 5,
+              "bob": 5
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 7
+          }
+        ]
+      }
+    },
+    {
+      "label": "competing_operation_rejected",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "queued_before_owner_tab_close",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 5,
+              "bob": 5
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            },
+            "before": {
+              "alice": 5,
+              "bob": 5
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 7
+          }
+        ]
+      }
+    },
+    {
+      "label": "exchange_after_owner_tab_close",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "queued_before_owner_commit",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            }
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 9
+          },
+          {
+            "type": "lock_queue",
+            "held": 1,
+            "pending": 1
+          }
+        ]
+      }
+    },
+    {
+      "label": "exchange_after_owner_commit",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "owner_commit_result",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            }
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 9
+          },
+          {
+            "type": "lock_queue",
+            "held": 1,
+            "pending": 1
+          },
+          {
+            "type": "result",
+            "action": "hold",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 10,
+              "bob": 9
+            },
+            "previous_revision": 9,
+            "held_change_committed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "confirmed_queue_before_tab_close",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            }
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 9
+          },
+          {
+            "type": "lock_queue",
+            "held": 1,
+            "pending": 1
+          },
+          {
+            "type": "result",
+            "action": "hold",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 10,
+              "bob": 9
+            },
+            "previous_revision": 9,
+            "held_change_committed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 12
+          },
+          {
+            "type": "lock_queue",
+            "held": 1,
+            "pending": 1
+          }
+        ]
+      }
+    },
+    {
+      "label": "confirmed_queue_recovered_after_close",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "held_before_worker_termination",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 14
+          }
+        ]
+      }
+    },
+    {
+      "label": "worker_terminated",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 14
+          },
+          {
+            "type": "worker_stopped",
+            "saved_state_needs_verification": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "identity_after_worker_termination",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 14
+          },
+          {
+            "type": "worker_stopped",
+            "saved_state_needs_verification": true
+          },
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "exchange_after_worker_termination",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle?run=f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 14
+          },
+          {
+            "type": "worker_stopped",
+            "saved_state_needs_verification": true
+          },
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 16,
+              "bob": 15
+            },
+            "before": {
+              "alice": 14,
+              "bob": 13
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "synthetic_test_deleted",
+      "url": "https://gajim-browser-qa.strongcaterpillar.chatgpt.site/lifecycle",
+      "report": {
+        "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+        "events": [
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 7,
+              "bob": 7
+            }
+          },
+          {
+            "type": "result",
+            "action": "contend",
+            "passed": true,
+            "competing_operation_blocked": true,
+            "lock_not_stolen": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 9,
+              "bob": 9
+            },
+            "before": {
+              "alice": 7,
+              "bob": 7
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 12,
+              "bob": 11
+            },
+            "before": {
+              "alice": 10,
+              "bob": 9
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            },
+            "before": {
+              "alice": 12,
+              "bob": 11
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "held",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "held": true,
+            "committed": false,
+            "revision_before": 14
+          },
+          {
+            "type": "worker_stopped",
+            "saved_state_needs_verification": true
+          },
+          {
+            "type": "runtime",
+            "tests": 23,
+            "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+            "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+            "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+          },
+          {
+            "type": "result",
+            "action": "inspect",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 14,
+              "bob": 13
+            }
+          },
+          {
+            "type": "result",
+            "action": "exchange",
+            "run": "f42b6608-f3e2-4d12-a2e6-f6cad716db5a",
+            "identity_preserved": true,
+            "revisions": {
+              "alice": 16,
+              "bob": 15
+            },
+            "before": {
+              "alice": 14,
+              "bob": 13
+            },
+            "encrypted_exchanges": 2,
+            "passed": true
+          },
+          {
+            "type": "result",
+            "action": "cleanup",
+            "cleaned": true
+          }
+        ]
+      }
+    }
+  ]
+}

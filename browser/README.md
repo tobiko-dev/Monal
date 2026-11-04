@@ -24,7 +24,7 @@ node scripts/test-wasm.mjs
 
 The first build downloads the pinned Pyodide cross-build environment and Emscripten SDK. It verifies the source archive, compiles a fresh unmodified source tree, checks the extension's WebAssembly header, verifies runtime assets and packages, and produces `dist/`. Compiler output is in `.build/compiler.log`. To reuse a downloaded source archive, pass `--source-archive /path/to/omemo_dr-1.2.0.tar.gz`; the same hash check still applies.
 
-The Node WASM command must exit successfully with `platform: emscripten`, `tests: 23`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 16 storage/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
+The Node WASM command must exit successfully with `platform: emscripten`, `tests: 23`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter and a lifecycle-fixture integration check for reconstructed fixtures, lock contention and committed handoff. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 16 storage/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
 
 The integrity command separately alters the generated test and adapter archives, confirms the runner rejects each before execution, and restores the original bytes even if the check fails.
 

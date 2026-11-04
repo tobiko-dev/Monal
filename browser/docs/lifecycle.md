@@ -46,6 +46,47 @@ through the actual repository's account locks.
 
 ## Evidence boundaries
 
+### Actual Chrome result
+
+Chrome 155 on Linux passed the sequence above over private HTTPS with real
+IndexedDB and Web Locks. The tested source was
+`3551c4d304f5be2fd0ac690d2878bafe1dbac771`, packaged as QA source
+`1403adae7a5b88cd40cd28a458144863ffb5b858`. Each fresh worker also passed the
+23-test WASM baseline; the crypto wheel and adapter archive hashes were unchanged.
+
+The [raw captures](evidence/chrome-lifecycle.json) record the visible page reports
+alongside the actual page/worker actions. Revisions below are Alice/Bob:
+
+| Observed action | Saved state / outcome |
+| --- | --- |
+| Create the synthetic pair | 3 / 3 |
+| Reload page, inspect, then exchange | 3 / 3 retained; 5 / 5 after exchange |
+| Close tab, reopen same URL, then exchange | 5 / 5 retained; 7 / 7 after exchange |
+| Competing operation while another tab holds a change | Blocked; lock not stolen |
+| Close uncommitted owner with another exchange waiting | Exchange starts at 7 / 7; ends at 9 / 9 |
+| Commit owner with one held and one pending lock observed | Owner commits Alice 10; waiting exchange loads 10 / 9 and ends at 12 / 11 |
+| Repeat owner closure with explicit held/pending queue evidence | Uncommitted Alice 12 change discarded; waiting exchange starts at 12 / 11 and ends at 14 / 13 |
+| Stop worker during another uncommitted change, restart and inspect | 14 / 13 retained |
+| Exchange after worker restart | 16 / 15; both messages decrypted |
+| Delete the completed synthetic run | Cleanup confirmed |
+
+Every completed exchange retained both original identity descriptors and used
+continued sessions. The first owner-closure capture preceded the asynchronous
+queue report, so the closure check was repeated with explicit one-held/one-pending
+evidence. A browser-control wait also expired while a fresh worker was loading;
+the subsequent page report confirmed successful initialization and inspection.
+Neither event is counted as an application failure or an additional passed test.
+
+![Chrome lifecycle test reports unchanged identities](evidence/chrome-lifecycle.jpg)
+
+The [fresh-build CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708)
+also passed the 16 simulated storage tests, 23 WASM tests, existing integration
+fixture, new lifecycle-fixture integration check and altered-archive rejection.
+The Node fixture reconstructs objects; the actual browser captures above are the
+evidence for page reload/closure and separate workers.
+
+### Remaining limits
+
 Node tests validate fixture setup, reconstruction, contention and continued
 ratchets against simulated IndexedDB. They do not prove tab closure or reload.
 Browser evidence must record actual page actions and the resulting reports.
