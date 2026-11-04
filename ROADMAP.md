@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs also pass the 23-test baseline, storage integration and continued encrypted exchanges after loading saved identities and committing a held change. Safari contention/suspension checks, the production worker boundary and a usable chat application remain pending.
+Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs pass the encryption/storage baseline, saved-session continuation, competing-tab blocking and recovery in the owner-close sequence. Further Safari lifecycle checks, the production worker boundary and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -52,7 +52,7 @@ Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAsse
 
 Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.json), [lifecycle results](browser/docs/evidence/chrome-lifecycle.json), [lifecycle procedure and revision table](browser/docs/lifecycle.md). These establish the stated Chrome checks, not Safari or full browser-process crash correctness.
 
-Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). Baseline and saved-session continuation pass; unobserved navigation, contention and suspension scenarios are not inferred from those reports.
+Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). These cover the baseline, saved-session continuation, competing-tab blocking and reported owner-close recovery. Remaining navigation, suspension and commit-handoff scenarios stay open.
 
 ### M2 — Durable identity and sessions: in progress
 
@@ -65,7 +65,9 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 - [x] Verify real Chrome tab contention without lock stealing. A queued operation recovers the prior revision after uncommitted owner closure, and the next revision after owner commit.
 - [x] Terminate the test worker before commit, restart it and verify unchanged identity/revisions followed by successful encryption/decryption.
 - [x] In user-reported iPad Safari results, load existing identities, continue encrypted exchanges and commit a held Alice change without losing either identity.
-- [ ] Verify explicit Safari reload/close-reopen scenarios, competing-tab interruption/handoff and OS suspension.
+- [x] Confirm Safari competing-tab access is blocked without stealing the lock (user-reported).
+- [x] Recover from the prior committed revision after the reported Safari owner-close sequence; continue encrypted exchanges with unchanged identities.
+- [ ] Verify Safari queued handoff after owner commit, explicit reload/close-reopen scenarios and background/OS suspension.
 - [ ] Verify full browser-process restart/crash and actual-browser storage failure/eviction.
 - [ ] Integrate and verify the production worker/coordinator lifecycle, including suspended pages and queued drafts.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.

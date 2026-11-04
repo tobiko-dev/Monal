@@ -42,9 +42,18 @@ The lifecycle report loads an existing fixture at Alice/Bob revisions 3/3,
 exchanges to 5/5 and 7/7, then commits a held Alice change to 8/7. A subsequent
 bidirectional exchange succeeds at 10/9. Both identities remain unchanged.
 The unequal revisions are expected: the held operation advances only Alice.
-Both queue inspections report zero held and zero pending locks, so this is not
-evidence of competing-tab blocking or handoff. The report does not identify the
-physical navigation or suspension actions between visits; those remain open.
+The two initial queue inspections show an idle queue. Subsequent reports show
+the owner holding an uncommitted Alice change at revision 10 and a second tab
+receiving `STORAGE_BUSY` during inspection, then passing the competing-owner
+check without stealing the lock. In response to the directed owner-close test,
+the user supplied a successful exchange from 10/9 to 12/11 with unchanged
+identities. This matches recovery from the last committed state; the held
+working-copy change was not persisted. This is user-reported owner-close
+evidence, not an independently controlled Safari run. No owner queue snapshot
+showing one held/one pending lock was supplied.
+
+Queued handoff after an owner commit, explicit reload/close-reopen and
+background/OS suspension scenarios remain open.
 
 Reported startup values are 68,848 ms and 37,989 ms; the separate elapsed fields
 are 184,792 ms and 2,900 ms. Python tests themselves take 0.365 and 0.366 seconds.
