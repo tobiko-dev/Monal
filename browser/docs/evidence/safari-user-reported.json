@@ -1,0 +1,341 @@
+{
+  "recorded_date": "2026-11-04",
+  "provenance": "User-pasted reports from their physical iPad Safari; selected baseline fields and transcribed lifecycle events. Not an independently controlled Safari run.",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15",
+  "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+  "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+  "baseline_runs": [
+    {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": true,
+      "python_test_seconds": 0.365,
+      "startup_ms": 68848,
+      "elapsed_ms": 184792,
+      "storage_integration": {
+        "passed": true,
+        "encrypted_exchanges": 3,
+        "identity_preserved": true,
+        "environment": "Browser IndexedDB and Web Locks"
+      }
+    },
+    {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": true,
+      "python_test_seconds": 0.366,
+      "startup_ms": 37989,
+      "elapsed_ms": 2900,
+      "storage_integration": {
+        "passed": true,
+        "encrypted_exchanges": 3,
+        "identity_preserved": true,
+        "environment": "Browser IndexedDB and Web Locks"
+      }
+    }
+  ],
+  "lifecycle": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 3,
+          "bob": 3
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 5,
+          "bob": 5
+        },
+        "before": {
+          "alice": 3,
+          "bob": 3
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 7,
+          "bob": 7
+        },
+        "before": {
+          "alice": 5,
+          "bob": 5
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 7,
+          "bob": 7
+        }
+      },
+      {
+        "type": "held",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "held": true,
+        "committed": false,
+        "revision_before": 7
+      },
+      {
+        "type": "result",
+        "action": "hold",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 8,
+          "bob": 7
+        },
+        "previous_revision": 7,
+        "held_change_committed": true
+      },
+      {
+        "type": "lock_queue",
+        "held": 0,
+        "pending": 0
+      },
+      {
+        "type": "lock_queue",
+        "held": 0,
+        "pending": 0
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 10,
+          "bob": 9
+        },
+        "before": {
+          "alice": 8,
+          "bob": 7
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "limits": [
+    "The initial lifecycle report does not identify its navigation action. The later close/reopen report was supplied in response to explicit close/reopen instructions, but navigation itself was not independently instrumented. A separate explicit reload remains unreported.",
+    "Contended access is confirmed. The reported owner-close sequence recovers the prior revision; no one-held/one-pending queue snapshot was supplied, and queued handoff after an owner commit has not been reported.",
+    "User-reported app-switch/lock/unlock and idle Safari app relaunch sequences preserved working sessions. Confirmed OS suspension, process-crash recovery during an active write and storage eviction are not established. No process-lifecycle instrumentation is present in the supplied reports.",
+    "Startup and elapsed fields are separate phases, not a combined end-to-end measurement. Network/cache effects were not isolated.",
+    "No production XMPP messaging, fingerprint-verification UI or durable outbox is exercised."
+  ],
+  "owner_before_close": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "last_event": {
+      "type": "held",
+      "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+      "held": true,
+      "committed": false,
+      "revision_before": 10
+    }
+  },
+  "competing_tab_recovery": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied this result in response to instructions to queue an exchange, inspect the owner lock queue, then close the owner without committing. The owner queue snapshot was not supplied.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "error",
+        "action": "inspect",
+        "error": "STORAGE_BUSY"
+      },
+      {
+        "type": "result",
+        "action": "contend",
+        "passed": true,
+        "competing_operation_blocked": true,
+        "lock_not_stolen": true
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 12,
+          "bob": 11
+        },
+        "before": {
+          "alice": 10,
+          "bob": 9
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "close_reopen": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied the same run URL and this fresh-runtime report in response to instructions to close the remaining tab, reopen its saved full URL, then resume the exchange. Recorded as user-reported close/reopen continuation; navigation itself was not independently observed.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 12,
+          "bob": 11
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 14,
+          "bob": 13
+        },
+        "before": {
+          "alice": 12,
+          "bob": 11
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "background_lock_unlock": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied this result in response to instructions to switch apps, lock the iPad for about a minute, unlock it, return to Safari and resume the same test. Recorded as user-reported lock/unlock continuation. The report contains no new runtime event or suspension instrumentation and does not establish OS suspension or browser/worker termination.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 12,
+          "bob": 11
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 14,
+          "bob": 13
+        },
+        "before": {
+          "alice": 12,
+          "bob": 11
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 16,
+          "bob": 15
+        },
+        "before": {
+          "alice": 14,
+          "bob": 13
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "safari_app_relaunch": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied this fresh-runtime report in response to instructions to dismiss Safari using the iPad app switcher, reopen Safari and resume the same test. Recorded as user-reported app relaunch recovery. No operation was deliberately held during dismissal. The report does not independently establish which WebKit processes terminated or exercise a crash during a write.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 16,
+          "bob": 15
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 18,
+          "bob": 17
+        },
+        "before": {
+          "alice": 16,
+          "bob": 15
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  }
+}

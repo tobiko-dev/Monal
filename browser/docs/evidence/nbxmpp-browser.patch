@@ -1,0 +1,503 @@
+--- a/nbxmpp/__init__.py
++++ b/nbxmpp/__init__.py
+@@ -1,7 +1,3 @@
+-import gi
+-
+-gi.require_version("Soup", "3.0")
+-
+ from .protocol import *  # noqa: F403, E402
+ 
+ __version__: str = "7.5.0"
+--- a/nbxmpp/client.py
++++ b/nbxmpp/client.py
+@@ -16,8 +16,9 @@
+ from collections.abc import Iterator
+ from collections.abc import Sequence
+ 
+-from gi.repository import Gio
+-from gi.repository import GLib
++from gajim_browser.nbxmpp_values import UnsupportedPlatformOperation
++from gajim_browser.nbxmpp_values import ChannelBindingType
++from gajim_browser import nbxmpp_scheduler as scheduler
+ 
+ from nbxmpp.addresses import NoMoreAddresses
+ from nbxmpp.addresses import ServerAddress
+@@ -45,14 +46,12 @@
+ from nbxmpp.smacks import Smacks
+ from nbxmpp.structs import ProxyData
+ from nbxmpp.task import Task
+-from nbxmpp.tcp import TCPConnection
+ from nbxmpp.types import CustomHostT
+ from nbxmpp.util import generate_id
+ from nbxmpp.util import get_stream_header
+ from nbxmpp.util import LogAdapter
+ from nbxmpp.util import Observable
+ from nbxmpp.util import validate_stream_header
+-from nbxmpp.websocket import WebsocketConnection
+ 
+ if TYPE_CHECKING:
+     from nbxmpp.connection import Connection
+@@ -182,14 +181,14 @@
+             None,
+         )
+ 
+-        self._ignored_tls_errors: set[Gio.TlsCertificateFlags] = set()
++        self._ignored_tls_errors: set[int] = set()
+         self._ignore_tls_errors = False
+-        self._accepted_certificates: list[Gio.TlsCertificate] = []
+-        self._peer_certificate: Gio.TlsCertificate | None = None
+-        self._peer_certificate_errors: set[Gio.TlsCertificateFlags] | None = None
++        self._accepted_certificates: list[object] = []
++        self._peer_certificate: object | None = None
++        self._peer_certificate_errors: set[int] | None = None
+ 
+         self._con: Connection | None = None
+-        self._local_address: Gio.SocketAddress | None = None
++        self._local_address: object | None = None
+         self._remote_address: str | None = None
+         self._mode: Mode = Mode.CLIENT
+ 
+@@ -279,15 +278,15 @@
+             raise ValueError("Call set_domain() first before set_custom_host()")
+         self._custom_host = (host_or_uri, protocol, type_)
+ 
+-    def set_accepted_certificates(self, certificates: list[Gio.TlsCertificate]) -> None:
++    def set_accepted_certificates(self, certificates: list[object]) -> None:
+         self._accepted_certificates = certificates
+ 
+     @property
+-    def ignored_tls_errors(self) -> set[Gio.TlsCertificateFlags]:
++    def ignored_tls_errors(self) -> set[int]:
+         return set(self._ignored_tls_errors)
+ 
+     def set_ignored_tls_errors(
+-        self, errors: set[Gio.TlsCertificateFlags] | None
++        self, errors: set[int] | None
+     ) -> None:
+         if errors is None:
+             errors = set()
+@@ -308,7 +307,7 @@
+         return self._con.ciphersuite
+ 
+     def get_channel_binding_data(
+-        self, type_: Gio.TlsChannelBindingType
++        self, type_: ChannelBindingType
+     ) -> bytes | None:
+         assert self._con is not None
+         return self._con.get_channel_binding_data(type_)
+@@ -328,7 +327,7 @@
+     @property
+     def peer_certificate(
+         self,
+-    ) -> tuple[Gio.TlsCertificate | None, set[Gio.TlsCertificateFlags] | None]:
++    ) -> tuple[object | None, set[int] | None]:
+         if self._con is not None:
+             return self._con.peer_certificate
+         return self._peer_certificate, self._peer_certificate_errors
+@@ -374,7 +373,7 @@
+         self._xmpp_state_machine()
+ 
+     @property
+-    def local_address(self) -> Gio.SocketAddress | None:
++    def local_address(self) -> object | None:
+         return self._local_address
+ 
+     @property
+@@ -498,12 +497,11 @@
+         self._con.subscribe("bad-certificate", self._on_bad_certificate)
+         self._con.connect()
+ 
+-    def _get_connection(self, *args: Any) -> WebsocketConnection | TCPConnection:
+-        if self.is_websocket:
+-            return WebsocketConnection(*args)
+-        return TCPConnection(*args)
++    def _get_connection(self, *args: Any) -> Any:
++        raise UnsupportedPlatformOperation("Browser network transport is not integrated")
+ 
+     def connect(self) -> None:
++        raise UnsupportedPlatformOperation("Browser network transport is not integrated")
+         if self._state != StreamState.DISCONNECTED:
+             self._log.error("Stream can't reconnect, stream state: %s", self._state)
+             return
+@@ -579,7 +577,7 @@
+             return
+ 
+         self._log.info("Start stream end timeout")
+-        self._stream_end_timeout_id = GLib.timeout_add_seconds(
++        self._stream_end_timeout_id = scheduler.timeout_add_seconds(
+             STREAM_END_TIMEOUT_SEC, self._on_stream_end_timeout
+         )
+ 
+@@ -588,7 +586,7 @@
+             return
+ 
+         self._log.info("Remove stream end timeout")
+-        GLib.source_remove(self._stream_end_timeout_id)
++        scheduler.source_remove(self._stream_end_timeout_id)
+         self._stream_end_timeout_id = None
+ 
+     def _on_stream_end_timeout(self) -> None:
+@@ -840,9 +838,9 @@
+         def _on_check() -> bool:
+             if self._state == StreamState.ACTIVE:
+                 self.check_if_connected()
+-            return GLib.SOURCE_CONTINUE
+-
+-        return GLib.timeout_add_seconds(CONNECTION_CHECK_INTERVAL, _on_check)
++            return scheduler.SOURCE_CONTINUE
++
++        return scheduler.timeout_add_seconds(CONNECTION_CHECK_INTERVAL, _on_check)
+ 
+     def check_if_connected(self) -> None:
+         if self._connection_check_timeout_id is not None:
+@@ -859,7 +857,7 @@
+             return
+ 
+         self._log.info("Start connection check")
+-        self._connection_check_timeout_id = GLib.timeout_add_seconds(
++        self._connection_check_timeout_id = scheduler.timeout_add_seconds(
+             CONNECTION_CHECK_TIMEOUT, self._on_connection_check_timeout
+         )
+         assert self._smacks is not None
+@@ -878,7 +876,7 @@
+         if self._connection_check_timeout_id is None:
+             return
+ 
+-        GLib.source_remove(self._connection_check_timeout_id)
++        scheduler.source_remove(self._connection_check_timeout_id)
+         self._connection_check_timeout_id = None
+ 
+         if self._state == StreamState.ACTIVE:
+@@ -1175,4 +1173,4 @@
+         self.remove_subscriptions()
+         self._remove_stream_end_timeout()
+         self._remove_connection_check_timeout()
+-        GLib.source_remove(self._connection_check_id)
++        scheduler.source_remove(self._connection_check_id)
+--- a/nbxmpp/const.py
++++ b/nbxmpp/const.py
+@@ -10,13 +10,6 @@
+ from enum import IntEnum
+ from functools import total_ordering
+ 
+-from gi.repository import Gio
+-from gi.repository import GLib
+-from packaging.version import Version
+-
+-GLIB_VERSION = Version(
+-    f"{GLib.MAJOR_VERSION}.{GLib.MINOR_VERSION}.{GLib.MICRO_VERSION}"
+-)
+ 
+ 
+ class IqType(Enum):
+@@ -653,15 +646,6 @@
+     "date",
+ ]
+ 
+-GIO_TLS_ERRORS = {
+-    Gio.TlsCertificateFlags.UNKNOWN_CA: "The signing certificate authority is not known",
+-    Gio.TlsCertificateFlags.REVOKED: "The certificate has been revoked",
+-    Gio.TlsCertificateFlags.BAD_IDENTITY: "The certificate does not match the expected identity of the site",
+-    Gio.TlsCertificateFlags.INSECURE: "The certificate’s algorithm is insecure",
+-    Gio.TlsCertificateFlags.NOT_ACTIVATED: "The certificate’s activation time is in the future",
+-    Gio.TlsCertificateFlags.GENERIC_ERROR: "Unknown validation error",
+-    Gio.TlsCertificateFlags.EXPIRED: "The certificate has expired",
+-}
+ 
+ NOT_ALLOWED_XML_CHARS = {
+     "&": "&amp;",
+--- a/nbxmpp/dispatcher.py
++++ b/nbxmpp/dispatcher.py
+@@ -16,7 +16,7 @@
+ from collections.abc import Callable
+ from xml.parsers.expat import ExpatError
+ 
+-from gi.repository import GLib
++from gajim_browser import nbxmpp_scheduler as scheduler
+ 
+ from nbxmpp.exceptions import StanzaDecrypted
+ from nbxmpp.modules.activity import Activity
+@@ -782,7 +782,7 @@
+     ) -> None:
+         if timeout is not None and self._timeout_id is None:
+             self._log.info("Add timeout check")
+-            self._timeout_id = GLib.timeout_add_seconds(1, self._timeout_check)
++            self._timeout_id = scheduler.timeout_add_seconds(1, self._timeout_check)
+             timeout = time.monotonic() + timeout
+         self._id_callbacks[id_] = (func, timeout, user_data)
+ 
+@@ -811,7 +811,7 @@
+ 
+     def _remove_timeout_source(self) -> None:
+         if self._timeout_id is not None:
+-            GLib.source_remove(self._timeout_id)
++            scheduler.source_remove(self._timeout_id)
+             self._timeout_id = None
+ 
+     def remove_iq_callback(self, id_: str) -> None:
+--- a/nbxmpp/protocol.py
++++ b/nbxmpp/protocol.py
+@@ -27,8 +27,9 @@
+ from dataclasses import fields
+ 
+ import idna
+-from gi.repository import Gio
+-from gi.repository import GLib
++from gajim_browser.nbxmpp_values import ChannelBindingType
++from gajim_browser.nbxmpp_values import hostname_is_ip_address
++from gajim_browser.nbxmpp_values import uri_unescape_string
+ 
+ from nbxmpp.namespaces import Namespace
+ from nbxmpp.precis import enforce_precis_opaque
+@@ -642,7 +643,7 @@
+         raise DomainpartByteLimit
+ 
+     ip_address = domainpart.strip("[]")
+-    if GLib.hostname_is_ip_address(ip_address):
++    if hostname_is_ip_address(ip_address):
+         return ip_address
+ 
+     length = len(domainpart.encode())
+@@ -797,13 +798,19 @@
+         localpart, domainpart, resourcepart = split_jid_string(iri_str)
+ 
+         if localpart is not None:
+-            localpart = GLib.Uri.unescape_string(localpart)
++            try:
++                localpart = uri_unescape_string(localpart)
++            except ValueError as error:
++                raise InvalidJid("Invalid escaped localpart") from error
+ 
+         if force_bare:
+             resourcepart = None
+ 
+         if resourcepart is not None:
+-            resourcepart = GLib.Uri.unescape_string(resourcepart)
++            try:
++                resourcepart = uri_unescape_string(resourcepart)
++            except ValueError as error:
++                raise InvalidJid("Invalid escaped resourcepart") from error
+ 
+         try:
+             return cls(localpart=localpart, domain=domainpart, resource=resourcepart)
+@@ -2038,7 +2045,7 @@
+     def has_anonymous(self) -> bool:
+         return "ANONYMOUS" in self.get_mechs()
+ 
+-    def get_channel_binding_type(self) -> Gio.TlsChannelBindingType | None:
++    def get_channel_binding_type(self) -> ChannelBindingType | None:
+         sasl_cb = self.getTag(
+             "sasl-channel-binding", namespace=Namespace.CHANNEL_BINDING
+         )
+@@ -2047,13 +2054,13 @@
+ 
+         exporter = sasl_cb.getTag("channel-binding", attrs={"type": "tls-exporter"})
+         if exporter is not None:
+-            return Gio.TlsChannelBindingType.EXPORTER
++            return ChannelBindingType.EXPORTER
+ 
+         server_end_point = sasl_cb.getTag(
+             "channel-binding", attrs={"type": "tls-server-end-point"}
+         )
+         if server_end_point is not None:
+-            return Gio.TlsChannelBindingType.SERVER_END_POINT
++            return ChannelBindingType.SERVER_END_POINT
+         return None
+ 
+ 
+--- a/nbxmpp/sasl.py
++++ b/nbxmpp/sasl.py
+@@ -14,9 +14,8 @@
+ import hmac
+ import logging
+ import secrets
+-from hashlib import pbkdf2_hmac
+-
+-from gi.repository import Gio
++from gajim_browser.nbxmpp_crypto import pbkdf2_hmac
++
+ 
+ from nbxmpp.const import StreamState
+ from nbxmpp.namespaces import Namespace
+@@ -102,21 +101,8 @@
+         elif stanza.getName() == "success":
+             self._on_success(stanza)
+ 
+-    def _get_channel_binding_data(
+-        self, features: Features
+-    ) -> ChannelBindingData | None:
+-        if self._client.tls_version != Gio.TlsProtocolVersion.TLS_1_3:
+-            return None
+-
+-        binding_type = features.get_channel_binding_type()
+-        if binding_type is None:
+-            return None
+-
+-        channel_binding_data = self._client.get_channel_binding_data(binding_type)
+-        if channel_binding_data is None:
+-            return None
+-
+-        return ChannelBindingData(binding_type, channel_binding_data)
++    def _get_channel_binding_data(self, features: Features) -> ChannelBindingData | None:
++        return None  # The browser WebSocket API does not expose TLS binding data.
+ 
+     def start_auth(self, features: Features) -> None:
+         self._mechanism = None
+@@ -441,9 +427,12 @@
+         except Exception:
+             password = ""
+ 
+-        salted_password = pbkdf2_hmac(
+-            self._hash_method, password.encode("utf8"), salt, iteration_count
+-        )
++        try:
++            salted_password = pbkdf2_hmac(
++                self._hash_method, password.encode("utf8"), salt, iteration_count
++            )
++        except (ValueError, TypeError) as error:
++            raise AuthFail("Unsupported password-derivation parameters") from error
+ 
+         client_final_message_wo_proof = "c=%s,r=%s" % (
+             self._b64_channel_binding_data,
+--- a/nbxmpp/structs.py
++++ b/nbxmpp/structs.py
+@@ -20,8 +20,9 @@
+ from dataclasses import field
+ from datetime import datetime
+ 
+-from gi.repository import Gio
+-from gi.repository import GLib
++from gajim_browser.nbxmpp_values import ChannelBindingType
++from gajim_browser.nbxmpp_values import uri_escape_string
++from gajim_browser.nbxmpp_values import UnsupportedPlatformOperation
+ 
+ from nbxmpp import exceptions
+ from nbxmpp.const import AdHocAction
+@@ -808,14 +809,14 @@
+ 
+     def get_uri(self) -> str:
+         if self.username is not None:
+-            username = GLib.uri_escape_string(self.username, None, False)
+-            password = GLib.uri_escape_string(self.password, None, False)
++            username = uri_escape_string(self.username, None, False)
++            password = uri_escape_string(self.password, None, False)
+             user_pass = f"{username}:{password}"
+             return "%s://%s@%s" % (self.type, user_pass, self.host)
+         return "%s://%s" % (self.type, self.host)
+ 
+-    def get_resolver(self) -> Gio.SimpleProxyResolver:
+-        return Gio.SimpleProxyResolver.new(self.get_uri(), None)
++    def get_resolver(self):
++        raise UnsupportedPlatformOperation("Desktop proxy resolvers are unavailable")
+ 
+ 
+ class OMEMOBundle(NamedTuple):
+@@ -1479,7 +1480,7 @@
+ 
+ @dataclass
+ class ChannelBindingData:
+-    type: Gio.TlsChannelBindingType
++    type: ChannelBindingType
+     data: bytes
+ 
+ 
+--- a/nbxmpp/task.py
++++ b/nbxmpp/task.py
+@@ -19,7 +19,7 @@
+ from enum import IntEnum
+ from functools import wraps
+ 
+-from gi.repository import GLib
++from gajim_browser import nbxmpp_scheduler as scheduler
+ 
+ from nbxmpp.errors import BaseError
+ from nbxmpp.errors import CancelledError
+@@ -177,7 +177,7 @@
+             self._logger.info(
+                 "Add timeout for task: %s s, task id: %s", self._timeout, id(self)
+             )
+-            self._timeout_id = GLib.timeout_add_seconds(self._timeout, self._on_timeout)
++            self._timeout_id = scheduler.timeout_add_seconds(self._timeout, self._on_timeout)
+ 
+         self._state = TaskState.RUNNING
+         next(self._gen)
+@@ -318,7 +318,7 @@
+ 
+     def _finalize(self) -> None:
+         if self._timeout_id is not None:
+-            GLib.source_remove(self._timeout_id)
++            scheduler.source_remove(self._timeout_id)
+             self._timeout_id = None
+         self._done_callbacks.clear()
+         self._sub_task = None
+--- a/nbxmpp/util.py
++++ b/nbxmpp/util.py
+@@ -21,12 +21,8 @@
+ from functools import lru_cache
+ from logging import LoggerAdapter
+ 
+-from gi.repository import Gio
+-from gi.repository import Soup
+-from packaging.version import Version
+-
+-from nbxmpp.const import GIO_TLS_ERRORS
+-from nbxmpp.const import GLIB_VERSION
++from gajim_browser.nbxmpp_values import UnsupportedPlatformOperation
++
+ from nbxmpp.modules.dataforms import DataForm
+ from nbxmpp.modules.dataforms import extend_form
+ from nbxmpp.namespaces import Namespace
+@@ -376,34 +372,16 @@
+ INVALID_XML_RX = get_invalid_xml_regex()
+ 
+ 
+-def get_tls_error_phrase(tls_error: Gio.TlsCertificateFlags) -> str | None:
+-    phrase = GIO_TLS_ERRORS.get(tls_error)
+-    if phrase is None:
+-        return GIO_TLS_ERRORS.get(Gio.TlsCertificateFlags.GENERIC_ERROR)
+-    return phrase
+-
+-
+-def convert_tls_error_flags(
+-    flags: Gio.TlsCertificateFlags | None,
+-) -> set[Gio.TlsCertificateFlags]:
+-    if not flags:
+-        return set()
+-
+-    # If GLib ever adds more flags GIO_TLS_ERRORS have to
+-    # be extended, otherwise errors go unnoticed
+-    if Gio.TlsCertificateFlags.VALIDATE_ALL != 127:
+-        raise ValueError
+-
+-    return set(filter(lambda error: error & flags, GIO_TLS_ERRORS.keys()))
+-
+-
+-def get_websocket_close_string(websocket: Soup.WebsocketConnection) -> str:
+-    data = websocket.get_close_data()
+-    code = websocket.get_close_code()
+-
+-    if code is None and data is None:
+-        return ""
+-    return " Data: %s Code: %s" % (data, code)
++def get_tls_error_phrase(*args, **kwargs):
++    raise UnsupportedPlatformOperation("Desktop TLS/Soup details are unavailable")
++
++
++def convert_tls_error_flags(*args, **kwargs):
++    raise UnsupportedPlatformOperation("Desktop TLS/Soup details are unavailable")
++
++
++def get_websocket_close_string(*args, **kwargs):
++    raise UnsupportedPlatformOperation("Desktop TLS/Soup details are unavailable")
+ 
+ 
+ def is_websocket_close(stanza: Node) -> bool:
+@@ -416,7 +394,7 @@
+ 
+ def min_version(name: str, min_version: str) -> bool:
+     if name == "GLib":
+-        return GLIB_VERSION >= Version(min_version)
++        return False  # The browser port has no GLib runtime.
+     raise ValueError("Unknown library name")
+ 
+ 

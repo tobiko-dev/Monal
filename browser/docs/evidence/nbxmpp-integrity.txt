@@ -1,0 +1,6 @@
+PASS: altered checks.zip rejected; original bytes restored
+PASS: altered port.zip rejected; original bytes restored
+PASS: altered nbxmpp.zip rejected; original bytes restored
+PASS: altered protocol-checks.zip rejected; original bytes restored
+PASS: altered precis_i18n-1.1.2-py3-none-any.whl rejected; original bytes restored
+PASS: altered nbxmpp source rejected before adaptation; original bytes restored

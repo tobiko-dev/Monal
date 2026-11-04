@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' wss://gajim-browser-qa.strongcaterpillar.chatgpt.site; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Gajim WebSocket connection checks</title>
+<link rel="stylesheet" href="style.css">
+<main>
+  <h1>WebSocket connection checks</h1>
+  <p>Uses Gajim’s actual nbxmpp client to authenticate, reconnect and handle failures over a real secure WebSocket.</p>
+  <p>The server is a controlled test peer on this private site. It only accepts fixed synthetic credentials and cannot forward messages. No 5july sign-in or contact messaging.</p>
+  <button id="run" type="button">Run connection checks</button>
+  <p id="status" role="status" aria-live="polite">Ready.</p>
+  <pre id="report" aria-label="Connection check results"></pre>
+  <p>A pass verifies this connection adapter. Account identity, device publication, verified-recipient policy, live OMEMO interoperability and production message delivery remain separate work.</p>
+  <p><a href="index.html">Encryption baseline</a> · <a href="protocol.html">Protocol checks</a> · <a href="outbox.html">Durable outbox checks</a></p>
+</main>
+<script type="module" src="transport-main.mjs"></script>
+</html>

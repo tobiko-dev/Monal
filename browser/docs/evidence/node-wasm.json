@@ -1,0 +1,20 @@
+{
+  "platform": "emscripten",
+  "python": "3.14.2",
+  "curve_module": "/experiment/site/omemo_dr/_curve.cpython-314-wasm32-emscripten.so",
+  "omemo_dr": "1.2.0",
+  "cryptography": "47.0.0",
+  "protobuf": "7.34.1",
+  "tests": 14,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": true,
+  "output": "test_vector_long_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_long_v3) ... ok\ntest_vector_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_v3) ... ok\ntest_omemo_tmp_session (tests.test_session_manager.SessionBuilderTest.test_omemo_tmp_session) ... ok\ntest_agreement (tests.test_sigs.Curve25519Test.test_agreement) ... ok\ntest_gensig (tests.test_sigs.Curve25519Test.test_gensig) ... ok\ntest_random_agreements (tests.test_sigs.Curve25519Test.test_random_agreements) ... ok\ntest_signature (tests.test_sigs.Curve25519Test.test_signature) ... ok\ntest_split (tests.util.test_byteutil.ByteUtilTest.test_split) ... ok\ntest_message_not_addressed_to_this_device_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_message_not_addressed_to_this_device_rejected) ... ok\ntest_missing_recipient_yields_no_ciphertext (port_tests.test_browser_crypto.BrowserCryptoTests.test_missing_recipient_yields_no_ciphertext) ... ok\ntest_round_trip_and_reply (port_tests.test_browser_crypto.BrowserCryptoTests.test_round_trip_and_reply) ... ok\ntest_tampered_iv_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_iv_rejected) ... ok\ntest_tampered_payload_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_payload_rejected) ... ok\ntest_tampered_wrapped_key_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_wrapped_key_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.748s\n\nOK\n",
+  "elapsed_ms": 1773,
+  "pyodide": "314.0.7",
+  "source_sha256": "18b6542b3bb7ed6dce34dd02f32b16401982ba24f0146ddae091dcb92c79a484",
+  "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+  "startup_ms": 1752,
+  "host": "Node v24.22.1"
+}

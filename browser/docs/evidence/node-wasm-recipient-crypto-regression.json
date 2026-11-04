@@ -1,0 +1,87 @@
+{
+  "platform": "emscripten",
+  "python": "3.14.2",
+  "curve_module": "/experiment/site/omemo_dr/_curve.cpython-314-wasm32-emscripten.so",
+  "omemo_dr": "1.2.0",
+  "cryptography": "47.0.0",
+  "protobuf": "7.34.1",
+  "tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": true,
+  "output": "test_vector_long_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_long_v3) ... ok\ntest_vector_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_v3) ... ok\ntest_omemo_tmp_session (tests.test_session_manager.SessionBuilderTest.test_omemo_tmp_session) ... ok\ntest_agreement (tests.test_sigs.Curve25519Test.test_agreement) ... ok\ntest_gensig (tests.test_sigs.Curve25519Test.test_gensig) ... ok\ntest_random_agreements (tests.test_sigs.Curve25519Test.test_random_agreements) ... ok\ntest_signature (tests.test_sigs.Curve25519Test.test_signature) ... ok\ntest_split (tests.util.test_byteutil.ByteUtilTest.test_split) ... ok\ntest_message_not_addressed_to_this_device_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_message_not_addressed_to_this_device_rejected) ... ok\ntest_missing_recipient_yields_no_ciphertext (port_tests.test_browser_crypto.BrowserCryptoTests.test_missing_recipient_yields_no_ciphertext) ... ok\ntest_round_trip_and_reply (port_tests.test_browser_crypto.BrowserCryptoTests.test_round_trip_and_reply) ... ok\ntest_tampered_iv_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_iv_rejected) ... ok\ntest_tampered_payload_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_payload_rejected) ... ok\ntest_tampered_wrapped_key_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_wrapped_key_rejected) ... ok\ntest_bridge_errors_never_include_private_exception_text (port_tests.test_identity.IdentityBridgeTests.test_bridge_errors_never_include_private_exception_text) ... ok\ntest_inspection_never_initializes_a_session_manager (port_tests.test_identity.IdentityBridgeTests.test_inspection_never_initializes_a_session_manager) ... ok\ntest_outer_descriptor_mismatch_is_rejected (port_tests.test_identity.IdentityBridgeTests.test_outer_descriptor_mismatch_is_rejected) ... ok\ntest_provision_uses_gajim_prekey_configuration (port_tests.test_identity.IdentityBridgeTests.test_provision_uses_gajim_prekey_configuration) ... ok\ntest_wrong_account_cannot_open_the_identity (port_tests.test_identity.IdentityBridgeTests.test_wrong_account_cannot_open_the_identity) ... ok\ntest_duplicate_identity_rejected (port_tests.test_storage.StorageTests.test_duplicate_identity_rejected) ... ok\ntest_empty_identity_rejected (port_tests.test_storage.StorageTests.test_empty_identity_rejected) ... ok\ntest_identity_and_prekeys_survive_restart_without_generation (port_tests.test_storage.StorageTests.test_identity_and_prekeys_survive_restart_without_generation) ... ok\ntest_inconsistent_key_pair_rejected (port_tests.test_storage.StorageTests.test_inconsistent_key_pair_rejected) ... ok\ntest_missing_and_corrupt_snapshots_do_not_create_identity (port_tests.test_storage.StorageTests.test_missing_and_corrupt_snapshots_do_not_create_identity) ... ok\ntest_other_account_cannot_load_snapshot (port_tests.test_storage.StorageTests.test_other_account_cannot_load_snapshot) ... ok\ntest_trust_and_ratchets_survive_both_participants_restarting (port_tests.test_storage.StorageTests.test_trust_and_ratchets_survive_both_participants_restarting) ... ok\ntest_unknown_schema_rejected (port_tests.test_storage.StorageTests.test_unknown_schema_rejected) ... ok\ntest_unverified_peer_is_not_silently_trusted (port_tests.test_storage.StorageTests.test_unverified_peer_is_not_silently_trusted) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 1.162s\n\nOK\n",
+  "elapsed_ms": 2465,
+  "pyodide": "314.0.7",
+  "source_sha256": "18b6542b3bb7ed6dce34dd02f32b16401982ba24f0146ddae091dcb92c79a484",
+  "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+  "gajim_storage": {
+    "repository": "https://github.com/gajim/gajim",
+    "commit": "5a57abb2950886dd9cb8a73972ecc2dcc59f688a",
+    "path": "src/gajim/common/storage/omemo.py",
+    "sha256": "5f57337f29e1d3a889698a2f65aba4348754ac268aad49fe18f32f9e4d427260"
+  },
+  "port_sha256": "9f14d07840e14ec5d33407567862d2baa23277034237ac91f9f9edc9d370d601",
+  "storage_integration": {
+    "passed": true,
+    "encrypted_exchanges": 3,
+    "identity_preserved": true,
+    "fixture": "Gajim SQLite snapshots with explicit synthetic trust",
+    "environment": "Simulated IndexedDB and Node Web Locks; not a browser pass"
+  },
+  "lifecycle_fixture": {
+    "passed": true,
+    "reconstructed_fixture": true,
+    "contention_blocked": true,
+    "ratchet_continued_after_held_commit": true,
+    "environment": "Node fixture logic; not a browser lifecycle pass"
+  },
+  "identity_service": {
+    "passed": true,
+    "encrypted_exchanges": 4,
+    "identity_preserved": true,
+    "creation_prekeys": 100,
+    "opened_revision": 5,
+    "environment": "Application service/Python bridge in Node WASM with simulated IndexedDB; not a browser worker test"
+  },
+  "outbox": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "queued text survives reconstruction without advancing the crypto session",
+        "passed": true
+      },
+      {
+        "name": "stable IDs deduplicate repeated intent and reject conflicting reuse",
+        "passed": true
+      },
+      {
+        "name": "conversation ordering and account isolation are preserved",
+        "passed": true
+      },
+      {
+        "name": "abort after the outbox write rolls back ciphertext and the actual Gajim session together",
+        "passed": true
+      },
+      {
+        "name": "deliberate retry after rollback produces a decryptable committed message",
+        "passed": true
+      },
+      {
+        "name": "lost-reply reconciliation reuses the identical ciphertext without advancing the ratchet",
+        "passed": true
+      },
+      {
+        "name": "bidirectional encrypted continuation preserves identity and prepared queue entries",
+        "passed": true
+      }
+    ],
+    "encrypted_exchanges": 4,
+    "discarded_preparations": 1,
+    "identity_preserved": true,
+    "format": "Test-only JSON OMEMO payload; not an XMPP stanza or production dispatcher",
+    "environment": "Node WASM with simulated IndexedDB and Node Web Locks; not a browser pass"
+  },
+  "startup_ms": 2332,
+  "host": "Node v24.22.1"
+}

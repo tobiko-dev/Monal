@@ -1,74 +1,182 @@
-# Web companion — cancelled
+# Gajim-derived browser port
 
-> **Cancelled at the owner’s request on 2026-11-03.** No further development or builds are planned. The roadmap below is a historical record, not an active plan. This cancellation concerns the separate web companion; the native Monal fork is retained.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and actual Chrome, plus 13 JS socket checks. The user also reports all 128 / 20 / 8 protocol and 18 WebSocket checks passing on physical iPad Safari, with matching hashes and zero remaining timers. A new local verified-recipient guard adds 24 checks passing natively and in Node WASM (44 adapter tests total); that increment is not yet deployed. Integrated Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
-## Goal
-Make the iPad web companion reliably deliver mandatory-OMEMO messages, preserve its encryption identity, and make verification and failures understandable.
+## Goal and scope
 
-This roadmap tracks the **separate Converse-based web companion**. It is not a claim that native Monal contains these integration issues. Native Monal remains the interoperability reference.
+Run Gajim-derived messaging code on the user's iPad through a webpage, connecting to 5july with OMEMO encryption and decryption on the device.
 
-## Current status — 2026-11-03
-The first security increment and the follow-up attribution/tab-handoff repair are implemented and published to the existing owner-private web deployment. Checked items below mean implemented with automated or synthetic-browser evidence, **not physical iPad or live native-client certification**.
+This replaces the cancelled Converse companion roadmap. Its completed checkboxes do not carry over. Git history retains that plan. The native Monal fork remains intact; browser work lives in `browser/`. No client substitution or remote desktop is part of this plan.
 
-- 95 Node tests passed, including real shipped crypto for legacy OMEMO and OMEMO 2, message reuse, and cooperative handoff failure cases.
-- This follow-up passed 17 actual-component interface assertions and 7 message-reuse assertions. The first security increment also passed 8 browser DOM/storage assertions.
-- Browser storage tests use the pinned OMEMOStore and IndexedDB with provisioning stubbed because the HTTP preview lacks WebCrypto. Crypto itself is exercised in Node.
-- No real account login, live image upload, or message to a contact was used in this build.
-- Source, tests, a synthetic screenshot and technical details are committed in the private web companion repository. The native fork has only roadmap changes.
-- GitHub Issues are disabled in this fork, so tracking remains in this file.
+Reusing `omemo-dr` alone is an encryption experiment, not a completed Gajim port. Later stages must retain and adapt Gajim/nbxmpp protocol and device-management behavior, with documented upstream provenance. The native GTK interface needs a browser implementation with explicit behavior and appearance comparisons.
 
-## Follow-up regressions — 2026-11-03
-- [x] Fix custom message rows retaining a previous model's body while the parent renders a new sender/direction. A browser regression failed before the fix and passes after it; stale asynchronous render results are discarded.
-- [x] Add **Use this tab instead** for tab conflicts. Pause new cryptographic work, drain existing incoming-message processing and queued preparation, save drafts, disconnect and flush identity state, then unload the old document before the new tab can acquire ownership.
-- [x] Abort timed-out or failed handoff requests so they cannot acquire an orphan lock later. Never steal a lock from an unresponsive document.
-- [x] Preserve the sign-in fields when a handoff cannot finish; provide a manual-close instruction for sleeping tabs or older builds.
-- [ ] Verify the full handoff on physical Safari, including a message arriving during transfer. Automated tests use an explicit simulated lock manager; HTTP preview cannot exercise real Web Locks.
-- The attribution evidence establishes a rendering defect, not that stored sender metadata was corrupted. No private conversation was inspected to infer a specific record's cause.
-- Existing tabs from the previous version need closing once because they cannot answer the new handoff request. No crypto vendor files changed in this follow-up.
+## Requirements every increment must preserve
 
-## P0 — Encryption and device continuity
-- [x] Require usable recipient keys at preparation and final transmission for text, edits, and photo descriptors; never fall back to plaintext.
-- [x] Preserve queued messages when sending is blocked; report omitted recipient devices.
-- [x] Check storage before sign-in, retain the existing identity, and block silent identity replacement on a storage failure.
-- [x] Persist session changes before transmission and surface storage failures.
-- [x] Allow one active connection per browser storage context; prevent competing tabs from reusing stale sessions. The implemented lock is origin-wide, including different accounts.
-- [x] Report device discovery and publication separately, including partial failures and protocol-specific results.
-- [x] Confirm the server's published identity matches the local public key; show this browser's fingerprint from its local identity.
-- [x] Bind the actual encryption session to the approved fingerprint. Rebuild approved replacement sessions with the upstream builder while archiving prior session state and retaining our own identity.
-- [x] Filter inactive/blocked devices before protocol preference so an unusable OMEMO 2 entry cannot suppress an approved legacy device.
+- User messages, edits and attachment descriptors require working OMEMO. Encryption failure blocks sending; never fall back to plaintext.
+- Encryption/decryption and private state stay on the device. Hosting must not receive passwords, private keys or plaintext through application APIs or telemetry.
+- Encrypted and identity-verified are different states. Indicators must reflect actual state, including missing, changed, blocked and unverified keys.
+- Reload, reconnect and suspension preserve the same device identity. Storage failure must not silently create a replacement.
+- One writer changes an account's cryptographic state at a time. Tab handoff preserves drafts without permanent sign-in lockouts.
+- Persist outgoing work and session changes before transmission; preserve failed messages and prevent accidental duplicates.
+- Correct sender, conversation, times and receipt state survive history loading, chat switching and reused UI components.
+- Tests use synthetic identities first. Live tests are limited to Notes to self or the explicitly designated npc test account. Never message another contact for testing.
+- Linux, Node and desktop-browser results are not physical iPad passes. Application deployment follows usable, verified functionality. A private synthetic QA harness may be hosted separately for HTTPS browser verification.
 
-## P1 — Identity, diagnostics, and delivery
-- [x] Record fingerprint decisions by account, peer, device, protocol, and exact identity key.
-- [x] Provide approve/verify/block controls and pause delivery to changed or unapproved identities.
-- [x] Distinguish local crypto readiness, recipient readiness, and verified identity.
-- [x] Render dated, attributed unreadable-message placeholders through the real error-message component.
-- [x] Distinguish missing recipient keys from decryption/authentication failures; do not assume every failure is old history.
-- [x] Keep compact sent/read checkmarks with accurate server/client receipt meanings.
-- [x] Preserve original history and edit state after an encrypted edit fails.
-- [ ] Unify durable retry behavior across text, edits, and photos. Text has a durable queue; photo failures remain in the photo dialog and failed edits retain their editor.
-- [ ] Add a redacted local diagnostic export limited to necessary public device/error metadata; exclude private keys and message content.
+## Milestones and acceptance criteria
 
-## P2 — Local security and usability
-- [ ] Review local readable history/outbox retention and an optional protected local vault.
-- [x] Explain that sign-out retains local data and keys, and that clearing website data can destroy needed keys.
-- [ ] Add separate local-history removal controls without automatically erasing encryption keys.
-- [ ] Verify selection, context-menu dismissal, photo zoom, keyboard layout, and autofill on physical iPad after the security foundation.
+Checked means the stated evidence exists, not that the whole milestone is complete.
 
-## Release checks
-- [x] Negative send tests for missing/blocked/inactive recipient devices and both supported OMEMO versions.
-- [x] Exact shipped crypto round trips, tamper rejection, ratchet replies, approved replacement sessions, and persistence failure tests.
-- [x] Synthetic identity continuity and competing-tab rejection tests.
-- [x] Actual message-component tests for unreadable messages, verification controls, and receipt semantics.
-- [ ] Physical iPad identity continuity across reload, logout/login, backgrounding, reconnect, and two real tabs.
-- [ ] Bidirectional text and photo exchange with native Monal, including offline catch-up, using only Notes to self or an explicitly authorized test account.
-- [x] Document physical-device and live-account verification that has not been completed.
+## Next usable milestone — one real encrypted conversation
 
-The original screenshot does not by itself establish which remote client omitted this browser or prove a particular newly arriving message is fixed. Old ciphertext that never included the browser's device key cannot be recovered by changing its display.
+Build in this order; source and security requirements above apply throughout:
 
-## First use after this increment
-Close web tabs running the previous version once and reload normally. Updated tabs offer **Use this tab instead** when another tab owns the session. Open **Encryption details → Compare fingerprints**, compare the full key through a trusted channel or your own native client's device details, then choose **Verify fingerprint**. **Approve unverified** is a separate explicit choice and does not claim identity verification. Review other devices of your own account as well, then retry retained messages. Do not clear website data as a routine repair.
+1. **Durable send queue (local storage/service implemented):** persist queued text before the
+   composer can clear; atomically save prepared ciphertext and its session
+   update. Preserve pending/blocked work across reloads, reject conflicting
+   reuse of a message ID, and retry preparation without duplicating committed
+   ciphertext. First implement and test the local storage/service boundary;
+   connect the composer and network dispatcher only after their own gates pass.
+2. **Gajim/nbxmpp connection and device management (next development):** adapt the actual upstream
+   code for 5july authentication, device publication, recipient bundles and
+   reconnects, with a source/patch ledger. The [source-boundary investigation](browser/docs/nbxmpp-port.md)
+   now includes the implemented runtime helpers and passing upstream protocol
+   tests. The protocol and controlled-peer WebSocket checks now pass in Chrome and
+   user-reported iPad Safari. Integrate Gajim's device/trust orchestration next.
+3. **Fingerprint verification:** expose real fingerprints and distinct
+   unverified/changed/blocked states. Missing usable keys block every content
+   send; no plaintext fallback. Revalidate queued work against current device
+   trust before transmission.
+4. **Live interoperability:** exchange encrypted text in both directions with
+   native Monal/Gajim using Notes to self or the designated npc account only.
+5. **Conversation interface:** build the agreed bubbles, receipts, history,
+   selection and image behavior around the verified messaging path.
 
-## Execution
-Work in verified increments: recipient checks → identity/session persistence and tab ownership → verification/publication → error and delivery presentation → integration checks. Keep completed, implemented-but-unverified, and deferred work distinct.
+Physical-device task completed: the user supplied all eight application
+identity-worker passes and all seven durable outbox passes from iPad Safari.
+[Reports and limits](browser/docs/evidence/safari-worker-outbox-user-reported.json).
+Those results remain scoped to their original build. The user has now also
+completed the newer protocol and controlled-peer WebSocket checks on Safari.
+[Protocol and transport report](browser/docs/evidence/safari-protocol-transport-user-reported.json).
+No repeat of these checks is currently requested.
 
-Started: 2026-11-03. Automated testing uses synthetic identities. Any live tests must use Notes to self or an explicitly designated test account; never message contacts just to test.
+Queue acceptance for this increment: acknowledged enqueue survives reopening;
+failed/aborted preparation changes neither the saved session nor prepared
+payload; committed preparation survives a lost reply and is not repeated;
+competing operations retain ordering and account isolation. Prepared means
+locally encrypted and saved, not sent, delivered or read. Network delivery
+reconciliation and wire-level required-OMEMO checks remain later gates.
+
+### M0 — Source baseline: complete
+
+- [x] Review pinned Monal, Gajim and nbxmpp source paths; verify 16 retrieved files against their Git blob hashes.
+- [x] Verify the `omemo-dr 1.2.0` source archive SHA-256 and build it unchanged.
+- [x] Pass all 8 upstream tests on native Python 3.12/Linux.
+- [x] Identify C-extension, GTK/GI, GLib/Soup and SQLite platform dependencies.
+
+M0 does not establish browser encryption, live interoperability or iPad support.
+
+### M1 — Browser encryption feasibility: in progress
+
+- [x] Pin Pyodide 314.0.7 / Python 3.14.2 / Emscripten 5.0.3 and build tools; compile the unchanged C extension to WebAssembly.
+- [x] Package a local harness, pinned source/runtime hashes and licenses. No account login or contact messaging.
+- [x] Pass all 8 upstream tests in WebAssembly under Node 24.22.1.
+- [x] Pass 6 added WebAssembly checks: round trip/reply, altered payload/IV/wrapped key, missing device key and unavailable recipient. Upstream tests also cover reordered/missed/duplicate messages.
+- [x] Complete the actual browser run: Chrome 155 on Linux over private HTTPS passed all 23 tests and three encrypted exchanges using real IndexedDB/Web Locks. Source and artifact hashes match the Node/CI baseline.
+- [x] Run the same baseline in physical iPad Safari: user reports 23 tests and three storage-integrated encrypted exchanges passing twice, with matching artifact hashes.
+- [x] Record iPad startup/check timings from both user-supplied reports.
+- [ ] Measure iPad memory use and isolate startup loading costs from network/cache effects.
+
+Exit: executable evidence for the chosen runtime. Record concrete blockers before changing architecture.
+
+Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAssembly result](browser/docs/evidence/node-wasm.json), [M2 WebAssembly/storage result](browser/docs/evidence/node-wasm-storage.json). The M1 blind-trust fixture is separate from the adapted Gajim store, which disables blind trust. Production device/trust orchestration remains M3.
+
+Browser evidence: [initial Chrome result](browser/docs/evidence/chrome-browser.json), [lifecycle results](browser/docs/evidence/chrome-lifecycle.json), [lifecycle procedure and revision table](browser/docs/lifecycle.md). These establish the stated Chrome checks, not Safari or full browser-process crash correctness.
+
+Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/safari-user-reported.json). These cover the baseline, saved-session continuation, competing-tab blocking, reported owner-close recovery, close/reopen, lock/unlock and Safari relaunch continuation. Separate reload, confirmed OS suspension and commit-handoff scenarios stay open.
+
+### M2 — Durable identity and sessions: in progress
+
+- [x] Adapt Gajim's actual SQLite Store with hash-checked source, an explicit patch ledger, separate creation/restoration and snapshot validation.
+- [x] Implement IndexedDB snapshot transactions, revision checks and per-operation Web Locks. Results are withheld until commit completes.
+- [x] Verify identity, trust, prekeys and session continuation after reconstructing stores/managers in native Python and WASM; run three combined encrypted exchanges through the repository.
+- [x] Pass 16 simulated IndexedDB/Node Web Locks tests, including interrupted writes, quota, denied storage, corruption, concurrent writers and lock timeout.
+- [x] Run the combined storage/encryption fixture against actual Chrome IndexedDB and Web Locks; preserve identities through three exchanges and reconstructed stores/managers.
+- [x] Reload the actual Chrome page and close/reopen its tab; retain identities and resume bidirectional encrypted exchanges from saved sessions.
+- [x] Verify real Chrome tab contention without lock stealing. A queued operation recovers the prior revision after uncommitted owner closure, and the next revision after owner commit.
+- [x] Terminate the test worker before commit, restart it and verify unchanged identity/revisions followed by successful encryption/decryption.
+- [x] In user-reported iPad Safari results, load existing identities, continue encrypted exchanges and commit a held Alice change without losing either identity.
+- [x] Confirm Safari competing-tab access is blocked without stealing the lock (user-reported).
+- [x] Recover from the prior committed revision after the reported Safari owner-close sequence; continue encrypted exchanges with unchanged identities.
+- [x] Restore saved identities and continue encrypted exchanges after the directed Safari close/reopen test (user-reported): inspect 12/11, then exchange to 14/13.
+- [x] Continue encrypted exchanges after the directed app-switch and iPad lock/unlock test (user-reported), with unchanged identities.
+- [x] Restore identities and continue encrypted exchanges after the directed Safari app-switcher dismissal and relaunch (user-reported).
+- [ ] Verify Safari queued handoff after owner commit, a separate explicit reload and confirmed OS suspension. A lock/unlock pass alone does not establish OS suspension.
+- [ ] Verify process crash during active work and actual-browser storage failure/eviction. The idle Safari relaunch pass does not cover a crash during a write or independently establish which WebKit processes terminated.
+- [x] Add the application identity worker API: explicit creation, validated restoration, bounded serial work, public-only replies and interrupted-operation outcomes.
+- [x] Verify the application identity worker in actual Chrome: eight checks cover creation/restoration, queued committed handoff, interruption before commit and recovery after a lost acknowledgement. [Raw result](browser/docs/evidence/chrome-identity-worker.json).
+- [x] Reload a synthetic session from the previous deployed adapter with the new build; preserve identities and resume encrypted exchange from 3/3 to 5/5. [Upgrade result](browser/docs/evidence/chrome-identity-upgrade.json).
+- [x] Verify the application identity worker on physical iPad Safari (user-reported): all eight checks pass, including queued committed creation, termination before commit and saved-identity recovery after a lost reply. Both contention cases report one held/one pending lock. [Evidence](browser/docs/evidence/safari-worker-outbox-user-reported.json).
+- [ ] Complete the messaging worker/coordinator lifecycle, including suspended pages, durable drafts and atomic outgoing work.
+- [ ] Distinguish sign-out, local-history removal and deliberate device reset.
+
+Exit: persistence/concurrency tests pass, including physical Safari lifecycle tests.
+
+Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md), [outbox boundary](browser/docs/outbox.md). The test harness uses separate workers/runtimes and real browser locks. Atomic outbox storage is implemented; it does not authorize network transmission before recipient-policy and dispatcher integration.
+
+### M3 — Gajim protocol integration and 5july: protocol and controlled-peer transport implemented
+
+- [x] Inspect the pinned nbxmpp package and reproduce the unchanged-client import blocker in WASM; record 12 desktop-dependent modules, retained upstream responsibilities and the incremental port plan. [Investigation and limits](browser/docs/nbxmpp-port.md).
+- [x] Package the pinned nbxmpp source and explicit runtime adapters; pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks natively and in WASM. Include real OMEMO XML exchange/restoration, malformed XML, SCRAM vectors, strict JID decoding and IQ cancellation. [Patch ledger and limits](browser/docs/nbxmpp-port.md).
+- [x] Retain all 50 JS and 28 WASM regression checks; reject altered protocol/test/dependency/source artifacts before execution/adaptation.
+- [x] Verify the new protocol core in actual Chrome 155 over owner-private HTTPS, including the 28-test crypto baseline; all counts and artifact hashes match. [Browser result](browser/docs/evidence/chrome-nbxmpp.json). Fresh source CI also passes.
+- [x] Verify the protocol core on physical iPad Safari (user-reported): 128 upstream, 20 adapter and eight timer checks pass, plus the 28-test crypto baseline; matching artifact hashes and zero remaining timers. [Evidence](browser/docs/evidence/safari-protocol-transport-user-reported.json).
+- [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
+- [x] Add a local recipient guard over the actual Gajim store/OMEMO engine: require verified coverage for peer and own devices, bind confirmations to current fingerprints, reject partial encryption/device-ID collisions, and revalidate prepared plans. All 24 new cases pass natively and in WASM, alongside 128 upstream, 20 existing adapter and eight timer checks. The guard is not yet connected to discovery or dispatch. [Contract and source review](browser/docs/recipient-policy.md).
+- [ ] Adapt Gajim's own-device merge and bundle/session flow with commit-before-publication, persisted discovery (including devices without sessions), authenticated reply binding and stale-generation rejection.
+- [ ] Connect real fingerprint verification, the recipient guard, atomic XML outbox preparation and pre-dispatch checks under the account owner. Synthetic trust/discovery fixtures do not complete this integration.
+- [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
+- [x] Adapt Soup networking to browser WebSocket. Pass 18 Node WASM controlled-peer/configuration checks and 13 JS socket checks, including actual SCRAM/binding, bad input, backpressure, failure/reconnect, disposal and logging. [Boundary and evidence](browser/docs/transport.md). No real account used.
+- [x] Verify the new controlled-peer WSS checks in actual Chrome 155 over private HTTPS: all 18 pass with matching artifact hashes. [Raw result](browser/docs/evidence/chrome-transport.json). [Fresh source CI](https://github.com/tobiko-dev/Monal/actions/runs/41812411668) also passes.
+- [x] Verify the controlled-peer WSS checks on physical iPad Safari (user-reported): all 18 pass, with matching artifact hashes and zero remaining timers. [Evidence](browser/docs/evidence/safari-protocol-transport-user-reported.json). No account login or contact messaging.
+- [ ] Assess actual 5july endpoint capabilities and BOSH/XEP-0206 need before enabling account authentication.
+- [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
+- [ ] Enforce required OMEMO for every user-content send path and test at the transmitted-stanza boundary.
+- [ ] Exchange encrypted text both ways with native Monal/Gajim using authorized test identities.
+
+Exit: real interoperability evidence, no plaintext fallback and understandable diagnostics. Shared namespaces alone are not proof.
+
+### M4 — Reliable conversations: in progress
+
+- [x] Persist queued intent with stable IDs, conversation order, account isolation and blocked preparation/retry states.
+- [x] Commit prepared ciphertext and session changes together; verify rollback after a late abort and reuse after a lost reply using actual Gajim WASM crypto.
+- [x] Preserve v1 identity data when adding the outbox store; reject corrupt, missing or stale initialized queue records.
+- [x] Pass seven outbox checks and eight identity-worker regressions in actual Chrome; preserve identity and encrypted continuation across the database upgrade. [Evidence](browser/docs/evidence/chrome-outbox.json).
+- [x] Pass all seven synthetic outbox checks on physical iPad Safari (user-reported): four encrypted exchanges, forced write-abort rollback, deliberate retry and identical-ciphertext reuse after a discarded reply. Artifact hashes match the tested build. [Evidence](browser/docs/evidence/safari-worker-outbox-user-reported.json).
+- [ ] Verify physical Safari outbox recovery after process interruption during active work and actual storage failure/eviction; object reconstruction and injected transaction abort do not cover these cases.
+- [ ] Connect the production messaging worker, recipient-policy checks and dispatcher; reconcile uncertain network delivery without blind resend.
+- [ ] Connect the composer: clear after enqueue succeeds; compact pending/sent/read/failed states and deliberate retry.
+- [ ] Reconcile uncertain delivery by stable message ID. Tightly spaced double checks require an actual read indication.
+- [ ] Archive history, carbons and reconnect preserve correct sender/direction through chat switches.
+- [ ] Explain old ciphertext that omitted this device separately from new-message failures.
+- [ ] Encrypt attachments locally; send encrypted descriptors and render images after authenticated decryption.
+
+### M5 — Familiar iPad interface: pending
+
+- [ ] Compare with agreed native reference: distinct incoming/outgoing bubbles, legible times and compact receipts.
+- [ ] Native text selection/right-click; menus close after use; no persistent Copy/Select buttons per message.
+- [ ] Keyboard-safe composer, image zoom and Escape dismissal of the new-message divider.
+- [ ] One sign-in attempt after password-manager autofill; editable fields after failure and no retry loop.
+- [ ] Aligned avatars; actual iPad touch, pointer, keyboard, accessibility and contrast checks.
+
+### M6 — Release and maintenance: pending
+
+- [ ] Reproducible pinned builds, dependency review, attribution and controlled same-origin runtime assets.
+- [ ] Upgrade/rollback tests preserve keys, trust, queued messages and history.
+- [ ] Review delivered code, hosting trust, content security policy and absence of plaintext/key telemetry.
+- [ ] Publish after integration/iPad checks pass; document remaining limits accurately.
+
+## Method
+
+Use Asura's method: define goals/constraints, give each component one responsibility, implement the smallest useful increment, verify immediately and verify its interactions. Complete the foundation before visual polish. Update this roadmap with evidence and limits after each increment.
+
+See [build entry point](browser/README.md) and [architecture](browser/docs/architecture.md).

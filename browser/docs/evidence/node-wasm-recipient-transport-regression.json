@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "unsafe endpoints are rejected before a socket is created",
+      "passed": true
+    },
+    {
+      "name": "changed domain, endpoint, transport or SASL policy fails before connection",
+      "passed": true
+    },
+    {
+      "name": "backpressure removes the IQ callback and never enters the sent-stanza queue",
+      "passed": true
+    },
+    {
+      "name": "queued inbound events are bounded and overflow terminates without late callbacks",
+      "passed": true
+    },
+    {
+      "name": "actual nbxmpp performs SCRAM authentication, stream restart, binding and IQ reply over WSS",
+      "passed": true
+    },
+    {
+      "name": "graceful close and reconnect use a fresh socket and working upstream state machine",
+      "passed": true
+    },
+    {
+      "name": "destroying an active client disposes socket, proxy and queued callbacks",
+      "passed": true
+    },
+    {
+      "name": "missing negotiated xmpp protocol never reaches authentication",
+      "passed": true
+    },
+    {
+      "name": "malformed XML terminates the stream before authentication",
+      "passed": true
+    },
+    {
+      "name": "external entity XML is rejected by the real parser",
+      "passed": true
+    },
+    {
+      "name": "binary input is rejected at the socket boundary",
+      "passed": true
+    },
+    {
+      "name": "oversized input is rejected before Python parsing",
+      "passed": true
+    },
+    {
+      "name": "stream header from another domain is rejected",
+      "passed": true
+    },
+    {
+      "name": "authentication failure does not become a connected session",
+      "passed": true
+    },
+    {
+      "name": "wrong SCRAM server signature fails authentication",
+      "passed": true
+    },
+    {
+      "name": "interrupted authentication produces a terminal outcome",
+      "passed": true
+    },
+    {
+      "name": "stalled authentication is terminated by the negotiation deadline",
+      "passed": true
+    },
+    {
+      "name": "protocol/authentication logs stay empty and no nbxmpp timers remain",
+      "passed": true
+    }
+  ],
+  "remaining_timers": 0,
+  "scope": "Real WebSocket plus upstream nbxmpp against a scripted synthetic peer; no 5july or contact messaging",
+  "nbxmpp_source": {
+    "repository": "https://github.com/gajim/python-nbxmpp",
+    "commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "version": "7.5.0",
+    "archive": "python-nbxmpp-999ce885.tar.gz",
+    "sha256": "3e2b15dae70e995da375b9cad4843151488e2f911004879398b490aea90faf51"
+  },
+  "protocol_sha256": "c2bcce13dcd6e7fe8b50d3f228529af331b6f0ddc8edf345af432009f9468be8",
+  "port_sha256": "9f14d07840e14ec5d33407567862d2baa23277034237ac91f9f9edc9d370d601",
+  "fixture_sha256": "9868b9413c97f7a6cfbea857ed503893353b75679ff433bd67646ed9c192d9a3",
+  "elapsed_ms": 2765,
+  "environment": "Node v24.22.1, native WebSocket, real local TLS and upstream nbxmpp in WebAssembly; not a browser pass"
+}
