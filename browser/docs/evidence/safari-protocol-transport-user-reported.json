@@ -1,0 +1,59 @@
+{
+  "recorded_on": "2026-11-04",
+  "provenance": "Structured summary of the reports supplied by the user from physical iPad Safari in this conversation. Not an agent-controlled Safari run or a raw log capture.",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15",
+  "build_context": {
+    "implementation_commit": "17717ddb7d6833efa056143f65340d9a055e6ae4",
+    "qa_source_commit": "17a449da0b539efcf339b153dd054868697fbe5e",
+    "note": "Commit identifiers are repository context. The reports supplied the artifact hashes below."
+  },
+  "artifacts": {
+    "nbxmpp_commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "nbxmpp_version": "7.5.0",
+    "nbxmpp_source_sha256": "3e2b15dae70e995da375b9cad4843151488e2f911004879398b490aea90faf51",
+    "protocol_sha256": "c2bcce13dcd6e7fe8b50d3f228529af331b6f0ddc8edf345af432009f9468be8",
+    "port_sha256": "6accbd61a037a7692eab8f9ab873978f1e049093c7f929f74d67601278341731",
+    "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+    "transport_fixture_sha256": "9868b9413c97f7a6cfbea857ed503893353b75679ff433bd67646ed9c192d9a3"
+  },
+  "protocol": {
+    "passed": true,
+    "upstream": {
+      "tests": 128,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser_adaptation": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "async_integration": {
+      "checks": 8,
+      "passed": true,
+      "remaining_timers": 0
+    },
+    "baseline_tests": 28,
+    "elapsed_ms": 1933,
+    "total_elapsed_ms": 4547,
+    "environment": "Actual browser module worker, Pyodide WebLoop, adapted upstream nbxmpp and unchanged Gajim OMEMO library",
+    "network": "No transport configured by these offline tests; no socket, sign-in or contact messaging"
+  },
+  "transport": {
+    "passed": true,
+    "checks": 18,
+    "remaining_timers": 0,
+    "elapsed_ms": 10624,
+    "total_elapsed_ms": 11754,
+    "environment": "Actual browser module worker and native WebSocket; upstream nbxmpp in WebAssembly; same-origin synthetic peer",
+    "scope": "Real WebSocket plus upstream nbxmpp against a scripted synthetic peer; no 5july or contact messaging"
+  },
+  "limits": [
+    "The transport server is the controlled synthetic peer, not 5july.",
+    "These results do not establish account/device orchestration, fingerprint-verification UI, native-client interoperability or production delivery.",
+    "No new process-crash, storage-eviction or confirmed OS-suspension evidence.",
+    "These hashes identify the tested build; later source changes require their own verification."
+  ]
+}

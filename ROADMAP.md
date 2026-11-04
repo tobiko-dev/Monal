@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and actual Chrome, plus 13 JS socket checks. Physical Safari transport verification, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and actual Chrome, plus 13 JS socket checks. The user also reports all 128 / 20 / 8 protocol and 18 WebSocket checks passing on physical iPad Safari, with matching hashes and zero remaining timers. A new local verified-recipient guard adds 24 checks passing natively and in Node WASM (44 adapter tests total); that increment is not yet deployed. Integrated Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -40,8 +40,8 @@ Build in this order; source and security requirements above apply throughout:
    code for 5july authentication, device publication, recipient bundles and
    reconnects, with a source/patch ledger. The [source-boundary investigation](browser/docs/nbxmpp-port.md)
    now includes the implemented runtime helpers and passing upstream protocol
-   tests. The WebSocket adapter now has controlled-peer checks; verify that
-   boundary in browsers, then integrate Gajim's device/trust orchestration.
+   tests. The protocol and controlled-peer WebSocket checks now pass in Chrome and
+   user-reported iPad Safari. Integrate Gajim's device/trust orchestration next.
 3. **Fingerprint verification:** expose real fingerprints and distinct
    unverified/changed/blocked states. Missing usable keys block every content
    send; no plaintext fallback. Revalidate queued work against current device
@@ -54,9 +54,10 @@ Build in this order; source and security requirements above apply throughout:
 Physical-device task completed: the user supplied all eight application
 identity-worker passes and all seven durable outbox passes from iPad Safari.
 [Reports and limits](browser/docs/evidence/safari-worker-outbox-user-reported.json).
-Those results remain scoped to their original build. The new offline protocol
-core has a separate Safari check; no repeat of the earlier worker/outbox
-procedure is required to report that new boundary.
+Those results remain scoped to their original build. The user has now also
+completed the newer protocol and controlled-peer WebSocket checks on Safari.
+[Protocol and transport report](browser/docs/evidence/safari-protocol-transport-user-reported.json).
+No repeat of these checks is currently requested.
 
 Queue acceptance for this increment: acknowledged enqueue survives reopening;
 failed/aborted preparation changes neither the saved session nor prepared
@@ -128,12 +129,15 @@ Implementation and limits: [storage design](browser/docs/storage.md), [actual li
 - [x] Package the pinned nbxmpp source and explicit runtime adapters; pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks natively and in WASM. Include real OMEMO XML exchange/restoration, malformed XML, SCRAM vectors, strict JID decoding and IQ cancellation. [Patch ledger and limits](browser/docs/nbxmpp-port.md).
 - [x] Retain all 50 JS and 28 WASM regression checks; reject altered protocol/test/dependency/source artifacts before execution/adaptation.
 - [x] Verify the new protocol core in actual Chrome 155 over owner-private HTTPS, including the 28-test crypto baseline; all counts and artifact hashes match. [Browser result](browser/docs/evidence/chrome-nbxmpp.json). Fresh source CI also passes.
-- [ ] Verify the new protocol core on physical iPad Safari using **Run protocol checks** at the private QA `/protocol` page; expect 128 upstream, 20 adapter and eight timer checks. Prior storage tests do not cover this increment.
+- [x] Verify the protocol core on physical iPad Safari (user-reported): 128 upstream, 20 adapter and eight timer checks pass, plus the 28-test crypto baseline; matching artifact hashes and zero remaining timers. [Evidence](browser/docs/evidence/safari-protocol-transport-user-reported.json).
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
+- [x] Add a local recipient guard over the actual Gajim store/OMEMO engine: require verified coverage for peer and own devices, bind confirmations to current fingerprints, reject partial encryption/device-ID collisions, and revalidate prepared plans. All 24 new cases pass natively and in WASM, alongside 128 upstream, 20 existing adapter and eight timer checks. The guard is not yet connected to discovery or dispatch. [Contract and source review](browser/docs/recipient-policy.md).
+- [ ] Adapt Gajim's own-device merge and bundle/session flow with commit-before-publication, persisted discovery (including devices without sessions), authenticated reply binding and stale-generation rejection.
+- [ ] Connect real fingerprint verification, the recipient guard, atomic XML outbox preparation and pre-dispatch checks under the account owner. Synthetic trust/discovery fixtures do not complete this integration.
 - [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
 - [x] Adapt Soup networking to browser WebSocket. Pass 18 Node WASM controlled-peer/configuration checks and 13 JS socket checks, including actual SCRAM/binding, bad input, backpressure, failure/reconnect, disposal and logging. [Boundary and evidence](browser/docs/transport.md). No real account used.
 - [x] Verify the new controlled-peer WSS checks in actual Chrome 155 over private HTTPS: all 18 pass with matching artifact hashes. [Raw result](browser/docs/evidence/chrome-transport.json). [Fresh source CI](https://github.com/tobiko-dev/Monal/actions/runs/41812411668) also passes.
-- [ ] Verify the controlled-peer WSS checks on physical iPad Safari: open the private QA `/transport` page, choose **Run connection checks**, and expect 18 passes. No account login or contact messaging.
+- [x] Verify the controlled-peer WSS checks on physical iPad Safari (user-reported): all 18 pass, with matching artifact hashes and zero remaining timers. [Evidence](browser/docs/evidence/safari-protocol-transport-user-reported.json). No account login or contact messaging.
 - [ ] Assess actual 5july endpoint capabilities and BOSH/XEP-0206 need before enabling account authentication.
 - [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
 - [ ] Enforce required OMEMO for every user-content send path and test at the transmitted-stanza boundary.

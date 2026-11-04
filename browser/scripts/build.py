@@ -183,7 +183,7 @@ def build(source_archive=None):
             "nbxmpp": PINS["nbxmpp"], "nbxmpp_patches": protocol_patches,
             "nbxmpp_excluded": sorted(NBXMPP_EXCLUDED), "precis_i18n": precis,
             "expected_protocol_upstream_tests": 128,
-            "expected_protocol_adaptation_tests": 20,
+            "expected_protocol_adaptation_tests": 44,
             "expected_protocol_async_checks": 8,
             "expected_transport_checks": 18,
         }

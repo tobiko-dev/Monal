@@ -32,7 +32,7 @@ The WASM runner also creates an identity through the application service, exchan
 
 It also runs seven [durable outbox checks](docs/outbox.md) with actual Gajim WASM crypto, including a forced late write abort, successful retry/decryption and reuse of committed ciphertext after a discarded reply. No network dispatcher is enabled.
 
-The protocol command must pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks. It exercises actual nbxmpp XML and encrypted round trips, SCRAM vectors, XML attack rejection, strict address decoding, client disposal and IQ cancellation. These offline checks do not configure a network transport. An optional output path writes the JSON report. Native comparison can use `scripts/test-protocol-native.py` in an environment with `omemo-dr 1.2.0` installed.
+The protocol command must pass 128 unchanged upstream tests, 44 adapter/security tests and eight timer checks. It exercises actual nbxmpp XML and encrypted round trips, SCRAM vectors, XML attack rejection, strict address decoding, client disposal and IQ cancellation. These offline checks do not configure a network transport. An optional output path writes the JSON report. Native comparison can use `scripts/test-protocol-native.py` in an environment with `omemo-dr 1.2.0` installed.
 
 The integrity command alters six generated test/adapter/dependency archives and the original nbxmpp source archive, confirms rejection at the corresponding loader/preparation boundary, and restores original bytes even if a check fails. Hash checks detect inconsistent artifacts; they do not protect against a compromised origin replacing both code and hashes.
 
@@ -52,7 +52,7 @@ test tabs are closed. This page never connects to XMPP or real contacts.
 
 **Test the durable send queue** runs the shared outbox checks with actual browser IndexedDB/Web Locks in a dedicated worker. It deletes its disposable database after completion. It reconstructs storage objects; a pass is not a process-crash or live-XMPP test.
 
-**Test the Gajim protocol core** runs the 28-test encryption baseline, then the same 128 upstream, 20 adapter and eight asynchronous protocol checks in a real browser worker. Its temporary identities are discarded when the worker finishes. Physical Safari verification for this new boundary is separate from the earlier worker/outbox passes.
+**Test the Gajim protocol core** runs the 28-test encryption baseline, then the same 128 upstream, 44 adapter and eight asynchronous protocol checks in a real browser worker. Its temporary identities are discarded when the worker finishes. The earlier 20-adapter-test build has user-reported Safari evidence. The 24 new recipient-policy checks are locally verified in native Python and WASM; they are not yet deployed or Safari-verified. See [the policy boundary](docs/recipient-policy.md).
 
 **WebSocket connection checks** uses the actual browser WebSocket and upstream nbxmpp against the private site’s scripted synthetic server. Expect 18 checks. It tests authentication, binding, IQ replies, close/reconnect, malformed inputs, rejected authentication, logging and bounds. It cannot sign into 5july or send contact messages. See [the transport boundary](docs/transport.md).
 

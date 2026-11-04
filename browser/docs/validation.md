@@ -304,6 +304,57 @@ and the final committed snapshot. Storage behavior was not changed.
 
 The [fresh browser-foundation CI run](https://github.com/tobiko-dev/Monal/actions/runs/41812411668) passes the source build, all 63 JS tests, the crypto/storage/outbox regressions, 128 / 20 / 8 protocol checks, altered-artifact rejection and the 18 real-TLS controlled-peer checks.
 
+## User-reported Safari protocol and transport results
+
+On 2026-11-04 the user supplied the requested physical iPad Safari 26.6 reports:
+**128 upstream / 20 adapter / eight asynchronous protocol checks**, the
+**28-test crypto baseline**, and **18 controlled-peer WebSocket checks** all
+passed. Both new reports show zero remaining timers. Protocol total time was
+4,547 ms; transport total time was 11,754 ms. Artifact hashes match the tested
+Chrome/Node build. [Structured report summary](evidence/safari-protocol-transport-user-reported.json).
+
+This completes the two Safari requests earlier in this record. These are
+user-supplied reports, not an independently controlled Safari run. The transport
+peer was the synthetic server; no 5july authentication or contact messaging
+occurred. Device publication, fingerprint verification, complete recipient
+coverage and native-client interoperability remain separate gates.
+
+## Local verified-recipient guard
+
+The subsequent recipient-policy increment adds **24 tests**, bringing the local
+protocol suite to **128 upstream / 44 adapter / eight asynchronous checks**.
+All pass on native Python 3.12 and Node-hosted WebAssembly with zero
+failures/errors/skips and no remaining timers.
+[Native result](evidence/native-recipient-policy.json),
+[WASM result](evidence/node-wasm-recipient-policy.json),
+[contract and source review](recipient-policy.md).
+
+These tests exercise actual Gajim sessions and nbxmpp OMEMO XML: all required
+peer/own devices can decrypt; a forced per-device encryption failure is blocked;
+retry from the original snapshot works; changed keys, stale confirmations,
+revoked trust, missing sessions and device-ID collisions cannot authorize a send.
+The guard is local only. Production discovery, verification UI, atomic real-XML
+outbox integration and dispatch remain pending.
+
+The existing **63 JS tests**, **28 crypto/storage tests**, storage/identity/
+lifecycle integrations, seven durable-outbox checks and **18 controlled-peer
+WebSocket checks** also pass on the new local build.
+[JS report](evidence/recipient-js-tests.txt),
+[crypto/integration report](evidence/node-wasm-recipient-crypto-regression.json),
+[transport regression](evidence/node-wasm-recipient-transport-regression.json).
+All six altered runtime archives and the altered nbxmpp source archive are
+rejected: [integrity check](evidence/recipient-integrity.txt).
+
+The new port archive SHA-256 is
+`9f14d07840e14ec5d33407567862d2baa23277034237ac91f9f9edc9d370d601`.
+The nbxmpp and crypto wheel hashes are unchanged. The QA site has not been
+redeployed for this increment. Earlier Chrome/Safari reports cover their
+recorded artifacts; they do not establish browser verification of this new guard.
+
+One local build completed packaging but failed during temporary-directory
+cleanup with `ENOTEMPTY`; an unchanged rerun exited successfully. No source or
+crypto changes were made to suppress the error.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.
@@ -312,6 +363,6 @@ The [fresh browser-foundation CI run](https://github.com/tobiko-dev/Monal/action
 
 ## Not implemented or proved
 
-The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. The nbxmpp protocol core and controlled-peer WSS adapter are implemented as recorded above. There is no fingerprint-verification UI, real-account authentication, 5july connection, Gajim device/trust orchestration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. The nbxmpp protocol core and controlled-peer WSS adapter are implemented as recorded above. A local recipient guard now exists, but there is no fingerprint-verification UI, real-account authentication, 5july connection, integrated Gajim device/trust orchestration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
-No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; recipient-policy revalidation and delivery reconciliation still precede any network send.
+No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; integrating the local recipient-policy revalidation and delivery reconciliation still precedes any network send.

@@ -7,7 +7,9 @@ adapters. Native Python, Node-hosted WebAssembly and actual Chrome each pass **1
 upstream tests, 20 adapter/security tests and eight asynchronous checks**.
 The checks exercise real OMEMO bundle/message XML and the unchanged Gajim
 encryption library, including a reply after session restoration, altered
-ciphertext rejection and a message addressed to another device.
+ciphertext rejection and a message addressed to another device. The subsequent
+local [recipient guard](recipient-policy.md) adds 24 checks (44 adapter tests
+total), verified natively and in Node WASM; that addition is not yet deployed.
 
 The subsequent [WebSocket increment](transport.md) adds an explicitly configured
 connection adapter. Unconfigured `Client.connect()` still fails before changing
@@ -112,8 +114,8 @@ References: [RFC 7395 §§3, 6](https://www.rfc-editor.org/rfc/rfc7395.html),
    operations explicitly. Run upstream JID, XML, OMEMO parsing and SCRAM vectors
    natively and in WASM, plus timer cancellation/ordering checks. Preserve the
    existing 28 WASM and 50 JS checks. **Implemented and passing natively, in
-   Node WASM and actual Chrome.** Physical Safari verification is pending. A successful
-   import alone is insufficient.
+   Node WASM, actual Chrome and a user-reported physical iPad Safari run.**
+   [Safari report](evidence/safari-protocol-transport-user-reported.json). A successful import alone is insufficient.
 2. **Implement and verify the WebSocket connection adapter.** Exercise actual
    nbxmpp client event flow against a controlled synthetic peer, including bad
    subprotocol, malformed/binary/oversized frames, failed connect, interrupted
@@ -136,10 +138,13 @@ References: [RFC 7395 §§3, 6](https://www.rfc-editor.org/rfc/rfc7395.html),
 Gajim's orchestrator is separately pinned at
 [`5a57abb2950886dd9cb8a73972ecc2dcc59f688a`](https://github.com/gajim/gajim/blob/5a57abb2950886dd9cb8a73972ecc2dcc59f688a/src/gajim/common/modules/omemo.py).
 Its native application/settings/event dependencies still need adaptation.
+The next local [recipient-policy increment](recipient-policy.md) adds strict
+coverage and current-fingerprint checks over the real store/session engine;
+discovery/publication and dispatch integration remain pending.
 Native support for blind trust is not permission to enable it in this project;
 the browser's explicit verification and required-OMEMO requirements remain.
 
 The offline port does not resolve 5july transport capabilities, BOSH need,
 live authentication, production trust policy or interoperability. The new
-private protocol-check page can verify this increment in Safari. Historical
-worker/outbox passes remain scoped to their original builds.
+private protocol-check page has a user-reported Safari pass for the recorded
+build. Historical worker/outbox passes remain scoped to their original builds.

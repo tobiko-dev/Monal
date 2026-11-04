@@ -60,8 +60,10 @@ See [generated patch](evidence/nbxmpp-transport.patch) and
 
 [Node TLS result](evidence/node-wasm-transport.json) reports all 18 Python checks.
 The same 18 checks also pass in actual Chrome 155 over private HTTPS, with matching
-artifact hashes: [browser result](evidence/chrome-transport.json). Neither is a
-physical Safari or real 5july interoperability pass. See [validation](validation.md).
+artifact hashes: [browser result](evidence/chrome-transport.json). The user also
+reports all 18 passing on physical iPad Safari with matching hashes and no
+remaining timers: [Safari summary](evidence/safari-protocol-transport-user-reported.json).
+These controlled-peer checks do not establish real 5july interoperability.
 
 The fixture accepts only `synthetic@example.invalid` with a public fixed test
 password. It recognizes only the scripted handshake, bind, ping and close
@@ -74,9 +76,9 @@ without turning certificate checks off.
 
 ## Remaining gates
 
-Run `/transport` on the private QA site in Safari. Also run the previously added
-offline `/protocol` page if it has not been checked there. Earlier iPad identity
-and outbox passes do not establish either new boundary.
+The user has completed both `/transport` and `/protocol` on iPad Safari.
+Their results are scoped to the hashes in the report; no repeat is requested
+for the already tested build.
 
 Next adapt Gajim's device/bundle/trust orchestration around the committed local
 identity. Required-OMEMO enforcement must cover all user-content paths before
