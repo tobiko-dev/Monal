@@ -24,9 +24,11 @@ node scripts/test-wasm.mjs
 
 The first build downloads the pinned Pyodide cross-build environment and Emscripten SDK. It verifies the source archive, compiles a fresh unmodified source tree, checks the extension's WebAssembly header, verifies runtime assets and packages, and produces `dist/`. Compiler output is in `.build/compiler.log`. To reuse a downloaded source archive, pass `--source-archive /path/to/omemo_dr-1.2.0.tar.gz`; the same hash check still applies.
 
-The Node WASM command must exit successfully with `platform: emscripten`, `tests: 28`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter and a lifecycle-fixture integration check for reconstructed fixtures, lock contention and committed handoff. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 30 storage/worker/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
+The Node WASM command must exit successfully with `platform: emscripten`, `tests: 28`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter and a lifecycle-fixture integration check for reconstructed fixtures, lock contention and committed handoff. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 50 storage/worker/outbox/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
 
 The WASM runner also creates an identity through the application service, exchanges four synthetic encrypted messages, and reopens its saved state. An optional output path after `test-wasm.mjs` writes clean JSON separately from runtime progress. Incomplete execution must exit with failure.
+
+It also runs seven [durable outbox checks](docs/outbox.md) with actual Gajim WASM crypto, including a forced late write abort, successful retry/decryption and reuse of committed ciphertext after a discarded reply. No network dispatcher is enabled.
 
 The integrity command separately alters the generated test and adapter archives, confirms the runner rejects each before execution, and restores the original bytes even if the check fails.
 
@@ -43,6 +45,8 @@ Its test databases are removed with **Delete this synthetic test** after other
 test tabs are closed. This page never connects to XMPP or real contacts.
 
 **Test the application identity worker** runs an automated check of actual module workers, including interruption before commit and a lost reply after commit. The [worker API](docs/identity-worker.md) exposes public identity details only. Its disposable test data is separate from the existing lifecycle test.
+
+**Test the durable send queue** runs the shared outbox checks with actual browser IndexedDB/Web Locks in a dedicated worker. It deletes its disposable database after completion. It reconstructs storage objects; a pass is not a process-crash or live-XMPP test.
 
 ## Source and licenses
 

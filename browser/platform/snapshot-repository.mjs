@@ -1,4 +1,6 @@
 // GPL-3.0-only. This stores private state locally; it is NOT encryption at rest.
+import { validEntries } from "./outbox-model.mjs";
+const DATABASE_VERSION = 2;
 const FORMAT = 1;
 const LIMIT = 32 * 1024 * 1024;
 
@@ -21,7 +23,8 @@ const sameIdentity = (a, b) => a.device_id === b.device_id && a.fingerprint === 
  * The callback must use a fresh disposable crypto working copy, return its full
  * snapshot, and perform no network I/O. Results are exposed only after IDB's
  * transaction-complete event. A failed operation is never retried implicitly.
- * M4 must persist prepared ciphertext/outbox data atomically before any send.
+ * updateOutbox commits prepared ciphertext and session changes together. A
+ * network dispatcher still needs recipient-policy and delivery reconciliation.
  */
 export class SnapshotRepository {
   constructor({ indexedDB = globalThis.indexedDB, locks = globalThis.navigator?.locks,
@@ -71,8 +74,15 @@ export class SnapshotRepository {
       let rejected = false;
       const stop = () => { rejected = true; reject(new StorageFailure("STORAGE_UNAVAILABLE")); };
       let request;
-      try { request = this.idb.open(this.database, FORMAT); } catch { stop(); return; }
-      request.onupgradeneeded = () => request.result.createObjectStore("snapshots", { keyPath: "account" });
+      try { request = this.idb.open(this.database, DATABASE_VERSION); } catch { stop(); return; }
+      request.onupgradeneeded = () => {
+        // Upgrade in place: never rewrite or delete existing identity records.
+        for (const name of ["snapshots", "outbox"]) {
+          if (!request.result.objectStoreNames.contains(name)) {
+            request.result.createObjectStore(name, { keyPath: "account" });
+          }
+        }
+      };
       request.onerror = stop;
       request.onblocked = stop;
       request.onsuccess = () => {
@@ -84,13 +94,14 @@ export class SnapshotRepository {
     });
   }
 
-  #read(db, account) {
+  #read(db, account, withOutbox = false) {
     return new Promise((resolve, reject) => {
       let transaction;
       try {
-        transaction = db.transaction("snapshots", "readonly");
+        transaction = db.transaction(withOutbox ? ["snapshots", "outbox"] : "snapshots", "readonly");
         const request = transaction.objectStore("snapshots").get(account);
-        transaction.oncomplete = () => resolve(request.result);
+        const queue = withOutbox ? transaction.objectStore("outbox").get(account) : null;
+        transaction.oncomplete = () => resolve(withOutbox ? { record: request.result, queue: queue.result } : request.result);
         transaction.onabort = () => reject(new StorageFailure("STORAGE_READ_FAILED"));
         transaction.onerror = () => {}; // The abort event is the final outcome.
       } catch { reject(new StorageFailure("STORAGE_READ_FAILED")); }
@@ -103,16 +114,19 @@ export class SnapshotRepository {
         !Number.isSafeInteger(record.revision) || record.revision < 1 ||
         !identityOK(record.identity) || !(record.snapshot instanceof Uint8Array) ||
         !record.snapshot.byteLength || record.snapshot.byteLength > LIMIT ||
+        (record.outbox_revision !== undefined && (!Number.isSafeInteger(record.outbox_revision) ||
+          record.outbox_revision < 1 || !/^[a-f0-9]{64}$/.test(record.outbox_sha256))) ||
+        (record.outbox_revision === undefined && record.outbox_sha256 !== undefined) ||
         await this.#hash(record.snapshot) !== record.sha256) fail("CORRUPT_STATE");
   }
 
-  #commit(db, previous, next) {
+  #commit(db, previous, next, outbox) {
     return new Promise((resolve, reject) => {
       let transaction;
       let code = "STORAGE_WRITE_FAILED";
       try {
         // Strict is a browser durability hint, not a power-loss guarantee.
-        transaction = db.transaction("snapshots", "readwrite", { durability: "strict" });
+        transaction = db.transaction(outbox ? ["snapshots", "outbox"] : "snapshots", "readwrite", { durability: "strict" });
         transaction.oncomplete = () => resolve();
         transaction.onabort = () => reject(new StorageFailure(code));
         transaction.onerror = () => {};
@@ -121,14 +135,31 @@ export class SnapshotRepository {
         request.onsuccess = () => {
           const current = request.result;
           if (previous ? !current || current.revision !== previous.revision ||
-              current.sha256 !== previous.sha256 : current !== undefined) {
+              current.sha256 !== previous.sha256 ||
+              current.outbox_revision !== previous.outbox_revision ||
+              current.outbox_sha256 !== previous.outbox_sha256 : current !== undefined) {
             code = "STALE_STATE";
             transaction.abort();
             return;
           }
-          try { store.put(next); } catch {
-            transaction.abort();
-          }
+          const put = () => {
+            try {
+              store.put(next);
+              if (outbox) transaction.objectStore("outbox").put(outbox.next);
+            } catch { transaction.abort(); }
+          };
+          if (!outbox) { put(); return; }
+          const queued = transaction.objectStore("outbox").get(next.account);
+          queued.onsuccess = () => {
+            const currentQueue = queued.result, expected = outbox.previous;
+            if (expected ? !currentQueue || currentQueue.revision !== expected.revision ||
+                currentQueue.sha256 !== expected.sha256 : currentQueue !== undefined) {
+              code = "STALE_STATE";
+              transaction.abort();
+              return;
+            }
+            put();
+          };
         };
       } catch {
         if (transaction) transaction.abort();
@@ -164,6 +195,79 @@ export class SnapshotRepository {
     return this.#change(account, false, operation, options);
   }
 
+  async #validateQueue(queue, account, record) {
+    if (queue === undefined) {
+      if (record.outbox_revision !== undefined) fail("CORRUPT_OUTBOX");
+      return;
+    }
+    if (!queue || queue.format !== FORMAT || queue.account !== account ||
+        !Number.isSafeInteger(queue.revision) || queue.revision < 1 ||
+        queue.revision !== record.outbox_revision || queue.sha256 !== record.outbox_sha256 ||
+        !validEntries(queue.entries) ||
+        await this.#hash(new TextEncoder().encode(JSON.stringify(queue.entries))) !== queue.sha256) {
+      fail("CORRUPT_OUTBOX");
+    }
+  }
+
+  // Internal callbacks receive disposable copies, never a live IDB record.
+  async readOutbox(account, operation, options) {
+    return this.#outbox(account, operation, false, options);
+  }
+
+  async updateOutbox(account, operation, options) {
+    return this.#outbox(account, operation, true, options);
+  }
+
+  async #outbox(account, operation, writing, options) {
+    return this.#exclusive(account, async () => {
+      const db = await this.#open();
+      try {
+        const { record: previous, queue } = await this.#read(db, account, true);
+        await this.#validate(previous, account);
+        if (!previous) fail("MISSING_IDENTITY");
+        await this.#validateQueue(queue, account, previous);
+        const value = await operation({ snapshot: previous.snapshot.slice(),
+          identity: { ...previous.identity }, revision: previous.revision,
+          entries: structuredClone(queue?.entries ?? []) });
+        if (!writing) return value;
+        if (value?.unchanged === true) return value.result;
+        if (!value || !validEntries(value.entries)) fail("INVALID_OUTBOX_CHANGE");
+        // The session snapshot is optional for enqueue/blocked status updates,
+        // but a supplied snapshot must be valid and preserve the identity.
+        const next = Object.hasOwn(value, "snapshot") ? await this.#next(account, previous, value) : { ...previous };
+        const nextQueue = { format: FORMAT, account, revision: (queue?.revision ?? 0) + 1,
+          entries: structuredClone(value.entries) };
+        if (!Number.isSafeInteger(nextQueue.revision)) fail("INVALID_REVISION");
+        nextQueue.sha256 = await this.#hash(new TextEncoder().encode(JSON.stringify(nextQueue.entries)));
+        // Bind queue presence/version to the identity record. A deleted or
+        // rolled-back queue must not silently look like an empty first queue.
+        next.outbox_revision = nextQueue.revision;
+        next.outbox_sha256 = nextQueue.sha256;
+        await this.#commit(db, previous, next, { previous: queue, next: nextQueue });
+        return value.result; // Neither result nor ciphertext escapes before commit.
+      } finally { db.close(); }
+    }, options);
+  }
+
+  async #next(account, previous, change) {
+    if (!change || !(change.snapshot instanceof Uint8Array) ||
+        !change.snapshot.byteLength || change.snapshot.byteLength > LIMIT ||
+        !identityOK(change.identity)) fail("INVALID_CHANGE");
+    if (previous && !sameIdentity(previous.identity, change.identity)) fail("IDENTITY_CHANGED");
+    const next = {
+      format: FORMAT, account, revision: (previous?.revision ?? 0) + 1,
+      identity: { device_id: change.identity.device_id, fingerprint: change.identity.fingerprint },
+      snapshot: change.snapshot.slice(),
+    };
+    if (previous?.outbox_revision !== undefined) {
+      next.outbox_revision = previous.outbox_revision;
+      next.outbox_sha256 = previous.outbox_sha256;
+    }
+    if (!Number.isSafeInteger(next.revision)) fail("INVALID_REVISION");
+    next.sha256 = await this.#hash(next.snapshot);
+    return next;
+  }
+
   async #change(account, creating, operation, options) {
     return this.#exclusive(account, async () => {
       const db = await this.#open();
@@ -176,17 +280,7 @@ export class SnapshotRepository {
           snapshot: previous.snapshot.slice(), identity: { ...previous.identity },
           revision: previous.revision,
         } : null);
-        if (!change || !(change.snapshot instanceof Uint8Array) ||
-            !change.snapshot.byteLength || change.snapshot.byteLength > LIMIT ||
-            !identityOK(change.identity)) fail("INVALID_CHANGE");
-        if (previous && !sameIdentity(previous.identity, change.identity)) fail("IDENTITY_CHANGED");
-        const next = {
-          format: FORMAT, account, revision: (previous?.revision ?? 0) + 1,
-          identity: { device_id: change.identity.device_id, fingerprint: change.identity.fingerprint },
-          snapshot: change.snapshot.slice(),
-        };
-        if (!Number.isSafeInteger(next.revision)) fail("INVALID_REVISION");
-        next.sha256 = await this.#hash(next.snapshot);
+        const next = await this.#next(account, previous, change);
         await this.#commit(db, previous, next);
         return change.result;
       } finally { db.close(); }

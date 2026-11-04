@@ -124,6 +124,31 @@ for the changed code.
 
 ![Actual Chrome reports eight application identity worker checks passed](evidence/chrome-identity-worker-pass.jpg)
 
+## Durable outbox increment
+
+The [outbox storage/service boundary](outbox.md) adds stable queued intent,
+explicit blocked preparation/retry, conversation ordering and atomic
+ciphertext/session commits. All **50 JS tests** pass (20 new outbox checks plus
+the existing 30). These use simulated IndexedDB and Node Web Locks.
+
+The unchanged **28 WASM tests** and earlier integration fixtures still pass.
+Seven new shared integration checks run actual Gajim/omemo-dr encryption,
+abort a transaction after its outbox write, verify that both the session and
+queue rolled back, retry and decrypt, and reconcile a discarded successful
+reply without repeating encryption. Four committed synthetic messages decrypt;
+one preparation is deliberately discarded. [Raw Node evidence](evidence/node-wasm-outbox.json).
+
+IndexedDB version 2 adds the queue store in place. A v1 fixture preserves its
+identity/revision during the simulated upgrade, and an older v1-only writer
+cannot reopen the upgraded database. The crypto wheel and Python adapter
+archive hashes are unchanged. The synthetic fixture archive adds variable
+test text; this does not alter the upstream crypto or production Python code.
+
+Actual-browser evidence for this increment is recorded separately after
+deployment. Object reconstruction and simulated lost replies are not OS crash
+tests. The new queue is not yet bound to production recipient policy, a page
+messaging worker, a composer or a network dispatcher.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.
@@ -132,6 +157,6 @@ for the changed code.
 
 ## Not implemented or proved
 
-The snapshot store, per-operation concurrency adapter and application identity worker are implemented and tested as described above. The demonstrated Chrome checks do not complete the physical Safari gates or the messaging coordinator. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, durable outbox, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above. The demonstrated Chrome checks do not complete the physical Safari gates or the messaging coordinator. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
-No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes are not encrypted at rest by this increment. Prepared ciphertext and ratchet state still need a shared durable outbox transaction before a network send is implemented.
+No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; recipient-policy revalidation and delivery reconciliation still precede any network send.

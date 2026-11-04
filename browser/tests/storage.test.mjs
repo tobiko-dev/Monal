@@ -23,7 +23,7 @@ function fixture() {
 
 async function rawChange(f, change) {
   const db = await new Promise((resolve, reject) => {
-    const request = f.indexedDB.open(f.database, 1);
+    const request = f.indexedDB.open(f.database);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });

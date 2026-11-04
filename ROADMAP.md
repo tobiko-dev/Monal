@@ -26,6 +26,39 @@ Reusing `omemo-dr` alone is an encryption experiment, not a completed Gajim port
 
 Checked means the stated evidence exists, not that the whole milestone is complete.
 
+## Next usable milestone — one real encrypted conversation
+
+Build in this order; source and security requirements above apply throughout:
+
+1. **Durable send queue (current increment):** persist queued text before the
+   composer can clear; atomically save prepared ciphertext and its session
+   update. Preserve pending/blocked work across reloads, reject conflicting
+   reuse of a message ID, and retry preparation without duplicating committed
+   ciphertext. First implement and test the local storage/service boundary;
+   connect the composer and network dispatcher only after their own gates pass.
+2. **Gajim/nbxmpp connection and device management:** adapt the actual upstream
+   code for 5july authentication, device publication, recipient bundles and
+   reconnects, with a source/patch ledger.
+3. **Fingerprint verification:** expose real fingerprints and distinct
+   unverified/changed/blocked states. Missing usable keys block every content
+   send; no plaintext fallback. Revalidate queued work against current device
+   trust before transmission.
+4. **Live interoperability:** exchange encrypted text in both directions with
+   native Monal/Gajim using Notes to self or the designated npc account only.
+5. **Conversation interface:** build the agreed bubbles, receipts, history,
+   selection and image behavior around the verified messaging path.
+
+Physical-device task: run the eight application identity-worker checks in
+iPad Safari. Queue development can proceed while this result is pending; a
+Chrome pass does not complete the iPad gate.
+
+Queue acceptance for this increment: acknowledged enqueue survives reopening;
+failed/aborted preparation changes neither the saved session nor prepared
+payload; committed preparation survives a lost reply and is not repeated;
+competing operations retain ordering and account isolation. Prepared means
+locally encrypted and saved, not sent, delivered or read. Network delivery
+reconciliation and wire-level required-OMEMO checks remain later gates.
+
 ### M0 — Source baseline: complete
 
 - [x] Review pinned Monal, Gajim and nbxmpp source paths; verify 16 retrieved files against their Git blob hashes.
@@ -81,7 +114,7 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 
 Exit: persistence/concurrency tests pass, including physical Safari lifecycle tests.
 
-Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md). The test harness uses separate workers/runtimes and real browser locks. There is no durable outbox yet; this storage API must not transmit user messages before M4's atomic session/ciphertext commit is implemented.
+Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md), [outbox boundary](browser/docs/outbox.md). The test harness uses separate workers/runtimes and real browser locks. Atomic outbox storage is implemented; it does not authorize network transmission before recipient-policy and dispatcher integration.
 
 ### M3 — Gajim protocol integration and 5july: pending
 
@@ -93,9 +126,14 @@ Implementation and limits: [storage design](browser/docs/storage.md), [actual li
 
 Exit: real interoperability evidence, no plaintext fallback and understandable diagnostics. Shared namespaces alone are not proof.
 
-### M4 — Reliable conversations: pending
+### M4 — Reliable conversations: in progress
 
-- [ ] Durable outbox: clear composer after enqueue succeeds; compact pending/sent/read/failed states and deliberate retry.
+- [x] Persist queued intent with stable IDs, conversation order, account isolation and blocked preparation/retry states.
+- [x] Commit prepared ciphertext and session changes together; verify rollback after a late abort and reuse after a lost reply using actual Gajim WASM crypto.
+- [x] Preserve v1 identity data when adding the outbox store; reject corrupt, missing or stale initialized queue records.
+- [ ] Verify the outbox on physical iPad Safari, including interrupted active work and storage failures.
+- [ ] Connect the production messaging worker, recipient-policy checks and dispatcher; reconcile uncertain network delivery without blind resend.
+- [ ] Connect the composer: clear after enqueue succeeds; compact pending/sent/read/failed states and deliberate retry.
 - [ ] Reconcile uncertain delivery by stable message ID. Tightly spaced double checks require an actual read indication.
 - [ ] Archive history, carbons and reconnect preserve correct sender/direction through chat switches.
 - [ ] Explain old ciphertext that omitted this device separately from new-message failures.

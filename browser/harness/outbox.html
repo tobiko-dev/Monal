@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Durable outbox checks</title>
+<link rel="stylesheet" href="style.css">
+<main>
+  <h1>Durable outbox checks</h1>
+  <p>Checks queued text and atomic ciphertext/session storage with Gajim’s actual encryption library and disposable identities. No sign-in or contact messaging.</p>
+  <p>The test deliberately aborts a write after encryption, retries it, and checks that the saved messages decrypt. Prepared means encrypted and saved locally; it does not mean sent or read.</p>
+  <button id="run" type="button">Run outbox checks</button>
+  <p id="status" role="status" aria-live="polite">Ready.</p>
+  <pre id="report" aria-label="Outbox check results"></pre>
+  <p>Test data is deleted after completion. These checks reconstruct storage objects; they do not simulate an iPad process crash or verify a live XMPP connection.</p>
+  <p><a href="index.html">Encryption baseline</a> · <a href="identity-worker.html">Application identity worker checks</a></p>
+</main>
+<script type="module" src="outbox-main.mjs"></script>
+</html>

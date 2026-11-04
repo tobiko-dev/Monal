@@ -3,10 +3,11 @@ import { fileURLToPath } from "node:url";
 import { loadPyodide } from "../dist/runtime/pyodide.mjs";
 import { runChecks } from "../dist/checks.mjs";
 import { runStorageChecks } from "../dist/storage-checks.mjs";
-import { IDBFactory } from "fake-indexeddb";
+import { IDBFactory, IDBObjectStore } from "fake-indexeddb";
 import { locks } from "node:worker_threads";
 import { checkLifecycleFixture } from "../tests/lifecycle-fixture-checks.mjs";
 import { checkIdentityIntegration } from "../tests/identity-integration-checks.mjs";
+import { runOutboxChecks } from "../dist/outbox-checks.mjs";
 
 let completed = false;
 process.on("exit", () => { if (!completed) process.exitCode = 1; });
@@ -24,6 +25,11 @@ if (result.passed) {
   result.passed &&= result.lifecycle_fixture.passed;
   result.identity_service = await checkIdentityIntegration(pyodide, { indexedDB: new IDBFactory(), locks });
   result.passed &&= result.identity_service.passed;
+  result.outbox = await runOutboxChecks(pyodide, {
+    indexedDB: new IDBFactory(), locks, objectStorePrototype: IDBObjectStore.prototype,
+  });
+  result.outbox.environment = "Node WASM with simulated IndexedDB and Node Web Locks; not a browser pass";
+  result.passed &&= result.outbox.passed;
 }
 const report = JSON.stringify({ ...result, startup_ms, host: `Node ${process.version}` }, null, 2);
 if (reportPath) await writeFile(reportPath, report + "\n");

@@ -58,7 +58,7 @@ def step(request_json):
                 manager.update_devicelist(peer, [bundle.device_id])
                 manager.build_session(peer, bundle)
                 store.set_trust(peer, IdentityKey(bundle.ik), OMEMOTrust.VERIFIED)
-            message = manager.encrypt(peer, "Synthetic persisted message", groupchat=False)
+            message = manager.encrypt(peer, request.get("text", "Synthetic persisted message"), groupchat=False)
             if message is None:
                 raise ValueError("Fixture could not encrypt")
             result = encode(asdict(message))
@@ -66,7 +66,7 @@ def step(request_json):
             message = decode(request["message"])
             message["keys"] = {int(key): tuple(value) for key, value in message["keys"].items()}
             plaintext, _, _ = manager.decrypt_message(OMEMOMessage(**message), request["peer"])
-            if plaintext != "Synthetic persisted message":
+            if plaintext != request.get("text", "Synthetic persisted message"):
                 raise ValueError("Fixture plaintext mismatch")
             # The harness supplies the known test peer's public identity.
             peer_bundle = OMEMOBundle(**decode(request["bundle"]))

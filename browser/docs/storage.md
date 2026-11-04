@@ -64,10 +64,11 @@ unchanged; outbound device selection consults stored trust. The application
 must still enforce all required peer/device and changed-key conditions at the
 stanza boundary. No user content is sent by this increment.
 
-This snapshot record does not yet contain a durable outbox. It must not become
-a send API until outgoing intent, stable IDs and prepared ciphertext are
-committed atomically with ratchet changes. A callback result alone cannot
-recover a crash between commit and transmission.
+The [outbox increment](outbox.md) adds a separate queue store in the same
+database, with atomic snapshot/queue commits and a version/checksum reference
+in the identity record. Prepared work and stable intent survive reopening.
+This remains a local API: a dispatcher must revalidate recipient policy and
+reconcile uncertain delivery before transmitting or retrying network work.
 
 ## Evidence and remaining gates
 
