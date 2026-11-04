@@ -99,3 +99,8 @@ without re-encrypting, and continue in both directions. Four committed messages
 decrypt, including the setup message and reply; one preparation is deliberately
 discarded. This does not simulate a process crash. Results are recorded in
 [validation](validation.md), distinguishing Node and actual-browser evidence.
+
+All seven shared checks passed in actual Chrome 155 on 2026-11-04, along with
+the eight identity-worker regressions and a saved-session upgrade from the
+previous deployed schema. [Raw results](evidence/chrome-outbox.json). Physical
+iPad verification of this queue remains pending.

@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: the application identity worker passes eight actual Chrome checks, and a saved session survives the adapter upgrade. User-reported physical iPad Safari runs pass the earlier encryption/storage baseline and recorded lifecycle checks. The new worker's iPad checks, messaging coordinator and usable chat application remain pending.
+Updated: 2026-11-04. Status: the local outbox passes seven actual Chrome checks; eight identity-worker checks also pass with the new database schema. A saved session survives the upgrade. Physical iPad checks for these increments, Gajim/nbxmpp integration and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -30,13 +30,13 @@ Checked means the stated evidence exists, not that the whole milestone is comple
 
 Build in this order; source and security requirements above apply throughout:
 
-1. **Durable send queue (current increment):** persist queued text before the
+1. **Durable send queue (local storage/service implemented):** persist queued text before the
    composer can clear; atomically save prepared ciphertext and its session
    update. Preserve pending/blocked work across reloads, reject conflicting
    reuse of a message ID, and retry preparation without duplicating committed
    ciphertext. First implement and test the local storage/service boundary;
    connect the composer and network dispatcher only after their own gates pass.
-2. **Gajim/nbxmpp connection and device management:** adapt the actual upstream
+2. **Gajim/nbxmpp connection and device management (next development):** adapt the actual upstream
    code for 5july authentication, device publication, recipient bundles and
    reconnects, with a source/patch ledger.
 3. **Fingerprint verification:** expose real fingerprints and distinct
@@ -48,9 +48,9 @@ Build in this order; source and security requirements above apply throughout:
 5. **Conversation interface:** build the agreed bubbles, receipts, history,
    selection and image behavior around the verified messaging path.
 
-Physical-device task: run the eight application identity-worker checks in
-iPad Safari. Queue development can proceed while this result is pending; a
-Chrome pass does not complete the iPad gate.
+Physical-device task: in iPad Safari, run the eight application identity-worker
+checks and the seven durable outbox checks. Source integration can proceed
+while these results are pending; a Chrome pass does not complete the iPad gate.
 
 Queue acceptance for this increment: acknowledged enqueue survives reopening;
 failed/aborted preparation changes neither the saved session nor prepared
@@ -131,6 +131,7 @@ Exit: real interoperability evidence, no plaintext fallback and understandable d
 - [x] Persist queued intent with stable IDs, conversation order, account isolation and blocked preparation/retry states.
 - [x] Commit prepared ciphertext and session changes together; verify rollback after a late abort and reuse after a lost reply using actual Gajim WASM crypto.
 - [x] Preserve v1 identity data when adding the outbox store; reject corrupt, missing or stale initialized queue records.
+- [x] Pass seven outbox checks and eight identity-worker regressions in actual Chrome; preserve identity and encrypted continuation across the database upgrade. [Evidence](browser/docs/evidence/chrome-outbox.json).
 - [ ] Verify the outbox on physical iPad Safari, including interrupted active work and storage failures.
 - [ ] Connect the production messaging worker, recipient-policy checks and dispatcher; reconcile uncertain network delivery without blind resend.
 - [ ] Connect the composer: clear after enqueue succeeds; compact pending/sent/read/failed states and deliberate retry.

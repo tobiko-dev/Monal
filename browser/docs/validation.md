@@ -144,10 +144,26 @@ cannot reopen the upgraded database. The crypto wheel and Python adapter
 archive hashes are unchanged. The synthetic fixture archive adds variable
 test text; this does not alter the upstream crypto or production Python code.
 
-Actual-browser evidence for this increment is recorded separately after
-deployment. Object reconstruction and simulated lost replies are not OS crash
-tests. The new queue is not yet bound to production recipient policy, a page
-messaging worker, a composer or a network dispatcher.
+Source `bb54a29edd96a8f7b0d134335020411f061a2d59`, deployed as private QA source
+`17aa76af3ab22236205661c94514d5fb5bc6c384`, passes **seven outbox checks in actual
+Chrome 155** with real IndexedDB/Web Locks in a dedicated worker. The transaction
+abort is injected after the native outbox write succeeds. Its rollback/retry,
+decryption and ciphertext-reuse assertions pass. The **eight application identity
+worker checks** also pass with database version 2, including termination and
+queued ownership cases. [Raw browser evidence](evidence/chrome-outbox.json).
+
+A fixture created by the previous v1-schema deployment was reloaded after
+deployment. Inspection restored Alice/Bob revisions 3/3; two encrypted exchanges
+continued to 5/5 with unchanged identities. All completed synthetic databases
+were deleted. The same evidence file retains the before/after reports.
+
+The [source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41800990712)
+passed. Object reconstruction and discarded replies in the outbox fixture are
+not OS crash tests. Physical iPad outbox verification remains pending. The new
+queue is not yet bound to production recipient policy, a page messaging worker,
+a composer or a network dispatcher.
+
+![Actual Chrome reports seven durable outbox checks passed](evidence/chrome-outbox-pass.jpg)
 
 ## Build issues resolved
 

@@ -1,0 +1,164 @@
+{
+  "observed_at": "2026-11-04",
+  "source_commit": "bb54a29edd96a8f7b0d134335020411f061a2d59",
+  "qa_source_commit": "17aa76af3ab22236205661c94514d5fb5bc6c384",
+  "result": {
+    "passed": true,
+    "baseline_tests": 28,
+    "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+    "port_sha256": "6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9",
+    "outbox": {
+      "passed": true,
+      "checks": [
+        {
+          "name": "queued text survives reconstruction without advancing the crypto session",
+          "passed": true
+        },
+        {
+          "name": "stable IDs deduplicate repeated intent and reject conflicting reuse",
+          "passed": true
+        },
+        {
+          "name": "conversation ordering and account isolation are preserved",
+          "passed": true
+        },
+        {
+          "name": "abort after the outbox write rolls back ciphertext and the actual Gajim session together",
+          "passed": true
+        },
+        {
+          "name": "deliberate retry after rollback produces a decryptable committed message",
+          "passed": true
+        },
+        {
+          "name": "lost-reply reconciliation reuses the identical ciphertext without advancing the ratchet",
+          "passed": true
+        },
+        {
+          "name": "bidirectional encrypted continuation preserves identity and prepared queue entries",
+          "passed": true
+        }
+      ],
+      "encrypted_exchanges": 4,
+      "discarded_preparations": 1,
+      "identity_preserved": true,
+      "format": "Test-only JSON OMEMO payload; not an XMPP stanza or production dispatcher"
+    },
+    "environment": "Actual browser worker, IndexedDB, Web Locks and unchanged Gajim OMEMO library",
+    "elapsed_ms": 5230,
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+  },
+  "identity_worker_regression": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "missing state does not create keys",
+        "passed": true
+      },
+      {
+        "name": "existing identity cannot be replaced",
+        "passed": true
+      },
+      {
+        "name": "queued reads preserve identity and revision",
+        "passed": true
+      },
+      {
+        "name": "fresh application worker restores the same identity",
+        "passed": true
+      },
+      {
+        "name": "queued worker reads committed creation",
+        "passed": true,
+        "queue": {
+          "held": 1,
+          "pending": 1
+        }
+      },
+      {
+        "name": "terminated owner leaves no partial identity and releases lock",
+        "passed": true,
+        "queue": {
+          "held": 1,
+          "pending": 1
+        }
+      },
+      {
+        "name": "explicit creation can proceed after interrupted first provisioning",
+        "passed": true
+      },
+      {
+        "name": "lost acknowledgement recovers saved identity without reprovisioning",
+        "passed": true
+      }
+    ],
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "environment": "Actual browser module workers, IndexedDB, Web Locks and Gajim WASM identity bridge",
+    "elapsed_ms": 24834
+  },
+  "database_upgrade": {
+    "procedure": "Created a synthetic lifecycle fixture in the v1 database build, deployed the outbox build, reloaded the same page, inspected and resumed encrypted exchange.",
+    "before": {
+      "run": "da3b5881-456b-4410-bf70-af171aab2bf5",
+      "events": [
+        {
+          "type": "runtime",
+          "tests": 28,
+          "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+          "port_sha256": "6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9",
+          "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        },
+        {
+          "type": "result",
+          "action": "create",
+          "run": "da3b5881-456b-4410-bf70-af171aab2bf5",
+          "identity_preserved": true,
+          "revisions": {
+            "alice": 3,
+            "bob": 3
+          },
+          "created": true,
+          "encrypted_exchanges": 2
+        }
+      ]
+    },
+    "after": {
+      "run": "da3b5881-456b-4410-bf70-af171aab2bf5",
+      "events": [
+        {
+          "type": "runtime",
+          "tests": 28,
+          "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+          "port_sha256": "6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9",
+          "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+        },
+        {
+          "type": "result",
+          "action": "inspect",
+          "run": "da3b5881-456b-4410-bf70-af171aab2bf5",
+          "identity_preserved": true,
+          "revisions": {
+            "alice": 3,
+            "bob": 3
+          }
+        },
+        {
+          "type": "result",
+          "action": "exchange",
+          "run": "da3b5881-456b-4410-bf70-af171aab2bf5",
+          "identity_preserved": true,
+          "revisions": {
+            "alice": 5,
+            "bob": 5
+          },
+          "before": {
+            "alice": 3,
+            "bob": 3
+          },
+          "encrypted_exchanges": 2,
+          "passed": true
+        }
+      ]
+    }
+  }
+}
