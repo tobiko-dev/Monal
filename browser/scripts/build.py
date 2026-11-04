@@ -19,6 +19,8 @@ import tempfile
 import urllib.request
 import zipfile
 from prepare_port import files as port_files
+from prepare_nbxmpp import prepare as prepare_nbxmpp
+from prepare_nbxmpp import EXCLUDED as NBXMPP_EXCLUDED
 
 ROOT = Path(__file__).resolve().parents[1]
 PINS = json.loads((ROOT / "versions.json").read_text())
@@ -129,12 +131,28 @@ def build(source_archive=None):
             for path in sorted((ROOT / "tests").glob("*.py")):
                 add_zip(z, "port_tests/" + path.name, path.read_bytes())
 
+        protocol_files, protocol_patches, protocol_diff, protocol_source = prepare_nbxmpp()
+        with zipfile.ZipFile(stage / "nbxmpp.zip", "w") as z:
+            for name, data in sorted(protocol_files.items()):
+                add_zip(z, name, data)
+        with zipfile.ZipFile(stage / "protocol-checks.zip", "w") as z:
+            for name, data in sorted(protocol_source.items()):
+                if name.startswith("test/"):
+                    add_zip(z, name, data)
+            for path in sorted((ROOT / "protocol-tests").glob("*.py")):
+                add_zip(z, "browser_protocol_tests/" + path.name, path.read_bytes())
+        shutil.copy2(ROOT / "vendor/nbxmpp" / PINS["nbxmpp"]["archive"], stage / "source" / PINS["nbxmpp"]["archive"])
+        (stage / "source/nbxmpp-browser.patch").write_text(protocol_diff)
+        (stage / "licenses/nbxmpp-COPYING.txt").write_bytes(protocol_source["COPYING"])
+        precis = PINS["precis_i18n"]
+        (stage / precis["filename"]).write_bytes(fetch(precis["url"], precis["sha256"], WORK / "downloads" / precis["filename"]))
+
         runtime = Path(config(pyodide, "dist_dir"))
         for name, expected in PINS["runtime_assets"].items():
             data = verify((runtime / name).read_bytes(), expected, name)
             (stage / "runtime" / name).write_bytes(data)
         lock = json.loads((stage / "runtime" / "pyodide-lock.json").read_text())
-        queue = ["cryptography", "protobuf"]
+        queue = ["cryptography", "protobuf", "idna"]
         seen = set()
         dependency_versions = {}
         while queue:
@@ -159,6 +177,11 @@ def build(source_archive=None):
             "gajim_storage": PINS["gajim_storage"],
             "gajim_storage_patches": ["remove desktop app import", "use stdlib logger adapter", "disable blind trust"],
             "expected_python_tests": 28,
+            "nbxmpp": PINS["nbxmpp"], "nbxmpp_patches": protocol_patches,
+            "nbxmpp_excluded": sorted(NBXMPP_EXCLUDED), "precis_i18n": precis,
+            "expected_protocol_upstream_tests": 128,
+            "expected_protocol_adaptation_tests": 20,
+            "expected_protocol_async_checks": 8,
         }
         (stage / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
         # Replace only generated output after every check/download succeeds.

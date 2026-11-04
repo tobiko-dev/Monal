@@ -39,6 +39,8 @@ jobs:
         run: npm test --prefix browser
       - name: Run upstream and negative tests in WebAssembly
         run: node browser/scripts/test-wasm.mjs
+      - name: Verify adapted nbxmpp protocol and browser-loop behavior
+        run: node browser/scripts/test-protocol-wasm.mjs
       - name: Reject altered test artifacts
         run: python browser/scripts/test-integrity.py
       - name: Compiler diagnostics on failure

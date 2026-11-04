@@ -17,14 +17,16 @@ The complete GTK application cannot run unchanged in Safari. Demonstrate compati
 | Gajim/nbxmpp messaging | Stanzas, conversations, carbons, history and actual receipt semantics |
 | Browser interface | Drafts, selection, images and sender/time/status presentation derived from real state |
 
-Introduce components when the milestone needs them. The executable harness now covers the unchanged encryption library and an adaptation of Gajim's actual SQLite store. See [storage boundaries and patch ledger](storage.md).
+Introduce components when the milestone needs them. The executable harness now covers the unchanged encryption library, an adaptation of Gajim's actual SQLite store and the adapted offline nbxmpp protocol core. See [storage boundaries and patch ledger](storage.md) and [protocol adaptations](nbxmpp-port.md).
 
 The [application identity worker](identity-worker.md) now owns identity creation
 and restoration behind a bounded, serialized request interface. The
 [local outbox](outbox.md) persists intent and atomically commits preparation
 with session changes. Messaging and device/trust decisions remain separate
-increments. The [nbxmpp investigation](nbxmpp-port.md) identifies the next
-platform boundaries and tests; it has not yet ported the networking client.
+increments. The [nbxmpp core](nbxmpp-port.md) retains upstream address/XML/SASL
+behavior with explicit value, timer and SCRAM KDF adapters. Real encrypted
+XML round trips and upstream tests pass natively and in WASM. Client connection
+is disabled until the browser WebSocket adapter is implemented and tested.
 
 ## Send sequence
 

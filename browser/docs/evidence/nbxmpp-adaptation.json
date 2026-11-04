@@ -1,0 +1,198 @@
+{
+  "nbxmpp": {
+    "repository": "https://github.com/gajim/python-nbxmpp",
+    "commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "version": "7.5.0",
+    "archive": "python-nbxmpp-999ce885.tar.gz",
+    "sha256": "3e2b15dae70e995da375b9cad4843151488e2f911004879398b490aea90faf51"
+  },
+  "nbxmpp_patches": [
+    {
+      "path": "nbxmpp/__init__.py",
+      "change": "Remove desktop-only Soup initialization"
+    },
+    {
+      "path": "nbxmpp/const.py",
+      "change": "Remove unavailable GLib version, without fabricating one"
+    },
+    {
+      "path": "nbxmpp/const.py",
+      "change": "Remove desktop certificate flag table"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Use portable advertised channel-binding names and strict text helpers"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Use stdlib IP-address recognition"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Reject malformed escaped localpart without silently changing JID identity"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Reject malformed escaped resourcepart without silently changing JID identity"
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "change": "Represent advertised channel binding as a portable enum"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Remove desktop imports from protocol value structs"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Use strict URI encoding"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Use portable channel-binding value type"
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "change": "Reject desktop proxy resolver requests explicitly"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Remove desktop TLS/version imports"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Remove unavailable desktop capability constants"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: get_tls_error_phrase"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: convert_tls_error_flags"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Reject unavailable desktop introspection: get_websocket_close_string"
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "change": "Do not claim any GLib capability/version"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/dispatcher.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/dispatcher.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/task.py",
+      "change": "Use cancellable browser-loop scheduling"
+    },
+    {
+      "path": "nbxmpp/task.py",
+      "change": "Route timer operations to the explicit adapter"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Remove desktop client annotations/imports"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsCertificateFlags"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsCertificate"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.TlsChannelBindingType"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Use portable annotation: Gio.SocketAddress"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Exclude raw TCP connection import"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Exclude desktop Soup connection import"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Keep connection creation disabled until an actual browser transport exists"
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "change": "Reject connect before touching stream state or resolving addresses"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Use pinned cryptography PBKDF2 where the WASM hashlib build lacks it"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Fail authentication cleanly when bounded KDF parameters are rejected"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Remove unused desktop TLS enum import"
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "change": "Report unavailable TLS binding honestly; retain upstream non-PLUS SASL logic"
+    }
+  ],
+  "nbxmpp_excluded": [
+    "nbxmpp/connection.py",
+    "nbxmpp/tcp.py",
+    "nbxmpp/websocket.py"
+  ],
+  "precis_i18n": {
+    "version": "1.1.2",
+    "filename": "precis_i18n-1.1.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/c3/9b/b68be6845faedb6fa33c4ffda7741467a8e8aabff82c6a941a0ba2785c3d/precis_i18n-1.1.2-py3-none-any.whl",
+    "sha256": "8e6cce33bdd8cb6289b9e85cdd7be74c30a1111cadb9d759492349c8c10b0840"
+  },
+  "dependencies": {
+    "idna": "3.11",
+    "protobuf": "7.34.1",
+    "cryptography": "47.0.0",
+    "cffi": "2.0.0",
+    "pycparser": "3.0",
+    "six": "1.17.0"
+  },
+  "scope": "Offline protocol core; networking disabled; no live XMPP interoperability claim",
+  "runtime_modules": 96,
+  "modified_files": [
+    "nbxmpp/__init__.py",
+    "nbxmpp/client.py",
+    "nbxmpp/const.py",
+    "nbxmpp/dispatcher.py",
+    "nbxmpp/protocol.py",
+    "nbxmpp/sasl.py",
+    "nbxmpp/structs.py",
+    "nbxmpp/task.py",
+    "nbxmpp/util.py"
+  ],
+  "artifacts": {
+    "nbxmpp.zip": "deee9ece157c8acc7f68b29d2ee2e3e06c85d0a157ecb24260214854c73ebb99",
+    "port.zip": "68db476519101c7c5f815f6fe67f33e84d1031af9a7b64356bbe5b95e9d0aefa",
+    "protocol-checks.zip": "c1ecaa445ba6ee40a579f2f0a23f3a4d106804d7ed7fc202ae7e06f5e5b93e40",
+    "source/nbxmpp-browser.patch": "7e48cf0ee1e46da8259d8ab1ac124113de368178b6c68472b5378610b52cc1f1",
+    "omemo_dr-1.2.0-cp314-cp314-pyemscripten_2026_0_wasm32.whl": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df"
+  }
+}

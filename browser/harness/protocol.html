@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Gajim protocol checks</title>
+<link rel="stylesheet" href="style.css">
+<main>
+  <h1>Gajim protocol checks</h1>
+  <p>Runs nbxmpp’s upstream protocol tests with browser adapters, authentication test vectors and real encrypted XML exchanges between disposable identities.</p>
+  <p>No account sign-in or contact messaging. Network connections are disabled in this protocol build.</p>
+  <button id="run" type="button">Run protocol checks</button>
+  <p id="status" role="status" aria-live="polite">Ready.</p>
+  <pre id="report" aria-label="Protocol check results"></pre>
+  <p>The test worker and its temporary identities are discarded when the run finishes. A pass covers the protocol and timer checks; a real server connection and native-client interoperability need separate verification.</p>
+  <p><a href="index.html">Encryption baseline</a> · <a href="outbox.html">Durable outbox checks</a></p>
+</main>
+<script type="module" src="protocol-main.mjs"></script>
+</html>

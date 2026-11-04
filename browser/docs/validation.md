@@ -196,6 +196,45 @@ recovery during active work, actual storage eviction or quota exhaustion.
 The worker test stops a worker; the queue test reconstructs storage objects.
 Neither operation is equivalent to an iPadOS/WebKit process crash.
 
+## Offline nbxmpp protocol-core increment
+
+The pinned nbxmpp core now imports and executes through explicit browser
+adapters, with no fake GI runtime. Both native Python 3.12.14/Linux and
+Node 24.22.1 / Pyodide 314.0.7 / Python 3.14.2 pass **128 unchanged upstream
+tests, 20 adapter/security tests and eight asynchronous checks**, with zero
+failures/errors/skips and no leftover timers.
+[Native result](evidence/native-nbxmpp.json),
+[WASM result](evidence/node-wasm-nbxmpp.json),
+[patch ledger](evidence/nbxmpp-adaptation.json).
+
+The checks cover actual OMEMO bundle/message XML and unchanged omemo-dr crypto,
+a bidirectional exchange across session restoration, payload tampering and
+wrong-device rejection. Upstream address/XML/SASL tests remain unchanged.
+Added tests include WebSocket-mode XML attacks, strict URI decoding,
+SCRAM-SHA-256's RFC 7677 vector, SHA-1/256/512 derivation reference values and
+bounded work rejection. Actual nbxmpp client disposal and IQ timeout/cancel
+behavior run on asyncio natively and Pyodide WebLoop in WASM.
+
+The WASM runtime lacked hashlib's PBKDF2 function. The adapter uses the existing
+pinned cryptography library and bounds server-requested work; it does not
+implement new cryptography or modify omemo-dr. Details and policy limits are in
+[the protocol document](nbxmpp-port.md).
+
+All **50 JS tests** and **28 existing WASM tests**, storage/lifecycle/identity
+integration checks and **seven outbox checks** still pass.
+[Crypto/storage regression report](evidence/node-wasm-protocol-regression.json).
+[Integrity checks](evidence/nbxmpp-integrity.txt) reject five altered runtime
+archives and an altered original nbxmpp source archive, restoring their bytes.
+The unchanged crypto wheel retains its earlier hash; port.zip now also includes
+three protocol adapters. Historical Safari passes are not relabeled as tests
+of this new bundle.
+
+The protocol page is a synthetic test, with networking explicitly disabled.
+No actual-browser pass is claimed by these Node/native results. Live server
+authentication, device policy, network lifecycle, message dispatch and native
+Monal/Gajim interoperability remain pending. The outbox fixture is still
+separate from production XML preparation.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.
@@ -204,6 +243,6 @@ Neither operation is equivalent to an iPadOS/WebKit process crash.
 
 ## Not implemented or proved
 
-The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. The offline nbxmpp protocol core is implemented as recorded above. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim device/trust orchestration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
 No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; recipient-policy revalidation and delivery reconciliation still precede any network send.

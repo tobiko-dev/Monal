@@ -1,6 +1,48 @@
 # nbxmpp browser integration boundary
 
-## Goal and current evidence
+## Implemented offline protocol core
+
+The pinned nbxmpp client and protocol modules now run with explicit browser
+adapters. Native Python and Node-hosted WebAssembly each pass **128 unchanged
+upstream tests, 20 adapter/security tests and eight asynchronous checks**.
+The checks exercise real OMEMO bundle/message XML and the unchanged Gajim
+encryption library, including a reply after session restoration, altered
+ciphertext rejection and a message addressed to another device.
+
+This increment has no network transport. `Client.connect()` fails before
+changing stream state or resolving addresses. Actual-browser verification is
+tracked separately in [validation](validation.md); no live interoperability
+or physical Safari result is implied by the native/Node runs.
+
+The build verifies the complete original Git archive, packages 96 of its 99
+runtime modules and records **37 patch operations across nine files**.
+`connection.py`, `tcp.py` and `websocket.py` are excluded from the runtime;
+their originals remain in the source archive. The generated
+[patch](evidence/nbxmpp-browser.patch) and
+[adaptation manifest](evidence/nbxmpp-adaptation.json) make the boundary
+reviewable. No `gi` facade is installed.
+
+| Adapter | Implemented behavior and limits |
+| --- | --- |
+| Values and addresses | Preserve upstream JID/IDNA/PRECIS validation. Pin `idna 3.11` and `precis-i18n 1.1.2`. Strict percent/UTF-8 decoding rejects malformed or NUL-containing input instead of changing an address silently. Stdlib IP parsing intentionally rejects NUL suffixes and slash scope IDs accepted by a native GLib spot check. |
+| Timers | Use asyncio/Pyodide WebLoop callbacks, repeat/remove results, cancellation and disposal. IDs are not reused; self-cancellation cannot revive a timer. Exceptions remove the timer with redacted diagnostics. This is not a GLib thread, I/O or priority implementation. Page suspension/reconnect still need integration tests. |
+| SCRAM password derivation | Pyodide's OpenSSL-free `hashlib` lacks `pbkdf2_hmac`. Use the already pinned `cryptography 47.0.0` PBKDF2 implementation. RFC 7677 SCRAM-SHA-256 and independent SHA-1/256/512 derivation vectors pass. No new crypto primitive and no omemo-dr KDF change. |
+| Desktop capabilities | Proxy resolution and desktop TLS/Soup introspection fail explicitly. No GLib version is invented. Browser channel-binding data is unavailable, so upstream non-PLUS SASL selection is retained. Desktop version comparisons no longer need `packaging` at runtime. |
+
+SCRAM policy bounds the server-requested work to 1,000,000 iterations, salts
+to 1,024 bytes, password input to 65,536 bytes and derived output to 64 bytes.
+Only SHA-1/256/512 are supported. Upstream's minimum 4,096 iterations remains.
+Rejected parameters become an authentication failure. These upper bounds need
+review against the actual server before enabling authentication; no server was
+contacted to establish compatibility.
+
+The tests also verify actual client construction/destruction and IQ timeout/
+cancellation using a synthetic IQ transport boundary. The upstream client,
+tasks and XML code are real; this is not a simulated implementation of those
+components. The outbox still uses its separate JSON fixture and is not yet
+connected to OMEMO stanza preparation or production recipient policy.
+
+## Historical import investigation
 
 Use Gajim's actual nbxmpp client, stanza parser, authentication and OMEMO XML
 code in a browser worker, then connect to 5july with the saved local identity.
@@ -11,11 +53,11 @@ The source remains pinned to
 (upstream declares version 7.5.0). A bounded investigation read committed Git
 objects, scanned all 99 Python modules and attempted the unchanged
 `nbxmpp.client` import in the existing Pyodide 314.0.7 / Python 3.14.2 runtime.
-It stops at `ModuleNotFoundError: gi`. Twelve modules import desktop GI APIs;
+It stopped at `ModuleNotFoundError: gi`. Twelve modules import desktop GI APIs;
 their source hashes and import locations are recorded in the
 [probe report](evidence/nbxmpp-import-probe.json).
 
-This is a reproduced compatibility blocker, **not a passing protocol test**.
+That probe reproduced a compatibility blocker, **not a passing protocol test**.
 No compatibility shim, fake GI module, socket or account was used. Finding the
 first missing import does not prove that all subsequent dependencies are known.
 The report lists 27 upstream regression source files; this probe does not run
@@ -36,7 +78,7 @@ the report's status remains `blocked_by_desktop_dependency`.
 
 | Boundary | Pinned source behavior | Browser treatment and verification |
 | --- | --- | --- |
-| Package and value helpers | `__init__.py` requires Soup at import; `protocol.py`, `const.py`, `structs.py` and `util.py` reference GI types, URI/IP helpers and versions | Explicit compatibility imports and a patch ledger. Preserve upstream JID/IDNA/PRECIS behavior; pin actual `idna`, `precis-i18n` and `packaging` dependencies. Do not claim GI exists or fabricate TLS capabilities. |
+| Package and value helpers | `__init__.py` requires Soup at import; `protocol.py`, `const.py`, `structs.py` and `util.py` reference GI types, URI/IP helpers and versions | Explicit compatibility imports and a patch ledger. Preserve upstream JID/IDNA/PRECIS behavior; pin actual `idna` and `precis-i18n` dependencies. The removed desktop version comparison no longer needs `packaging`. Do not claim GI exists or fabricate TLS capabilities. |
 | Scheduling | `client.py`, `dispatcher.py`, `task.py` use cancellable GLib timeouts | Worker event-loop adapter with correct repeat/remove behavior, asynchronous callbacks and disposal. Test cancellation, stale callbacks, reconnect and paused pages. |
 | Transport | `client._get_connection()` selects `websocket.WebsocketConnection` or TCP; WebSocket uses Soup/Gio | Adapt this factory/connection interface to browser `WebSocket`, preserving upstream client events and state-machine ownership. Browser build must exclude raw TCP, plaintext `ws:` and STARTTLS paths. |
 | Endpoint selection | `addresses.py` accepts a custom WebSocket endpoint or supplied host-meta; it also contains TCP defaults/fallbacks | Verify the 5july endpoint independently, restrict protocol/type and retain upstream XMPP-domain binding. A failed WebSocket must not fall back to an unsafe/unrelated endpoint. No endpoint was tested in this investigation. |
@@ -68,7 +110,9 @@ References: [RFC 7395 §§3, 6](https://www.rfc-editor.org/rfc/rfc7395.html),
    its protocol tests. Keep a file-by-file patch ledger; fail unsupported
    operations explicitly. Run upstream JID, XML, OMEMO parsing and SCRAM vectors
    natively and in WASM, plus timer cancellation/ordering checks. Preserve the
-   existing 28 WASM and 50 JS checks. A successful import alone is insufficient.
+   existing 28 WASM and 50 JS checks. **Implemented and passing natively and
+   in Node WASM.** Actual-browser evidence is recorded separately. A successful
+   import alone is insufficient.
 2. **Implement and verify the WebSocket connection adapter.** Exercise actual
    nbxmpp client event flow against a controlled synthetic peer, including bad
    subprotocol, malformed/binary/oversized frames, failed connect, interrupted
@@ -92,7 +136,7 @@ Its native application/settings/event dependencies still need adaptation.
 Native support for blind trust is not permission to enable it in this project;
 the browser's explicit verification and required-OMEMO requirements remain.
 
-This investigation does not resolve 5july transport capabilities, BOSH need,
-live authentication, production trust policy or interoperability. No deployment
-change or repeat of the completed iPad worker/outbox checks is needed for these
-source-review artifacts.
+The offline port does not resolve 5july transport capabilities, BOSH need,
+live authentication, production trust policy or interoperability. The new
+private protocol-check page can verify this increment in Safari. Historical
+worker/outbox passes remain scoped to their original builds.

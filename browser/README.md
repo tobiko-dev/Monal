@@ -1,8 +1,8 @@
 # Gajim browser foundation
 
-This directory starts a **Gajim-derived browser port** inside the existing native Monal fork. It is currently an encryption feasibility experiment, not a usable chat client.
+This directory implements the foundation of a **Gajim-derived browser port** inside the existing native Monal fork. It has encryption, durable identity/outbox storage and an offline nbxmpp protocol core. It is not yet a usable chat client.
 
-It compiles the actual `omemo-dr 1.2.0` Python/C encryption library used by Gajim and adapts Gajim's SQLite OMEMO store. Browser compatibility code stays separate from the original upstream files. Later work adapts Gajim/nbxmpp messaging and device lifecycle code; this foundation does not complete that port.
+It compiles the actual `omemo-dr 1.2.0` Python/C encryption library used by Gajim, adapts Gajim's SQLite OMEMO store and packages hash-pinned nbxmpp source with explicit runtime patches. Browser compatibility code stays separate from the original upstream files. Network transport and Gajim's device/trust orchestration are still pending.
 
 See the [roadmap](../ROADMAP.md), [architecture](docs/architecture.md) and [validation record](docs/validation.md).
 
@@ -19,6 +19,7 @@ python3.14 -m venv .venv
 npm ci --ignore-scripts --no-audit --no-fund
 npm test
 node scripts/test-wasm.mjs
+node scripts/test-protocol-wasm.mjs
 .venv/bin/python scripts/test-integrity.py
 ```
 
@@ -30,7 +31,9 @@ The WASM runner also creates an identity through the application service, exchan
 
 It also runs seven [durable outbox checks](docs/outbox.md) with actual Gajim WASM crypto, including a forced late write abort, successful retry/decryption and reuse of committed ciphertext after a discarded reply. No network dispatcher is enabled.
 
-The integrity command separately alters the generated test and adapter archives, confirms the runner rejects each before execution, and restores the original bytes even if the check fails.
+The protocol command must pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks. It exercises actual nbxmpp XML and encrypted round trips, SCRAM vectors, XML attack rejection, strict address decoding, client disposal and IQ cancellation. Network access is explicitly disabled. An optional output path writes the JSON report. Native comparison can use `scripts/test-protocol-native.py` in an environment with `omemo-dr 1.2.0` installed.
+
+The integrity command alters five generated test/adapter/dependency archives and the original nbxmpp source archive, confirms rejection at the corresponding loader/preparation boundary, and restores original bytes even if a check fails. Hash checks detect inconsistent artifacts; they do not protect against a compromised origin replacing both code and hashes.
 
 ## Browser check
 
@@ -48,8 +51,10 @@ test tabs are closed. This page never connects to XMPP or real contacts.
 
 **Test the durable send queue** runs the shared outbox checks with actual browser IndexedDB/Web Locks in a dedicated worker. It deletes its disposable database after completion. It reconstructs storage objects; a pass is not a process-crash or live-XMPP test.
 
+**Test the Gajim protocol core** runs the 28-test encryption baseline, then the same 128 upstream, 20 adapter and eight asynchronous protocol checks in a real browser worker. Its temporary identities are discarded when the worker finishes. Physical Safari verification for this new boundary is separate from the earlier worker/outbox passes.
+
 ## Source and licenses
 
-No changes to upstream `omemo-dr` source or tests are applied. The build adds six crypto checks, nine storage checks, five identity bridge checks and platform adapters. Gajim's original store has three explicit compatibility substitutions, described in [storage design and limits](docs/storage.md). The generated bundle includes original source and licenses. Runtime dependencies remain in their original wheels with their notices. See [third-party provenance](THIRD_PARTY.md).
+No changes to upstream `omemo-dr` source or tests are applied. The build adds six crypto checks, nine storage checks, five identity bridge checks and platform adapters. Gajim's original store has three explicit compatibility substitutions, described in [storage design and limits](docs/storage.md). The [nbxmpp port](docs/nbxmpp-port.md) retains upstream tests unchanged and records every runtime patch. The generated bundle includes original source, a protocol patch and licenses. Runtime dependencies remain in their original wheels with their notices. See [third-party provenance](THIRD_PARTY.md).
 
 New code in this directory is GPL-3.0-only; see [LICENSE](LICENSE). This does not change the native Monal fork's licensing.

@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. Gajim/nbxmpp integration, process-crash/storage-eviction checks and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively and in WASM. Browser WebSocket transport, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -39,9 +39,9 @@ Build in this order; source and security requirements above apply throughout:
 2. **Gajim/nbxmpp connection and device management (next development):** adapt the actual upstream
    code for 5july authentication, device publication, recipient bundles and
    reconnects, with a source/patch ledger. The [source-boundary investigation](browser/docs/nbxmpp-port.md)
-   reproduces the missing desktop GI dependency. First port the runtime helpers
-   and run upstream protocol tests; then adapt the WebSocket connection and
-   integrate Gajim's device/trust orchestration.
+   now includes the implemented runtime helpers and passing upstream protocol
+   tests. Next adapt and test the WebSocket connection, then integrate
+   Gajim's device/trust orchestration.
 3. **Fingerprint verification:** expose real fingerprints and distinct
    unverified/changed/blocked states. Missing usable keys block every content
    send; no plaintext fallback. Revalidate queued work against current device
@@ -54,8 +54,9 @@ Build in this order; source and security requirements above apply throughout:
 Physical-device task completed: the user supplied all eight application
 identity-worker passes and all seven durable outbox passes from iPad Safari.
 [Reports and limits](browser/docs/evidence/safari-worker-outbox-user-reported.json).
-No repeat of these checks is needed for this build. Continue source integration;
-request device assistance again when a new integration needs physical testing.
+Those results remain scoped to their original build. The new offline protocol
+core has a separate Safari check; no repeat of the earlier worker/outbox
+procedure is required to report that new boundary.
 
 Queue acceptance for this increment: acknowledged enqueue survives reopening;
 failed/aborted preparation changes neither the saved session nor prepared
@@ -121,12 +122,15 @@ Exit: persistence/concurrency tests pass, including physical Safari lifecycle te
 
 Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md), [outbox boundary](browser/docs/outbox.md). The test harness uses separate workers/runtimes and real browser locks. Atomic outbox storage is implemented; it does not authorize network transmission before recipient-policy and dispatcher integration.
 
-### M3 — Gajim protocol integration and 5july: investigation complete, implementation pending
+### M3 — Gajim protocol integration and 5july: offline protocol core implemented
 
 - [x] Inspect the pinned nbxmpp package and reproduce the unchanged-client import blocker in WASM; record 12 desktop-dependent modules, retained upstream responsibilities and the incremental port plan. [Investigation and limits](browser/docs/nbxmpp-port.md).
-- [ ] Port the required runtime helpers and run upstream JID, XML-security, OMEMO parsing and SCRAM tests in WASM before connecting an account.
+- [x] Package the pinned nbxmpp source and explicit runtime adapters; pass 128 unchanged upstream tests, 20 adapter/security tests and eight timer checks natively and in WASM. Include real OMEMO XML exchange/restoration, malformed XML, SCRAM vectors, strict JID decoding and IQ cancellation. [Patch ledger and limits](browser/docs/nbxmpp-port.md).
+- [x] Retain all 50 JS and 28 WASM regression checks; reject altered protocol/test/dependency/source artifacts before execution/adaptation.
+- [ ] Verify the new protocol core in actual Chrome and physical iPad Safari; prior storage tests do not cover this increment.
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
-- [ ] Adapt Soup/GLib networking/scheduling to browser APIs. nbxmpp already supports XMPP WebSockets; assess BOSH/XEP-0206 if actual endpoint capabilities require it.
+- [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
+- [ ] Adapt Soup networking to browser WebSocket and test controlled-peer connection, subprotocol, malformed/binary/oversized input, backpressure, failed authentication, reconnect and late events. Disable SASL/stanza logging before any credential use. Assess BOSH/XEP-0206 only if actual endpoint capabilities require it.
 - [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
 - [ ] Enforce required OMEMO for every user-content send path and test at the transmitted-stanza boundary.
 - [ ] Exchange encrypted text both ways with native Monal/Gajim using authorized test identities.

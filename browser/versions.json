@@ -24,5 +24,18 @@
     "commit": "5a57abb2950886dd9cb8a73972ecc2dcc59f688a",
     "path": "src/gajim/common/storage/omemo.py",
     "sha256": "5f57337f29e1d3a889698a2f65aba4348754ac268aad49fe18f32f9e4d427260"
+  },
+  "nbxmpp": {
+    "repository": "https://github.com/gajim/python-nbxmpp",
+    "commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "version": "7.5.0",
+    "archive": "python-nbxmpp-999ce885.tar.gz",
+    "sha256": "3e2b15dae70e995da375b9cad4843151488e2f911004879398b490aea90faf51"
+  },
+  "precis_i18n": {
+    "version": "1.1.2",
+    "filename": "precis_i18n-1.1.2-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/c3/9b/b68be6845faedb6fa33c4ffda7741467a8e8aabff82c6a941a0ba2785c3d/precis_i18n-1.1.2-py3-none-any.whl",
+    "sha256": "8e6cce33bdd8cb6289b9e85cdd7be74c30a1111cadb9d759492349c8c10b0840"
   }
 }
