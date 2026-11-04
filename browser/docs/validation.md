@@ -1,9 +1,9 @@
 # Foundation validation — 2026-11-04
 
-## Demonstrated
+## Earlier encryption/storage baseline
 
 - Built the unchanged omemo-dr 1.2.0 C extension as `cp314-cp314-pyemscripten_2026_0_wasm32` and checked its actual WebAssembly magic bytes.
-- Ran 8 unchanged upstream tests, 6 crypto checks and 9 Gajim storage checks in Pyodide 314.0.7, hosted by Node 24.22.1. **23 passed, 0 failed, 0 errors, 0 skipped.** [Current raw result](evidence/node-wasm-storage.json); [earlier 14-test M1 result](evidence/node-wasm.json).
+- Ran 8 unchanged upstream tests, 6 crypto checks and 9 Gajim storage checks in Pyodide 314.0.7, hosted by Node 24.22.1. **23 passed, 0 failed, 0 errors, 0 skipped.** [Storage baseline result](evidence/node-wasm-storage.json); [earlier 14-test M1 result](evidence/node-wasm.json). The identity-worker increment below increases this suite to 28 tests.
 - The nine storage checks also passed on native Python. They retain the device identity, prekeys, peer trust and working ratchets after reconstructing the stores/session managers; corrupt, missing, mismatched and unsupported snapshots are rejected.
 - Passed all **16** JS repository tests against simulated IndexedDB and Node Web Locks, including quota/denied storage, concurrent writers, stale revisions, identity replacement attempts, lock timeout and an abort after the write request succeeds.
 - Completed **three encrypted exchanges** through WASM, the adapted Gajim store and the JS repository with reconstructed objects. These combined checks use synthetic identities and explicit synthetic trust; no XMPP transport exists yet.
@@ -97,8 +97,32 @@ synthetic encrypted messages, and reopens the same identity between exchanges.
 
 The unchanged crypto wheel retains its prior hash. The adapter archive changes
 to `6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9`.
-Earlier Safari reports apply to the earlier adapter/worker. Actual-browser
-results for this increment are recorded separately after verification.
+Earlier Safari reports apply to the earlier adapter/worker.
+
+Source `54368f6b9e339bf9e70a67aad07b20785df23da4`, deployed as private QA source
+`be1722b28ef902d995a4c6dd5e4359b076bbef4d`, passed all **eight application worker
+checks in actual Chrome 155** using real module workers, IndexedDB, Web Locks
+and the Gajim WASM bridge. The cases cover missing state, explicit creation,
+duplicate creation rejection, queued reads, fresh-worker restoration, queued
+handoff after commit, termination before commit, and recovery after a saved
+identity's reply is lost. The two competing-worker cases each observed one
+held and one pending lock. All disposable databases were removed after the run.
+[Raw browser result](evidence/chrome-identity-worker.json).
+
+A synthetic lifecycle fixture created by the previous deployment was reloaded
+after this deployment. The new 28-test runtime restored Alice/Bob revisions
+3/3, then exchanged two encrypted messages to reach 5/5 with unchanged
+identities. The fixture was deleted after evidence capture. This verifies this
+specific adapter upgrade; it does not establish arbitrary upgrade/rollback
+safety. [Before/after browser capture](evidence/chrome-identity-upgrade.json).
+
+The [source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41792951304)
+passed its fresh WASM build, 30 JS tests, 28 WASM tests, combined integration
+fixtures and altered-archive rejection. Physical iPad verification of this new
+worker remains pending; the earlier Safari results are not relabeled as passes
+for the changed code.
+
+![Actual Chrome reports eight application identity worker checks passed](evidence/chrome-identity-worker-pass.jpg)
 
 ## Build issues resolved
 
@@ -108,6 +132,6 @@ results for this increment are recorded separately after verification.
 
 ## Not implemented or proved
 
-The snapshot store and per-operation concurrency adapter are implemented and tested as described above. The demonstrated Chrome lifecycle checks do not complete the physical Safari gates or the production worker boundary. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, durable outbox, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter and application identity worker are implemented and tested as described above. The demonstrated Chrome checks do not complete the physical Safari gates or the messaging coordinator. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, durable outbox, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
 No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes are not encrypted at rest by this increment. Prepared ciphertext and ratchet state still need a shared durable outbox transaction before a network send is implemented.

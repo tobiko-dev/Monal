@@ -63,6 +63,15 @@ commit or suppress a reply after commit; these hooks are absent from the
 production worker entry point. Test databases are disposable. The validation
 record distinguishes observed browser results from simulated tests.
 
+On 2026-11-04, all eight worker checks passed in actual Chrome 155 over the
+private HTTPS QA deployment. Both held/queued cases observed one held and one
+pending Web Lock. The fixture recovered after termination before commit and
+after a successful commit whose reply was suppressed. Test data was deleted.
+[Raw browser result](evidence/chrome-identity-worker.json). A separate deployment
+upgrade check restored the previous adapter's synthetic identities and resumed
+encrypted exchange from revisions 3/3 to 5/5 without replacing either identity.
+[Upgrade result](evidence/chrome-identity-upgrade.json).
+
 This is the identity portion of the coordinator. There is no send, receive,
 trust-approval, key-export or reset command. Durable drafts/outbox and atomic
 session/ciphertext storage must precede the messaging API. Account login,

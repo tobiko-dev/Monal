@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: Chrome lifecycle checks pass. User-reported physical iPad Safari runs pass the encryption/storage baseline and the recorded tab, lock/unlock and Safari relaunch recovery checks. Further Safari lifecycle checks, the production worker boundary and a usable chat application remain pending.
+Updated: 2026-11-04. Status: the application identity worker passes eight actual Chrome checks, and a saved session survives the adapter upgrade. User-reported physical iPad Safari runs pass the earlier encryption/storage baseline and recorded lifecycle checks. The new worker's iPad checks, messaging coordinator and usable chat application remain pending.
 
 ## Goal and scope
 
@@ -73,7 +73,9 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 - [ ] Verify Safari queued handoff after owner commit, a separate explicit reload and confirmed OS suspension. A lock/unlock pass alone does not establish OS suspension.
 - [ ] Verify process crash during active work and actual-browser storage failure/eviction. The idle Safari relaunch pass does not cover a crash during a write or independently establish which WebKit processes terminated.
 - [x] Add the application identity worker API: explicit creation, validated restoration, bounded serial work, public-only replies and interrupted-operation outcomes.
-- [ ] Verify the new application identity worker in actual Chrome and physical iPad Safari.
+- [x] Verify the application identity worker in actual Chrome: eight checks cover creation/restoration, queued committed handoff, interruption before commit and recovery after a lost acknowledgement. [Raw result](browser/docs/evidence/chrome-identity-worker.json).
+- [x] Reload a synthetic session from the previous deployed adapter with the new build; preserve identities and resume encrypted exchange from 3/3 to 5/5. [Upgrade result](browser/docs/evidence/chrome-identity-upgrade.json).
+- [ ] Verify the new application identity worker on physical iPad Safari; earlier harness passes do not cover this changed boundary.
 - [ ] Complete the messaging worker/coordinator lifecycle, including suspended pages, durable drafts and atomic outgoing work.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 

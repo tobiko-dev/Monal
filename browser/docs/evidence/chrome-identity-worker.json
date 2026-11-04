@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-11-04",
+  "source_commit": "54368f6b9e339bf9e70a67aad07b20785df23da4",
+  "qa_source_commit": "be1722b28ef902d995a4c6dd5e4359b076bbef4d",
+  "result": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "missing state does not create keys",
+        "passed": true
+      },
+      {
+        "name": "existing identity cannot be replaced",
+        "passed": true
+      },
+      {
+        "name": "queued reads preserve identity and revision",
+        "passed": true
+      },
+      {
+        "name": "fresh application worker restores the same identity",
+        "passed": true
+      },
+      {
+        "name": "queued worker reads committed creation",
+        "passed": true,
+        "queue": {
+          "held": 1,
+          "pending": 1
+        }
+      },
+      {
+        "name": "terminated owner leaves no partial identity and releases lock",
+        "passed": true,
+        "queue": {
+          "held": 1,
+          "pending": 1
+        }
+      },
+      {
+        "name": "explicit creation can proceed after interrupted first provisioning",
+        "passed": true
+      },
+      {
+        "name": "lost acknowledgement recovers saved identity without reprovisioning",
+        "passed": true
+      }
+    ],
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "environment": "Actual browser module workers, IndexedDB, Web Locks and Gajim WASM identity bridge",
+    "elapsed_ms": 25739
+  }
+}
