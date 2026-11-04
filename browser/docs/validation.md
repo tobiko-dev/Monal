@@ -28,7 +28,7 @@ The earlier HTTP preview at `http://terminal.local:4173/` stopped at the secure-
 
 The separate lifecycle harness retains synthetic data across visits until its explicit cleanup. Its actual Chrome run used source `3551c4d304f5be2fd0ac690d2878bafe1dbac771`, packaged as QA source `1403adae7a5b88cd40cd28a458144863ffb5b858`. Reload and close/reopen preserved saved identities and session state. One held/one pending lock was observed before both committed handoff and a repeated uncommitted owner closure. Worker termination before commit also preserved the prior revision, and a fresh worker decrypted subsequent messages. [Full lifecycle evidence and limitations](lifecycle.md).
 
-The physical iPad Safari reports below cover selected lifecycle scenarios, including user-reported lock/unlock continuation. A separate reload, queued handoff after owner commit, full browser-process restart/crash, storage eviction and confirmed OS suspension remain pending. The 16 fault-injection/concurrency tests still have Node evidence only. The [lifecycle source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708) passed its fresh build, all 16 JS and 23 WASM tests, both integration fixtures and altered-archive rejection.
+The physical iPad Safari reports below cover selected lifecycle scenarios, including user-reported lock/unlock and Safari relaunch continuation. A separate reload, queued handoff after owner commit, process crash during active work, storage eviction and confirmed OS suspension remain pending. The 16 fault-injection/concurrency tests still have Node evidence only. The [lifecycle source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41777981708) passed its fresh build, all 16 JS and 23 WASM tests, both integration fixtures and altered-archive rejection.
 
 ## User-reported physical iPad Safari results
 
@@ -67,9 +67,16 @@ user-reported continuation after app switching and lock/unlock. No new runtime
 event or suspension instrumentation is present; the report does not establish
 whether iPadOS suspended or terminated the browser or worker.
 
-Queued handoff after an owner commit, a separate explicit reload and confirmed
-OS suspension remain open. Neither the close/reopen nor lock/unlock result
-establishes browser-process termination.
+In response to instructions to dismiss Safari in the iPad app switcher, reopen
+Safari and resume the same run, the user supplied a fresh runtime report. Its
+startup inspection restores 16/15, followed by two successful encrypted
+exchanges reaching 18/17. Identities and artifact hashes remain unchanged.
+This is recorded as user-reported Safari app relaunch recovery while no
+operation was deliberately held. The report does not independently establish
+which WebKit processes terminated or exercise interruption during a write.
+
+Queued handoff after an owner commit, a separate explicit reload, confirmed
+OS suspension and process-crash recovery during active work remain open.
 
 Reported startup values are 68,848 ms and 37,989 ms; the separate elapsed fields
 are 184,792 ms and 2,900 ms. Python tests themselves take 0.365 and 0.366 seconds.

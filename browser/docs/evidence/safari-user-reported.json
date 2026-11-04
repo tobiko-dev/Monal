@@ -150,7 +150,7 @@
   "limits": [
     "The initial lifecycle report does not identify its navigation action. The later close/reopen report was supplied in response to explicit close/reopen instructions, but navigation itself was not independently instrumented. A separate explicit reload remains unreported.",
     "Contended access is confirmed. The reported owner-close sequence recovers the prior revision; no one-held/one-pending queue snapshot was supplied, and queued handoff after an owner commit has not been reported.",
-    "The user-reported app-switch and lock/unlock sequence preserved working sessions. OS suspension, browser-process crash and storage eviction are not established; no lifecycle instrumentation is present in the supplied report.",
+    "User-reported app-switch/lock/unlock and idle Safari app relaunch sequences preserved working sessions. Confirmed OS suspension, process-crash recovery during an active write and storage eviction are not established. No process-lifecycle instrumentation is present in the supplied reports.",
     "Startup and elapsed fields are separate phases, not a combined end-to-end measurement. Network/cache effects were not isolated.",
     "No production XMPP messaging, fingerprint-verification UI or durable outbox is exercised."
   ],
@@ -293,6 +293,45 @@
         "before": {
           "alice": 14,
           "bob": 13
+        },
+        "encrypted_exchanges": 2,
+        "passed": true
+      }
+    ]
+  },
+  "safari_app_relaunch": {
+    "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+    "workflow_context": "User supplied this fresh-runtime report in response to instructions to dismiss Safari using the iPad app switcher, reopen Safari and resume the same test. Recorded as user-reported app relaunch recovery. No operation was deliberately held during dismissal. The report does not independently establish which WebKit processes terminated or exercise a crash during a write.",
+    "events": [
+      {
+        "type": "runtime",
+        "tests": 23,
+        "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+        "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+      },
+      {
+        "type": "result",
+        "action": "inspect",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 16,
+          "bob": 15
+        }
+      },
+      {
+        "type": "result",
+        "action": "exchange",
+        "run": "8ec80c57-7f99-4317-a245-91a3f2d2509d",
+        "identity_preserved": true,
+        "revisions": {
+          "alice": 18,
+          "bob": 17
+        },
+        "before": {
+          "alice": 16,
+          "bob": 15
         },
         "encrypted_exchanges": 2,
         "passed": true
