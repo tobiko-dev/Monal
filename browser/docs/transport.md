@@ -59,8 +59,9 @@ See [generated patch](evidence/nbxmpp-transport.patch) and
   authentication and no protocol logging or leftover nbxmpp timers.
 
 [Node TLS result](evidence/node-wasm-transport.json) reports all 18 Python checks.
-It is not a browser or real-server interoperability pass. Actual browser results
-are tracked in [validation](validation.md).
+The same 18 checks also pass in actual Chrome 155 over private HTTPS, with matching
+artifact hashes: [browser result](evidence/chrome-transport.json). Neither is a
+physical Safari or real 5july interoperability pass. See [validation](validation.md).
 
 The fixture accepts only `synthetic@example.invalid` with a public fixed test
 password. It recognizes only the scripted handshake, bind, ping and close

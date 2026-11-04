@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and 13 JS socket checks. Actual-browser verification of this increment, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. The offline nbxmpp core passes 128 upstream, 20 adapter and eight timer checks natively, in Node WASM and in actual Chrome; its fresh CI build passes. The browser WebSocket adapter passes 18 controlled-peer/configuration checks in Node WASM and actual Chrome, plus 13 JS socket checks. Physical Safari transport verification, Gajim device/trust orchestration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -132,7 +132,8 @@ Implementation and limits: [storage design](browser/docs/storage.md), [actual li
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
 - [x] Adapt GLib timers to the browser event loop; test asynchronous ordering, cancellation, repeat/removal, disposal and real client/IQ task cleanup.
 - [x] Adapt Soup networking to browser WebSocket. Pass 18 Node WASM controlled-peer/configuration checks and 13 JS socket checks, including actual SCRAM/binding, bad input, backpressure, failure/reconnect, disposal and logging. [Boundary and evidence](browser/docs/transport.md). No real account used.
-- [ ] Verify the new controlled-peer WSS checks in actual Chrome and physical iPad Safari.
+- [x] Verify the new controlled-peer WSS checks in actual Chrome 155 over private HTTPS: all 18 pass with matching artifact hashes. [Raw result](browser/docs/evidence/chrome-transport.json). [Fresh source CI](https://github.com/tobiko-dev/Monal/actions/runs/41812411668) also passes.
+- [ ] Verify the controlled-peer WSS checks on physical iPad Safari: open the private QA `/transport` page, choose **Run connection checks**, and expect 18 passes. No account login or contact messaging.
 - [ ] Assess actual 5july endpoint capabilities and BOSH/XEP-0206 need before enabling account authentication.
 - [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
 - [ ] Enforce required OMEMO for every user-content send path and test at the transmitted-stanza boundary.

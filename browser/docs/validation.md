@@ -281,6 +281,29 @@ device/trust orchestration is adapted. The synthetic server accepts only fixture
 credentials and cannot forward messages. No user credentials are requested by
 this increment.
 
+The private QA deployment of source `17717ddb7d6833efa056143f65340d9a055e6ae4`,
+packaged as Site source `17a449da0b539efcf339b153dd054868697fbe5e`, passes all
+**18 checks in actual Chrome 155 on Linux**. Reported port, protocol and fixture
+hashes exactly match the Node/local build. The test reports 6,347 ms for loading
+and checks, 8,166 ms total worker time; these are single cloud-browser
+observations, not iPad measurements. [Raw result](evidence/chrome-transport.json).
+The same origin and owner-only audience are retained. Existing static QA pages
+are preserved; the added server route is only a bounded synthetic peer.
+
+![Chrome reports 18 WebSocket connection checks passed](evidence/chrome-transport-pass.jpg)
+
+On physical iPad Safari, open
+[WebSocket connection checks](https://gajim-browser-qa.strongcaterpillar.chatgpt.site/transport)
+and press **Run connection checks**. Expect 18 passes. This new result is pending;
+the previous user-reported worker/outbox checks remain scoped to their old build.
+
+One regression run exposed a test assumption: independent repositories hash lock
+names asynchronously, so their call order need not equal lock-acquisition order.
+The test now checks unique results, monotonic serialized mutations, no overlap
+and the final committed snapshot. Storage behavior was not changed.
+
+The [fresh browser-foundation CI run](https://github.com/tobiko-dev/Monal/actions/runs/41812411668) passes the source build, all 63 JS tests, the crypto/storage/outbox regressions, 128 / 20 / 8 protocol checks, altered-artifact rejection and the 18 real-TLS controlled-peer checks.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.
