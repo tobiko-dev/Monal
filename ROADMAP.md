@@ -72,7 +72,9 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 - [x] Restore identities and continue encrypted exchanges after the directed Safari app-switcher dismissal and relaunch (user-reported).
 - [ ] Verify Safari queued handoff after owner commit, a separate explicit reload and confirmed OS suspension. A lock/unlock pass alone does not establish OS suspension.
 - [ ] Verify process crash during active work and actual-browser storage failure/eviction. The idle Safari relaunch pass does not cover a crash during a write or independently establish which WebKit processes terminated.
-- [ ] Integrate and verify the production worker/coordinator lifecycle, including suspended pages and queued drafts.
+- [x] Add the application identity worker API: explicit creation, validated restoration, bounded serial work, public-only replies and interrupted-operation outcomes.
+- [ ] Verify the new application identity worker in actual Chrome and physical iPad Safari.
+- [ ] Complete the messaging worker/coordinator lifecycle, including suspended pages, durable drafts and atomic outgoing work.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 
 Exit: persistence/concurrency tests pass, including physical Safari lifecycle tests.

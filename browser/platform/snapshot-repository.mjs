@@ -138,13 +138,20 @@ export class SnapshotRepository {
   }
 
   async inspect(account, options) {
+    return this.read(account, ({ identity, revision }) => ({ identity, revision }), options);
+  }
+
+  // Worker-internal read: validate SQLite as well as the envelope without
+  // advancing the revision. Never pass this callback or snapshot to page code.
+  async read(account, operation, options) {
     return this.#exclusive(account, async () => {
       const db = await this.#open();
       try {
         const record = await this.#read(db, account);
         await this.#validate(record, account);
         if (!record) fail("MISSING_IDENTITY");
-        return { identity: record.identity, revision: record.revision };
+        return await operation({ snapshot: record.snapshot.slice(),
+          identity: { ...record.identity }, revision: record.revision });
       } finally { db.close(); }
     }, options);
   }

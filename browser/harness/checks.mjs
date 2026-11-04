@@ -1,19 +1,10 @@
+import { loadPort } from "./platform/port-loader.mjs";
+
 // Identical checks are used by the browser worker and Node WebAssembly runner.
 export async function runChecks(pyodide, readBytes, progress = () => {}) {
   const started = performance.now();
-  const manifest = JSON.parse(new TextDecoder().decode(await readBytes("manifest.json")));
-  const checked = async (name) => {
-    const bytes = await readBytes(name);
-    const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
-    const hash = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
-    if (hash !== manifest.assets[name]) throw new Error(`Integrity check failed: ${name}`);
-    return bytes;
-  };
-  progress("Loading the pinned cryptography and protobuf packages…");
-  await pyodide.loadPackage(["cryptography", "protobuf"]);
-  pyodide.unpackArchive(await checked(manifest.wheel), "zip", { extractDir: "/experiment/site" });
+  const { manifest, checked } = await loadPort(pyodide, readBytes, progress);
   pyodide.unpackArchive(await checked("checks.zip"), "zip", { extractDir: "/experiment/checks" });
-  pyodide.unpackArchive(await checked("port.zip"), "zip", { extractDir: "/experiment/site" });
   progress("Running upstream encryption and Gajim storage checks…");
   const report = JSON.parse(await pyodide.runPythonAsync(`
 import io, json, logging, platform, sys, unittest

@@ -24,7 +24,9 @@ node scripts/test-wasm.mjs
 
 The first build downloads the pinned Pyodide cross-build environment and Emscripten SDK. It verifies the source archive, compiles a fresh unmodified source tree, checks the extension's WebAssembly header, verifies runtime assets and packages, and produces `dist/`. Compiler output is in `.build/compiler.log`. To reuse a downloaded source archive, pass `--source-archive /path/to/omemo_dr-1.2.0.tar.gz`; the same hash check still applies.
 
-The Node WASM command must exit successfully with `platform: emscripten`, `tests: 23`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter and a lifecycle-fixture integration check for reconstructed fixtures, lock contention and committed handoff. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 16 storage/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
+The Node WASM command must exit successfully with `platform: emscripten`, `tests: 28`, no failures/errors/skips, and `passed: true`. It also runs three synthetic encrypted exchanges through the storage adapter and a lifecycle-fixture integration check for reconstructed fixtures, lock contention and committed handoff. It executes the WebAssembly extension, not the host's native extension. `npm test` runs 30 storage/worker/failure/concurrency tests. IndexedDB is simulated in Node; neither result is an iPad/Safari pass.
+
+The WASM runner also creates an identity through the application service, exchanges four synthetic encrypted messages, and reopens its saved state. An optional output path after `test-wasm.mjs` writes clean JSON separately from runtime progress. Incomplete execution must exit with failure.
 
 The integrity command separately alters the generated test and adapter archives, confirms the runner rejects each before execution, and restores the original bytes even if the check fails.
 
@@ -40,8 +42,10 @@ to check restoration, queued ownership, interrupted work and worker recovery.
 Its test databases are removed with **Delete this synthetic test** after other
 test tabs are closed. This page never connects to XMPP or real contacts.
 
+**Test the application identity worker** runs an automated check of actual module workers, including interruption before commit and a lost reply after commit. The [worker API](docs/identity-worker.md) exposes public identity details only. Its disposable test data is separate from the existing lifecycle test.
+
 ## Source and licenses
 
-No changes to upstream `omemo-dr` source or tests are applied. The build adds six crypto checks, nine storage checks and platform adapters. Gajim's original store has three explicit compatibility substitutions, described in [storage design and limits](docs/storage.md). The generated bundle includes original source and licenses. Runtime dependencies remain in their original wheels with their notices. See [third-party provenance](THIRD_PARTY.md).
+No changes to upstream `omemo-dr` source or tests are applied. The build adds six crypto checks, nine storage checks, five identity bridge checks and platform adapters. Gajim's original store has three explicit compatibility substitutions, described in [storage design and limits](docs/storage.md). The generated bundle includes original source and licenses. Runtime dependencies remain in their original wheels with their notices. See [third-party provenance](THIRD_PARTY.md).
 
 New code in this directory is GPL-3.0-only; see [LICENSE](LICENSE). This does not change the native Monal fork's licensing.

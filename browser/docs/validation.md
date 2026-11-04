@@ -83,6 +83,23 @@ are 184,792 ms and 2,900 ms. Python tests themselves take 0.365 and 0.366 second
 These phases must not be presented as a single complete launch measurement.
 Network and cache effects were not isolated, and memory use was not measured.
 
+## Application identity worker increment
+
+The [application identity API](identity-worker.md) now creates and reopens
+actual Gajim identities inside a serialized worker service. Thirty JS tests pass
+against simulated IndexedDB, including interruption, late abort and lost commit
+acknowledgement. The five new Python bridge tests pass natively and in WASM;
+the WASM suite now totals **28 passed, 0 failed, 0 errors, 0 skipped**.
+The existing storage and lifecycle fixtures still pass. A new combined service
+check creates an identity using Gajim's 100-prekey configuration, exchanges four
+synthetic encrypted messages, and reopens the same identity between exchanges.
+[Raw Node WASM evidence](evidence/node-wasm-identity-worker.json).
+
+The unchanged crypto wheel retains its prior hash. The adapter archive changes
+to `6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9`.
+Earlier Safari reports apply to the earlier adapter/worker. Actual-browser
+results for this increment are recorded separately after verification.
+
 ## Build issues resolved
 
 1. The SDK's archive extraction initially tried to restore ownership IDs unsupported by the container. Build-time `TAR_OPTIONS=--no-same-owner` fixed this without changing compiler or crypto source.

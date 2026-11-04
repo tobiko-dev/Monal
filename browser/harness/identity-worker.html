@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; style-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Application identity worker checks</title>
+<link rel="stylesheet" href="style.css">
+<main>
+  <h1>Application identity worker checks</h1>
+  <p>Tests the app’s worker interface with disposable identities. No sign-in or contact messaging.</p>
+  <p>This checks creation, restoration, competing workers, interruption before saving, and a lost reply after saving. Test data is removed when the run finishes.</p>
+  <button id="run" type="button">Run worker checks</button>
+  <p id="status" role="status" aria-live="polite">Ready.</p>
+  <pre id="report" aria-label="Worker check results"></pre>
+  <p>These identity checks do not send messages or verify live XMPP interoperability. Closing this page interrupts the check; completed results will not be claimed.</p>
+  <p><a href="index.html">Encryption baseline</a> · <a href="lifecycle.html">Identity persistence tests</a></p>
+</main>
+<script type="module" src="identity-worker-main.mjs"></script>
+</html>

@@ -158,7 +158,7 @@ def build(source_archive=None):
             "assets": assets, "crypto_upstream_patches": [],
             "gajim_storage": PINS["gajim_storage"],
             "gajim_storage_patches": ["remove desktop app import", "use stdlib logger adapter", "disable blind trust"],
-            "expected_python_tests": 23,
+            "expected_python_tests": 28,
         }
         (stage / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
         # Replace only generated output after every check/download succeeds.

@@ -19,6 +19,10 @@ The complete GTK application cannot run unchanged in Safari. Demonstrate compati
 
 Introduce components when the milestone needs them. The executable harness now covers the unchanged encryption library and an adaptation of Gajim's actual SQLite store. See [storage boundaries and patch ledger](storage.md).
 
+The [application identity worker](identity-worker.md) now owns identity creation
+and restoration behind a bounded, serialized request interface. Messaging,
+device/trust decisions and the durable outbox remain separate increments.
+
 ## Send sequence
 
 1. Persist intent with account, conversation and stable message ID.

@@ -196,3 +196,16 @@ test("invalid or oversized snapshots are rejected before commit", async () => {
   }
   await assert.rejects(f.repo.inspect("alice"), code("MISSING_IDENTITY"));
 });
+
+test("validated reads use a disposable copy and never increment the revision", async () => {
+  const f = fixture(); await f.repo.provision("alice", initial);
+  await f.repo.read("alice", (saved) => { saved.snapshot[0] = 88; saved.identity.device_id = 3; });
+  assert.equal(await f.repo.read("alice", (saved) => saved.snapshot[0]), 0);
+  assert.deepEqual(await f.repo.inspect("alice"), { identity, revision: 1 });
+});
+
+test("failed SQLite validation releases the read lock without changing saved data", async () => {
+  const f = fixture(); await f.repo.provision("alice", initial);
+  await assert.rejects(f.repo.read("alice", () => { throw new Error("synthetic SQLite corruption"); }));
+  assert.equal((await f.another().inspect("alice")).revision, 1);
+});

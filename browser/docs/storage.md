@@ -1,7 +1,8 @@
 # Identity storage increment
 
-This is M2 foundation code with the Chrome lifecycle evidence below. The
-production worker/coordinator and sending API are not complete.
+This is M2 foundation code with the lifecycle evidence below. The application
+identity worker is implemented; the messaging coordinator and sending API are
+not complete. See [the worker contract](identity-worker.md).
 
 ## Actual source reuse
 
@@ -44,9 +45,10 @@ guarantee. There is no localStorage fallback, lock stealing or implicit retry.
 The lock covers one operation, not the whole sign-in session. Waiting has a
 bounded timeout; an acquired operation retains ownership until it finishes.
 
-The JS record descriptor must be checked against the Python snapshot when
-opening it, as demonstrated by the test bridge. The final worker/coordinator
-API and upstream-normalized account identifiers still belong to integration.
+The application worker checks the JS record descriptor against the Python
+snapshot on opening. A read callback validates the full SQLite state under
+the account lock without incrementing its revision. Upstream-normalized account
+identifiers and the messaging coordinator still belong to integration.
 
 ## What is and is not protected
 
@@ -89,12 +91,13 @@ recover a crash between commit and transmission.
   exchanges with unchanged identities. The raw reports record saved revisions
   and a one-held/one-pending queue before each explicitly verified handoff.
 
-Full browser-process termination, OS/tab suspension, storage eviction/failures in
-an actual browser, physical iPad Safari and explicit sign-out/reset behavior
-remain unverified. Tests use synthetic identities only and delete their own
-test databases. The fixture's explicit synthetic trust decisions are not a
-production trust UI, and its worker lifecycle does not complete the application
-coordinator.
+User-reported physical iPad Safari baseline, tab contention, close/reopen,
+lock/unlock and app relaunch results are recorded in [validation](validation.md).
+They do not prove process-crash recovery during active work, confirmed OS
+suspension or actual-browser storage eviction. Explicit sign-out/reset behavior
+remains pending. Tests use synthetic identities only. Their explicit synthetic
+trust decisions are not a production trust UI, and their lifecycle results do
+not complete the application messaging coordinator.
 
 Platform references: [Web Locks](https://www.w3.org/TR/web-locks/),
 [IndexedDB](https://www.w3.org/TR/IndexedDB/),
