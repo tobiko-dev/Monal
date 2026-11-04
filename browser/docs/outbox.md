@@ -102,5 +102,12 @@ discarded. This does not simulate a process crash. Results are recorded in
 
 All seven shared checks passed in actual Chrome 155 on 2026-11-04, along with
 the eight identity-worker regressions and a saved-session upgrade from the
-previous deployed schema. [Raw results](evidence/chrome-outbox.json). Physical
-iPad verification of this queue remains pending.
+previous deployed schema. [Raw results](evidence/chrome-outbox.json).
+
+The user also reported all seven checks passing on physical iPad Safari 26.6
+in 3,314 ms, with 28 baseline tests and matching wheel/adapter hashes. Four
+encrypted exchanges succeeded, one preparation was deliberately discarded,
+identities were preserved and the page reported synthetic data deleted.
+[Transcribed Safari report](evidence/safari-worker-outbox-user-reported.json).
+This completes the same synthetic queue checks on that device. Actual process
+interruption during writes, storage eviction and quota exhaustion remain open.

@@ -1,0 +1,62 @@
+{
+  "recorded_on": "2026-11-04",
+  "provenance": "Reports transcribed from the user's physical iPad Safari run in this conversation; not an independently controlled Safari run.",
+  "deployment_context": {
+    "source_commit": "bb54a29edd96a8f7b0d134335020411f061a2d59",
+    "qa_source_commit": "17aa76af3ab22236205661c94514d5fb5bc6c384",
+    "note": "Deployment commits are repository context, not fields supplied by the Safari reports. Only the outbox report supplies artifact hashes."
+  },
+  "identity_worker": {
+    "passed": true,
+    "checks": [
+      {"name": "missing state does not create keys", "passed": true},
+      {"name": "existing identity cannot be replaced", "passed": true},
+      {"name": "queued reads preserve identity and revision", "passed": true},
+      {"name": "fresh application worker restores the same identity", "passed": true},
+      {"name": "queued worker reads committed creation", "passed": true, "queue": {"held": 1, "pending": 1}},
+      {"name": "terminated owner leaves no partial identity and releases lock", "passed": true, "queue": {"held": 1, "pending": 1}},
+      {"name": "explicit creation can proceed after interrupted first provisioning", "passed": true},
+      {"name": "lost acknowledgement recovers saved identity without reprovisioning", "passed": true}
+    ],
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15",
+    "environment": "Actual browser module workers, IndexedDB, Web Locks and Gajim WASM identity bridge",
+    "elapsed_ms": 22430
+  },
+  "outbox": {
+    "passed": true,
+    "baseline_tests": 28,
+    "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+    "port_sha256": "6ead984f579ad6a38d2e914f6540b1ea2a1f20d0c720fddc63968e44b7d37af9",
+    "outbox": {
+      "passed": true,
+      "checks": [
+        {"name": "queued text survives reconstruction without advancing the crypto session", "passed": true},
+        {"name": "stable IDs deduplicate repeated intent and reject conflicting reuse", "passed": true},
+        {"name": "conversation ordering and account isolation are preserved", "passed": true},
+        {"name": "abort after the outbox write rolls back ciphertext and the actual Gajim session together", "passed": true},
+        {"name": "deliberate retry after rollback produces a decryptable committed message", "passed": true},
+        {"name": "lost-reply reconciliation reuses the identical ciphertext without advancing the ratchet", "passed": true},
+        {"name": "bidirectional encrypted continuation preserves identity and prepared queue entries", "passed": true}
+      ],
+      "encrypted_exchanges": 4,
+      "discarded_preparations": 1,
+      "identity_preserved": true,
+      "format": "Test-only JSON OMEMO payload; not an XMPP stanza or production dispatcher"
+    },
+    "environment": "Actual browser worker, IndexedDB, Web Locks and unchanged Gajim OMEMO library",
+    "elapsed_ms": 3314,
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6 Safari/605.1.15"
+  },
+  "completion_text": {
+    "identity_worker": "8 worker checks passed. Synthetic test data deleted.",
+    "outbox": "7 outbox checks passed. Synthetic test data deleted."
+  },
+  "limits": [
+    "No XMPP sign-in, contact messaging or live native-client interoperability.",
+    "Worker termination is not an iPadOS or WebKit process crash.",
+    "Outbox reconstruction and discarded replies do not simulate a page reload or process crash during an outbox write.",
+    "No actual storage eviction, physical Safari quota exhaustion or confirmed OS suspension.",
+    "Synthetic peer trust is explicit and test-only; production device/trust policy and wire-level OMEMO enforcement remain unimplemented.",
+    "These passes do not establish encryption at rest, safe hosting or production security."
+  ]
+}

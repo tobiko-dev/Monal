@@ -118,9 +118,9 @@ safety. [Before/after browser capture](evidence/chrome-identity-upgrade.json).
 
 The [source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41792951304)
 passed its fresh WASM build, 30 JS tests, 28 WASM tests, combined integration
-fixtures and altered-archive rejection. Physical iPad verification of this new
-worker remains pending; the earlier Safari results are not relabeled as passes
-for the changed code.
+fixtures and altered-archive rejection. The subsequent user-reported Safari
+worker results below cover this changed boundary; the earlier lifecycle results
+are not relabeled as application-worker passes.
 
 ![Actual Chrome reports eight application identity worker checks passed](evidence/chrome-identity-worker-pass.jpg)
 
@@ -159,11 +159,42 @@ were deleted. The same evidence file retains the before/after reports.
 
 The [source CI run](https://github.com/tobiko-dev/Monal/actions/runs/41800990712)
 passed. Object reconstruction and discarded replies in the outbox fixture are
-not OS crash tests. Physical iPad outbox verification remains pending. The new
+not OS crash tests. Subsequent physical iPad results are recorded below. The new
 queue is not yet bound to production recipient policy, a page messaging worker,
 a composer or a network dispatcher.
 
 ![Actual Chrome reports seven durable outbox checks passed](evidence/chrome-outbox-pass.jpg)
+
+## User-reported Safari application-worker and outbox results
+
+On 2026-11-04 the user supplied successful physical iPad Safari 26.6 reports
+for both new harness pages. [Transcribed reports and provenance](evidence/safari-worker-outbox-user-reported.json)
+retain the exact check names, outcomes, reported timing and runtime fields.
+These are user-supplied results, not independently controlled Safari tests.
+
+All **eight application identity-worker checks** pass in **22,430 ms**. They
+cover missing-state rejection, creation without replacement, queued reads,
+restoration through a fresh worker, queued handoff after committed creation,
+termination before saving, explicit creation after that interruption, and
+recovery after a saved creation loses its reply. Both competing-worker checks
+report one held and one pending lock. This establishes committed-creation
+handoff for the application worker; it does not retroactively complete the
+separate lifecycle harness's held-session-change handoff procedure.
+
+All **seven durable outbox checks** pass in **3,314 ms**, with **28 baseline
+tests**, **four encrypted exchanges**, **one discarded preparation** and
+unchanged identities. The wheel and adapter SHA-256 values match the tested
+build. The tests exercise actual worker/IndexedDB/Web Locks behavior and actual
+Gajim crypto, including rollback after an injected write abort, retry/decryption
+and ciphertext reuse after a discarded successful reply. Both pages report
+that disposable test data was deleted. The identity report does not include
+artifact hashes; the outbox report does.
+
+These results complete the specified iPad worker/outbox checks, without
+establishing live XMPP interoperability, production trust policy, process-crash
+recovery during active work, actual storage eviction or quota exhaustion.
+The worker test stops a worker; the queue test reconstructs storage objects.
+Neither operation is equivalent to an iPadOS/WebKit process crash.
 
 ## Build issues resolved
 
@@ -173,6 +204,6 @@ a composer or a network dispatcher.
 
 ## Not implemented or proved
 
-The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above. The demonstrated Chrome checks do not complete the physical Safari gates or the messaging coordinator. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
+The snapshot store, per-operation concurrency adapter, application identity worker and local outbox are implemented and tested as described above, including the specific user-reported Safari passes. Process-crash/storage-eviction gates and the messaging coordinator remain incomplete. There is no fingerprint-verification UI, XMPP account authentication, 5july connection, Gajim/nbxmpp messaging integration, network dispatcher, history, attachments, conversation UI or production security review. The M1 fixture's blind trust is test-only; the adapted Gajim store disables it.
 
 No XMPP account login or real contact message was used. A library returning no ciphertext for an unknown or unverified peer is tested; app-wide enforcement of required OMEMO belongs to M3 and is not claimed here. Local identity bytes and queued text are not encrypted at rest. The shared ciphertext/session transaction is implemented; recipient-policy revalidation and delivery reconciliation still precede any network send.

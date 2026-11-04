@@ -72,17 +72,24 @@ upgrade check restored the previous adapter's synthetic identities and resumed
 encrypted exchange from revisions 3/3 to 5/5 without replacing either identity.
 [Upgrade result](evidence/chrome-identity-upgrade.json).
 
+The user subsequently reported all eight checks passing on physical iPad Safari
+26.6 in 22,430 ms, including both one-held/one-pending lock cases. The report
+states that synthetic data was deleted. This is evidence for the application
+worker boundary, distinct from the earlier lifecycle harness.
+[Transcribed Safari report](evidence/safari-worker-outbox-user-reported.json).
+
 This is the identity portion of the coordinator. There is no send, receive,
-trust-approval, key-export or reset command. Durable drafts/outbox and atomic
-session/ciphertext storage must precede the messaging API. Account login,
+trust-approval, key-export or reset command. Durable outbox and atomic
+session/ciphertext storage now exist as a separate internal service; they are
+not yet bound to a page-facing messaging API. Account login,
 fingerprint comparison UI, transport, page lifecycle integration and suspended
 pages remain later work. The fixture's peer trust is explicit and test-only.
 
 Worker separation is an interface boundary, not protection against malicious
 same-origin code. Snapshot bytes remain unencrypted at rest. Eviction, process
 crash during a write, delivery uncertainty and hosting/code trust retain their
-roadmap checks. Earlier iPad passes cover the earlier harness; this changed
-worker needs its own physical iPad verification.
+roadmap checks. The new physical iPad report covers worker termination, not an
+OS/browser-process crash or storage eviction.
 
 Platform contracts: [Web Workers](https://html.spec.whatwg.org/multipage/workers.html),
 [Web Locks](https://www.w3.org/TR/web-locks/), [IndexedDB](https://www.w3.org/TR/IndexedDB/).

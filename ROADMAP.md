@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-04. Status: the local outbox passes seven actual Chrome checks; eight identity-worker checks also pass with the new database schema. A saved session survives the upgrade. Physical iPad checks for these increments, Gajim/nbxmpp integration and a usable chat application remain pending.
+Updated: 2026-11-04. Status: eight application identity-worker checks and seven local-outbox checks pass in Chrome and user-reported physical iPad Safari runs. A saved session survives the schema upgrade in Chrome. Gajim/nbxmpp integration, process-crash/storage-eviction checks and a usable chat application remain pending.
 
 ## Goal and scope
 
@@ -48,9 +48,11 @@ Build in this order; source and security requirements above apply throughout:
 5. **Conversation interface:** build the agreed bubbles, receipts, history,
    selection and image behavior around the verified messaging path.
 
-Physical-device task: in iPad Safari, run the eight application identity-worker
-checks and the seven durable outbox checks. Source integration can proceed
-while these results are pending; a Chrome pass does not complete the iPad gate.
+Physical-device task completed: the user supplied all eight application
+identity-worker passes and all seven durable outbox passes from iPad Safari.
+[Reports and limits](browser/docs/evidence/safari-worker-outbox-user-reported.json).
+No repeat of these checks is needed for this build. Continue source integration;
+request device assistance again when a new integration needs physical testing.
 
 Queue acceptance for this increment: acknowledged enqueue survives reopening;
 failed/aborted preparation changes neither the saved session nor prepared
@@ -108,7 +110,7 @@ Physical iPad evidence: [user-reported Safari results](browser/docs/evidence/saf
 - [x] Add the application identity worker API: explicit creation, validated restoration, bounded serial work, public-only replies and interrupted-operation outcomes.
 - [x] Verify the application identity worker in actual Chrome: eight checks cover creation/restoration, queued committed handoff, interruption before commit and recovery after a lost acknowledgement. [Raw result](browser/docs/evidence/chrome-identity-worker.json).
 - [x] Reload a synthetic session from the previous deployed adapter with the new build; preserve identities and resume encrypted exchange from 3/3 to 5/5. [Upgrade result](browser/docs/evidence/chrome-identity-upgrade.json).
-- [ ] Verify the new application identity worker on physical iPad Safari; earlier harness passes do not cover this changed boundary.
+- [x] Verify the application identity worker on physical iPad Safari (user-reported): all eight checks pass, including queued committed creation, termination before commit and saved-identity recovery after a lost reply. Both contention cases report one held/one pending lock. [Evidence](browser/docs/evidence/safari-worker-outbox-user-reported.json).
 - [ ] Complete the messaging worker/coordinator lifecycle, including suspended pages, durable drafts and atomic outgoing work.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.
 
@@ -132,7 +134,8 @@ Exit: real interoperability evidence, no plaintext fallback and understandable d
 - [x] Commit prepared ciphertext and session changes together; verify rollback after a late abort and reuse after a lost reply using actual Gajim WASM crypto.
 - [x] Preserve v1 identity data when adding the outbox store; reject corrupt, missing or stale initialized queue records.
 - [x] Pass seven outbox checks and eight identity-worker regressions in actual Chrome; preserve identity and encrypted continuation across the database upgrade. [Evidence](browser/docs/evidence/chrome-outbox.json).
-- [ ] Verify the outbox on physical iPad Safari, including interrupted active work and storage failures.
+- [x] Pass all seven synthetic outbox checks on physical iPad Safari (user-reported): four encrypted exchanges, forced write-abort rollback, deliberate retry and identical-ciphertext reuse after a discarded reply. Artifact hashes match the tested build. [Evidence](browser/docs/evidence/safari-worker-outbox-user-reported.json).
+- [ ] Verify physical Safari outbox recovery after process interruption during active work and actual storage failure/eviction; object reconstruction and injected transaction abort do not cover these cases.
 - [ ] Connect the production messaging worker, recipient-policy checks and dispatcher; reconcile uncertain network delivery without blind resend.
 - [ ] Connect the composer: clear after enqueue succeeds; compact pending/sent/read/failed states and deliberate retry.
 - [ ] Reconcile uncertain delivery by stable message ID. Tightly spaced double checks require an actual read indication.
