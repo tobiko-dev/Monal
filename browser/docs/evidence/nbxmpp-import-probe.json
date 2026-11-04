@@ -1,0 +1,352 @@
+{
+  "purpose": "Unmodified nbxmpp import probe and static desktop-dependency inventory",
+  "source": {
+    "repository": "https://github.com/gajim/python-nbxmpp",
+    "commit": "999ce8859d6d799fe8ce00a877e85b2ae554e392",
+    "archive_sha256": "2c89345ac435537da39d19cbed3ebf3e15be37973a17e87beebb7e801941e90f"
+  },
+  "environment": "Node v24.22.1 with Pyodide 314.0.7; not a Safari or network test",
+  "status": "blocked_by_desktop_dependency",
+  "platform": "emscripten",
+  "python": "3.14.2",
+  "source_module_count": 99,
+  "desktop_dependencies": [
+    {
+      "path": "nbxmpp/__init__.py",
+      "sha256": "a0e8914d3fc3d11a2f6f72a4cf3e380b30df3b92d3a72ddbdf2f8405747844b8",
+      "imports": [
+        {
+          "line": 1,
+          "module": "gi"
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/client.py",
+      "sha256": "918aac471aab0325c842b8ea4d47331922647d24691c85362f7ff8557eb52c04",
+      "imports": [
+        {
+          "line": 19,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 20,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/connection.py",
+      "sha256": "197d792a454ddce75cf6c5ba1c818f4b33078c8982e3bfc32b63be39469ebe64",
+      "imports": [
+        {
+          "line": 11,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/const.py",
+      "sha256": "10766e830a20225be25398047840a453fb37668ca1e1e0b99a8674bf7a4725d3",
+      "imports": [
+        {
+          "line": 13,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 14,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/dispatcher.py",
+      "sha256": "e58bc56a72a79441b272352c7e01edb73726d7d13fe6fd28cf89ce6007acd8d5",
+      "imports": [
+        {
+          "line": 19,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/protocol.py",
+      "sha256": "e8929f639ff95e9415d7e0ca70b8f2ca297e194fd83981862bc4fc245e7d4d9d",
+      "imports": [
+        {
+          "line": 30,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 31,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/sasl.py",
+      "sha256": "7bf32b173df0f695215f437529943e9eff6306e3d0daf32a54b19f6a07f937a6",
+      "imports": [
+        {
+          "line": 19,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/structs.py",
+      "sha256": "0524016eeacf967804499031a3e346ba63bbc5ecb5c419a083f85bbb89df1874",
+      "imports": [
+        {
+          "line": 23,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 24,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/task.py",
+      "sha256": "b3c36e376da11f3b26f70721a6c6b9d09d63df1f143791d03e7ed5a382a249fb",
+      "imports": [
+        {
+          "line": 22,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/tcp.py",
+      "sha256": "81f9e0617cbbc8fa2d6f19eccf2839dcdba591e119099b8580d52cf3758fec86",
+      "imports": [
+        {
+          "line": 12,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 13,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        },
+        {
+          "line": 14,
+          "module": "gi.repository",
+          "names": [
+            "GObject"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/util.py",
+      "sha256": "66b3a969241459293324fb66128006eea2a8842ad7fe9c5d6efa415f863f2ef6",
+      "imports": [
+        {
+          "line": 24,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 25,
+          "module": "gi.repository",
+          "names": [
+            "Soup"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "nbxmpp/websocket.py",
+      "sha256": "42a19812e2dbec5e9676380c38f069d5b8113e428d84f9feb05e0bd394343d60",
+      "imports": [
+        {
+          "line": 11,
+          "module": "gi.repository",
+          "names": [
+            "Gio"
+          ]
+        },
+        {
+          "line": 12,
+          "module": "gi.repository",
+          "names": [
+            "GLib"
+          ]
+        },
+        {
+          "line": 13,
+          "module": "gi.repository",
+          "names": [
+            "Soup"
+          ]
+        }
+      ]
+    }
+  ],
+  "import_probe": {
+    "imported": false,
+    "error_type": "ModuleNotFoundError",
+    "missing_module": "gi"
+  },
+  "upstream_regression_sources": [
+    {
+      "path": "test/unit/test_activity.py",
+      "sha256": "08ba506de537eb3023a50be5c469776eccf08aed705e894886fb298d7385ccf4"
+    },
+    {
+      "path": "test/unit/test_avatar.py",
+      "sha256": "525259f4d6961826f39560e27c2b9b154c67ce195afda05c63700a13a45dbe64"
+    },
+    {
+      "path": "test/unit/test_body.py",
+      "sha256": "f72ce0a2c0ac7cd6171e17e0afd825ed7a23454d42f93d46fb3df95d998a8e33"
+    },
+    {
+      "path": "test/unit/test_bookmarks.py",
+      "sha256": "eeb28a93fe33c6352d00a89091c9c2e04950641dd56c1a676efcc3bd1b6af5ef"
+    },
+    {
+      "path": "test/unit/test_datetime_parsing.py",
+      "sha256": "02d498e20bd24011255df3e29ff2277682242bd08de5178f2f4218f738e1629b"
+    },
+    {
+      "path": "test/unit/test_delay_parsing.py",
+      "sha256": "6f2a3cfda4bc72aea599f56bd8d4ebbb518f099ef746685f45397326b4e01212"
+    },
+    {
+      "path": "test/unit/test_entity_caps.py",
+      "sha256": "e2ad449acd7bc008bc2b7cca0aec8bdbad366be9e621bc09bd047a03efe3bbc1"
+    },
+    {
+      "path": "test/unit/test_error_parsing.py",
+      "sha256": "d7e758cd3cec465e87c6d3fad4544fbd934de0b038bd7fff00d7f539c81c4b44"
+    },
+    {
+      "path": "test/unit/test_fallback.py",
+      "sha256": "18d5f989ddc36973a64183a361a034fb5ca73ded566cae4882291e680e06a3d1"
+    },
+    {
+      "path": "test/unit/test_hats.py",
+      "sha256": "ad2bfd3d8428ee09d6f4994fb03085f1b7eb273bdf53db8aa0cbaefd8b9e23a5"
+    },
+    {
+      "path": "test/unit/test_jid_parsing.py",
+      "sha256": "ebb10f7d20a76d07ddac7516348710d7ac99f4db01dd178d0216fc592f5ebbec"
+    },
+    {
+      "path": "test/unit/test_language.py",
+      "sha256": "f32e8ef35acef81cb351d3071d0ab32c131c304b7e15967b35c498f63170ce87"
+    },
+    {
+      "path": "test/unit/test_location.py",
+      "sha256": "dea542712f6006f597295ee62b88bcea45692228fe4c22099ba690f32454720d"
+    },
+    {
+      "path": "test/unit/test_moderation.py",
+      "sha256": "66615c0afd29d90afe7ff05d146c52af04eaa6c15b6509604628b0a6c3b16347"
+    },
+    {
+      "path": "test/unit/test_mood.py",
+      "sha256": "27eb77018969b23a06a23fc79b0b64c8f49308a3b2e324eab0650269833e2763"
+    },
+    {
+      "path": "test/unit/test_node.py",
+      "sha256": "fe5a5046865d639e11cebebe4c0df61832d50b2beea7d8a68b595dc2667fc756"
+    },
+    {
+      "path": "test/unit/test_ogp.py",
+      "sha256": "46bc134a9c4449f553034f62cd65cf56ace786a7027aa944ce8c4bbba7411976"
+    },
+    {
+      "path": "test/unit/test_omemo.py",
+      "sha256": "c4fa9229f49270aa0cc4f489678a2fa767c0b4f72b635256f8c064ac79a37873"
+    },
+    {
+      "path": "test/unit/test_pubsub.py",
+      "sha256": "c3e035f0ef5cd13f74f84fe47ccde74e80ba410fd38a5907bc20b4d148187771"
+    },
+    {
+      "path": "test/unit/test_reactions.py",
+      "sha256": "e17c4cd42cb1ea0f262870bfc16a85e4f81dae09b5dc1120b950e4b589237783"
+    },
+    {
+      "path": "test/unit/test_restricted_reactions.py",
+      "sha256": "d47882f4e6aa5ecc90aeef37f5f9735e40813ceb0d1109d1b735dc397290c649"
+    },
+    {
+      "path": "test/unit/test_retraction.py",
+      "sha256": "f8862c11861cb1fc8862bd3df1f3ddd71f05e6ebc56189433362847cd7c58e4f"
+    },
+    {
+      "path": "test/unit/test_sasl_scram.py",
+      "sha256": "336bf8d0eaa977ec8cc76871f3f75a852cd1d1d2422762fb5df6e91acc522e9d"
+    },
+    {
+      "path": "test/unit/test_stringprep.py",
+      "sha256": "49da39c19b3c586ddcb3141472e1816f5fc40af8fe6143bc09c3f8491fdbd1fb"
+    },
+    {
+      "path": "test/unit/test_tune.py",
+      "sha256": "f511a5df47cf19d2aea1b17806c64cfab3f7c0ffef4e17fcbcd8ae65f9592e9a"
+    },
+    {
+      "path": "test/unit/test_vcard4.py",
+      "sha256": "96a77104390db06a3475b9c1da74b8d074791c55875f3a28870f826de6aa1b95"
+    },
+    {
+      "path": "test/unit/test_xml_vulnerability.py",
+      "sha256": "6325b39cc8de018c502c31eb001995ba2bca1968df688c0018cfaa34a2c0945a"
+    }
+  ],
+  "limits": [
+    "GI-dependent paths were inspected, not ported or executed.",
+    "No upstream regression tests were run by this probe; listed test files are the next port's inputs.",
+    "The first import failure does not identify every subsequent runtime dependency.",
+    "No socket, account sign-in, key publication or contact message."
+  ]
+}

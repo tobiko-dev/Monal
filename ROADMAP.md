@@ -38,7 +38,10 @@ Build in this order; source and security requirements above apply throughout:
    connect the composer and network dispatcher only after their own gates pass.
 2. **Gajim/nbxmpp connection and device management (next development):** adapt the actual upstream
    code for 5july authentication, device publication, recipient bundles and
-   reconnects, with a source/patch ledger.
+   reconnects, with a source/patch ledger. The [source-boundary investigation](browser/docs/nbxmpp-port.md)
+   reproduces the missing desktop GI dependency. First port the runtime helpers
+   and run upstream protocol tests; then adapt the WebSocket connection and
+   integrate Gajim's device/trust orchestration.
 3. **Fingerprint verification:** expose real fingerprints and distinct
    unverified/changed/blocked states. Missing usable keys block every content
    send; no plaintext fallback. Revalidate queued work against current device
@@ -118,8 +121,10 @@ Exit: persistence/concurrency tests pass, including physical Safari lifecycle te
 
 Implementation and limits: [storage design](browser/docs/storage.md), [actual lifecycle evidence](browser/docs/lifecycle.md), [outbox boundary](browser/docs/outbox.md). The test harness uses separate workers/runtimes and real browser locks. Atomic outbox storage is implemented; it does not authorize network transmission before recipient-policy and dispatcher integration.
 
-### M3 — Gajim protocol integration and 5july: pending
+### M3 — Gajim protocol integration and 5july: investigation complete, implementation pending
 
+- [x] Inspect the pinned nbxmpp package and reproduce the unchanged-client import blocker in WASM; record 12 desktop-dependent modules, retained upstream responsibilities and the incremental port plan. [Investigation and limits](browser/docs/nbxmpp-port.md).
+- [ ] Port the required runtime helpers and run upstream JID, XML-security, OMEMO parsing and SCRAM tests in WASM before connecting an account.
 - [ ] Adapt Gajim/nbxmpp client and OMEMO lifecycle at explicit platform boundaries; keep a source-reuse and patch ledger.
 - [ ] Adapt Soup/GLib networking/scheduling to browser APIs. nbxmpp already supports XMPP WebSockets; assess BOSH/XEP-0206 if actual endpoint capabilities require it.
 - [ ] Verify 5july transport, authentication, device publication, bundle retrieval, changed-key handling and fingerprints.
