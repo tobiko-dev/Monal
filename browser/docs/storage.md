@@ -78,8 +78,9 @@ recover a crash between commit and transmission.
   changed identity, damaged data, stale writer and lock timeout.
 - A combined test performs three encrypted exchanges through WASM, Gajim's
   SQLite snapshots and the repository, reconstructing objects between calls.
-  The same fixture is available in the HTTPS browser harness with real browser
-  storage APIs. The Node result is not a browser pass.
+  The same fixture also passes in actual Chrome 155 over HTTPS with real
+  IndexedDB and Web Locks; see [the browser result](evidence/chrome-browser.json).
+  This covers reconstructed objects in one worker, not a page/process restart.
 
 Actual browser reload, process termination, tab closure/suspension, eviction,
 physical iPad Safari and explicit sign-out/reset behavior remain unverified.

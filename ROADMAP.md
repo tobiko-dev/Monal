@@ -1,6 +1,6 @@
 # Gajim-derived browser port
 
-Updated: 2026-11-03. Status: 23 WebAssembly tests and 16 simulated storage/concurrency tests pass, with three combined encrypted exchanges. M2 storage foundation is implemented; actual browser/iPad validation and a usable chat application are still pending.
+Updated: 2026-11-03. Status: 23 WebAssembly tests and three encrypted exchanges now pass in actual Chrome over HTTPS with real IndexedDB/Web Locks. The 16 simulated storage/concurrency tests also pass in Node/CI. M2 storage foundation is implemented; browser lifecycle, physical iPad validation and a usable chat application are still pending.
 
 ## Goal and scope
 
@@ -41,12 +41,14 @@ M0 does not establish browser encryption, live interoperability or iPad support.
 - [x] Package a local harness, pinned source/runtime hashes and licenses. No account login or contact messaging.
 - [x] Pass all 8 upstream tests in WebAssembly under Node 24.22.1.
 - [x] Pass 6 added WebAssembly checks: round trip/reply, altered payload/IV/wrapped key, missing device key and unavailable recipient. Upstream tests also cover reordered/missed/duplicate messages.
-- [ ] Complete the actual browser run. A private HTTPS QA endpoint now exists; its authenticated browser run is pending. The original HTTP preview lacked secure Web Crypto. No browser pass is claimed.
+- [x] Complete the actual browser run: Chrome 155 on Linux over private HTTPS passed all 23 tests and three encrypted exchanges using real IndexedDB/Web Locks. Source and artifact hashes match the Node/CI baseline.
 - [ ] Record startup/memory observations and run the same harness in physical iPad Safari.
 
 Exit: executable evidence for the chosen runtime. Record concrete blockers before changing architecture.
 
 Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAssembly result](browser/docs/evidence/node-wasm.json), [M2 WebAssembly/storage result](browser/docs/evidence/node-wasm-storage.json). The M1 blind-trust fixture is separate from the adapted Gajim store, which disables blind trust. Production device/trust orchestration remains M3.
+
+Browser evidence: [actual Chrome result](browser/docs/evidence/chrome-browser.json), [screenshot](browser/docs/evidence/chrome-browser-pass.jpg). This establishes execution and the tested storage operations in Chrome, not device reload or Safari lifecycle correctness.
 
 ### M2 — Durable identity and sessions: in progress
 
@@ -54,6 +56,7 @@ Evidence: [build and validation record](browser/docs/validation.md), [M1 WebAsse
 - [x] Implement IndexedDB snapshot transactions, revision checks and per-operation Web Locks. Results are withheld until commit completes.
 - [x] Verify identity, trust, prekeys and session continuation after reconstructing stores/managers in native Python and WASM; run three combined encrypted exchanges through the repository.
 - [x] Pass 16 simulated IndexedDB/Node Web Locks tests, including interrupted writes, quota, denied storage, corruption, concurrent writers and lock timeout.
+- [x] Run the combined storage/encryption fixture against actual Chrome IndexedDB and Web Locks; preserve identities through three exchanges and reconstructed stores/managers.
 - [ ] Verify real browser reload/restart and storage failure behavior, including physical iPad Safari.
 - [ ] Verify real multi-tab closure, suspension and handoff; integrate the final worker/coordinator boundary.
 - [ ] Distinguish sign-out, local-history removal and deliberate device reset.

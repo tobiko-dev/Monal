@@ -1,0 +1,34 @@
+{
+  "platform": "emscripten",
+  "python": "3.14.2",
+  "curve_module": "/experiment/site/omemo_dr/_curve.cpython-314-wasm32-emscripten.so",
+  "omemo_dr": "1.2.0",
+  "cryptography": "47.0.0",
+  "protobuf": "7.34.1",
+  "tests": 23,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": true,
+  "output": "test_vector_long_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_long_v3) ... ok\ntest_vector_v3 (tests.kdf.test_hkdf.HKDFTest.test_vector_v3) ... ok\ntest_omemo_tmp_session (tests.test_session_manager.SessionBuilderTest.test_omemo_tmp_session) ... ok\ntest_agreement (tests.test_sigs.Curve25519Test.test_agreement) ... ok\ntest_gensig (tests.test_sigs.Curve25519Test.test_gensig) ... ok\ntest_random_agreements (tests.test_sigs.Curve25519Test.test_random_agreements) ... ok\ntest_signature (tests.test_sigs.Curve25519Test.test_signature) ... ok\ntest_split (tests.util.test_byteutil.ByteUtilTest.test_split) ... ok\ntest_message_not_addressed_to_this_device_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_message_not_addressed_to_this_device_rejected) ... ok\ntest_missing_recipient_yields_no_ciphertext (port_tests.test_browser_crypto.BrowserCryptoTests.test_missing_recipient_yields_no_ciphertext) ... ok\ntest_round_trip_and_reply (port_tests.test_browser_crypto.BrowserCryptoTests.test_round_trip_and_reply) ... ok\ntest_tampered_iv_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_iv_rejected) ... ok\ntest_tampered_payload_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_payload_rejected) ... ok\ntest_tampered_wrapped_key_rejected (port_tests.test_browser_crypto.BrowserCryptoTests.test_tampered_wrapped_key_rejected) ... ok\ntest_duplicate_identity_rejected (port_tests.test_storage.StorageTests.test_duplicate_identity_rejected) ... ok\ntest_empty_identity_rejected (port_tests.test_storage.StorageTests.test_empty_identity_rejected) ... ok\ntest_identity_and_prekeys_survive_restart_without_generation (port_tests.test_storage.StorageTests.test_identity_and_prekeys_survive_restart_without_generation) ... ok\ntest_inconsistent_key_pair_rejected (port_tests.test_storage.StorageTests.test_inconsistent_key_pair_rejected) ... ok\ntest_missing_and_corrupt_snapshots_do_not_create_identity (port_tests.test_storage.StorageTests.test_missing_and_corrupt_snapshots_do_not_create_identity) ... ok\ntest_other_account_cannot_load_snapshot (port_tests.test_storage.StorageTests.test_other_account_cannot_load_snapshot) ... ok\ntest_trust_and_ratchets_survive_both_participants_restarting (port_tests.test_storage.StorageTests.test_trust_and_ratchets_survive_both_participants_restarting) ... ok\ntest_unknown_schema_rejected (port_tests.test_storage.StorageTests.test_unknown_schema_rejected) ... ok\ntest_unverified_peer_is_not_silently_trusted (port_tests.test_storage.StorageTests.test_unverified_peer_is_not_silently_trusted) ... ok\n\n----------------------------------------------------------------------\nRan 23 tests in 1.085s\n\nOK\n",
+  "elapsed_ms": 3303,
+  "pyodide": "314.0.7",
+  "source_sha256": "18b6542b3bb7ed6dce34dd02f32b16401982ba24f0146ddae091dcb92c79a484",
+  "wheel_sha256": "e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df",
+  "gajim_storage": {
+    "repository": "https://github.com/gajim/gajim",
+    "commit": "5a57abb2950886dd9cb8a73972ecc2dcc59f688a",
+    "path": "src/gajim/common/storage/omemo.py",
+    "sha256": "5f57337f29e1d3a889698a2f65aba4348754ac268aad49fe18f32f9e4d427260"
+  },
+  "port_sha256": "bc6b9990f18b9782a845141b790847f8a69ffd62e28b7ee8362e7c5668a27a37",
+  "storage_integration": {
+    "passed": true,
+    "encrypted_exchanges": 3,
+    "identity_preserved": true,
+    "fixture": "Gajim SQLite snapshots with explicit synthetic trust",
+    "environment": "Browser IndexedDB and Web Locks"
+  },
+  "startup_ms": 4096,
+  "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+}

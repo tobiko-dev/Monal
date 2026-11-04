@@ -7,6 +7,7 @@
 - The nine storage checks also passed on native Python. They retain the device identity, prekeys, peer trust and working ratchets after reconstructing the stores/session managers; corrupt, missing, mismatched and unsupported snapshots are rejected.
 - Passed all **16** JS repository tests against simulated IndexedDB and Node Web Locks, including quota/denied storage, concurrent writers, stale revisions, identity replacement attempts, lock timeout and an abort after the write request succeeds.
 - Completed **three encrypted exchanges** through WASM, the adapted Gajim store and the JS repository with reconstructed objects. These combined checks use synthetic identities and explicit synthetic trust; no XMPP transport exists yet.
+- Repeated all **23 WASM tests and three encrypted exchanges in actual Chrome 155 on Linux**, served over private HTTPS. Real browser IndexedDB and Web Locks were used. Zero failures/errors/skips; the device identities remained consistent through reconstructed stores/managers. [Raw browser result](evidence/chrome-browser.json).
 - Confirmed Python 3.14.2, cryptography 47.0.0, protobuf 7.34.1 and the loaded WASM curve-module path in the test result.
 - Source archive, runtime files and runtime package hashes are checked before packaging. The crypto source remains unchanged. Gajim's original SQLite file is hash-checked, then adapted with three explicit substitutions recorded in [the storage patch ledger](storage.md).
 - Fresh local builds and [the M1 GitHub Actions run](https://github.com/tobiko-dev/Monal/actions/runs/41624574387) produced the identical wheel SHA-256: `e3df1e9853a938f1d62ba9e4fce4d27fc82b003be6bcbf4c6c20999b12ebe9df`. The M2 local build retains that hash; storage code is packaged separately.
@@ -14,13 +15,17 @@
 - The generated harness is about 16.5 MB before transfer compression; the runtime and dependencies account for about 16.2 MB. This is asset size, not memory usage.
 - One Node observation: runtime startup 1.75 seconds; package loading plus checks 1.77 seconds; the 14 tests themselves 0.75 seconds. These are observations in this Linux environment, not iPad performance estimates.
 
-## Browser and device limits
+## Actual browser verification and device limits
 
-The actual Chrome preview opened the harness, and pressing Run reached its explicit secure-context check. The provided preview uses `http://terminal.local:4173/`, which does not provide the required secure Web Crypto context. The worker therefore stopped before running the tests. No browser encryption pass is claimed, and browser security was not disabled.
+The authenticated HTTPS harness at `https://gajim-browser-qa.strongcaterpillar.chatgpt.site/` passed in the actual cloud Chrome browser. It served source commit `bc23461062b7f571a2da915154bfc5b5ed9b3656`, packaged as QA source commit `5ed48711654197b2b450318ceebcfeb911eff545`. Browser wheel, adapter-archive and source hashes match the Node/CI evidence. No browser security setting or application code was changed to obtain this pass.
 
-A private HTTPS QA harness has now been deployed for browser checks. Its sign-in is pending authorization, so no authenticated browser result is recorded. Actual iPad Safari, reloads, real multi-tab behavior, startup/memory measurements and background/resume behavior remain pending. Node's simulated IndexedDB and real WASM execution do not substitute for those checks.
+One observation: 4.10 seconds runtime startup, 3.30 seconds package loading plus Python checks, and 1.09 seconds for those 23 tests themselves. The report's elapsed time excludes the subsequent storage integration fixture. These are cloud Chrome observations, not iPad estimates; memory usage was not measured.
 
-![Observed secure-context check in the HTTP browser preview](evidence/secure-context-check-1793703790137.jpg)
+![Actual Chrome browser reports 23 tests passed](evidence/chrome-browser-pass.jpg)
+
+The earlier HTTP preview at `http://terminal.local:4173/` stopped at the secure-context check. Moving this synthetic harness to private HTTPS resolved that environment limitation. The [earlier screenshot](evidence/secure-context-check-1793703790137.jpg) remains historical evidence.
+
+Actual iPad Safari, reload/process restart, real multi-tab contention and closure, storage eviction and background/resume behavior remain pending. The synthetic database is deleted after each complete harness run, so this pass does not demonstrate persistence across a page reload. The 16 fault-injection/concurrency tests still have Node evidence only.
 
 ## Build issues resolved
 
