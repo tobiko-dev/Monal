@@ -5,6 +5,7 @@ import { runChecks } from "../dist/checks.mjs";
 import { runStorageChecks } from "../dist/storage-checks.mjs";
 import { IDBFactory } from "fake-indexeddb";
 import { locks } from "node:worker_threads";
+import { checkLifecycleFixture } from "../tests/lifecycle-fixture-checks.mjs";
 
 const root = new URL("../dist/", import.meta.url);
 const started = performance.now();
@@ -15,6 +16,8 @@ if (result.passed) {
   result.storage_integration = await runStorageChecks(pyodide, { indexedDB: new IDBFactory(), locks });
   result.storage_integration.environment = "Simulated IndexedDB and Node Web Locks; not a browser pass";
   result.passed &&= result.storage_integration.passed;
+  result.lifecycle_fixture = await checkLifecycleFixture(pyodide, { indexedDB: new IDBFactory(), locks });
+  result.passed &&= result.lifecycle_fixture.passed;
 }
 console.log(JSON.stringify({ ...result, startup_ms, host: `Node ${process.version}` }, null, 2));
 if (!result.passed) process.exitCode = 1;

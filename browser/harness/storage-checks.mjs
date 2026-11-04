@@ -1,13 +1,6 @@
 // Test-only bridge. No transport and no user accounts; do not expose as an app API.
 import { SnapshotRepository } from "./platform/snapshot-repository.mjs";
-
-function toBase64(bytes) {
-  let binary = "";
-  for (let start = 0; start < bytes.length; start += 8192) {
-    binary += String.fromCharCode(...bytes.subarray(start, start + 8192));
-  }
-  return btoa(binary);
-}
+import { fixtureOperation } from "./fixture-bridge.mjs";
 
 export async function runStorageChecks(pyodide, options = {}) {
   const indexedDB = options.indexedDB ?? globalThis.indexedDB;
@@ -16,17 +9,7 @@ export async function runStorageChecks(pyodide, options = {}) {
   let repo = new SnapshotRepository(settings);
   const alice = "synthetic-alice";
   const bob = "synthetic-bob";
-  const run = (account, action, extra = {}) => async (previous) => {
-    const request = { account, action, ...extra };
-    if (previous) Object.assign(request, { snapshot: toBase64(previous.snapshot), identity: previous.identity });
-    pyodide.globals.set("_storage_request", JSON.stringify(request));
-    try {
-      const result = JSON.parse(await pyodide.runPythonAsync(
-        "from port_tests.storage_fixture import step\nstep(_storage_request)"
-      ));
-      return { ...result, snapshot: Uint8Array.from(atob(result.snapshot), (character) => character.charCodeAt(0)) };
-    } finally { pyodide.globals.delete("_storage_request"); }
-  };
+  const run = (account, action, extra) => fixtureOperation(pyodide, account, action, extra);
   try {
     const aBundle = await repo.provision(alice, run(alice, "provision"));
     const bBundle = await repo.provision(bob, run(bob, "provision"));

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+<title>Gajim browser lifecycle tests</title>
+<link rel="stylesheet" href="style.css">
+<main>
+  <h1>Identity persistence tests</h1>
+  <p>This disposable test keeps two synthetic identities in this browser until you delete the test data. It cannot sign into XMPP or contact anyone.</p>
+  <p>Start a test, reload or reopen this link, then resume the exchange. Open the same test in a second tab to check competing operations and interrupted work.</p>
+  <button id="create" type="button">Start a new synthetic test</button>
+  <a id="same-test" target="_blank" rel="noopener" hidden>Open this test in another tab</a>
+  <p id="status" role="status" aria-live="polite">Ready to create a disposable test.</p>
+  <div id="operations" hidden>
+    <button data-action="exchange" type="button">Resume and exchange</button>
+    <button data-action="inspect" type="button">Inspect saved identity</button>
+    <button data-action="hold" type="button">Hold an uncommitted change</button>
+    <button data-action="contend" type="button">Check competing owner</button>
+    <button id="queue" type="button">Inspect lock queue</button>
+    <button id="release" type="button" disabled>Commit held change</button>
+    <button id="terminate" type="button">Stop this test worker</button>
+    <button data-action="cleanup" type="button">Delete this synthetic test</button>
+  </div>
+  <pre id="report" aria-label="Lifecycle results"></pre>
+  <p>Closing this tab stops its worker. An uncommitted change must be discarded and the other tab must be able to continue. Physical iPad suspension and a full browser-process crash require separate checks.</p>
+  <a href="index.html">Encryption baseline</a>
+</main>
+<script type="module" src="lifecycle-main.mjs"></script>
+</html>

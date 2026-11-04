@@ -34,6 +34,12 @@ Serve `dist/` from an **HTTPS origin**, or localhost on the same computer as the
 
 An HTTP preview at a non-localhost hostname will intentionally stop with a secure-context error. Do not disable browser security to make the test run. Physical iPad Safari remains an explicit roadmap check.
 
+The linked **Test reloads and competing tabs** page keeps disposable synthetic
+identities across page reloads. Follow [the lifecycle procedure](docs/lifecycle.md)
+to check restoration, queued ownership, interrupted work and worker recovery.
+Its test databases are removed with **Delete this synthetic test** after other
+test tabs are closed. This page never connects to XMPP or real contacts.
+
 ## Source and licenses
 
 No changes to upstream `omemo-dr` source or tests are applied. The build adds six crypto checks, nine storage checks and platform adapters. Gajim's original store has three explicit compatibility substitutions, described in [storage design and limits](docs/storage.md). The generated bundle includes original source and licenses. Runtime dependencies remain in their original wheels with their notices. See [third-party provenance](THIRD_PARTY.md).
