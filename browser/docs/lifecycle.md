@@ -11,6 +11,12 @@ fingerprints. No production outbox or account-reset behavior is implemented here
 
 ## Checks
 
+The latest result is shown directly above the controls with a result number and
+saved revisions. Repeated inspections increase the result number, not the saved
+revisions; only an exchange advances both sessions. Worker startup clears the
+previous completion status and shows elapsed progress. A slow operation is not
+automatically cancelled or retried. The detailed JSON remains below the controls.
+
 1. Start a new synthetic test. The initial exchange establishes sessions in both
    directions. Save the displayed revisions.
 2. Reload the page. Opening an existing URL only inspects saved state; it never

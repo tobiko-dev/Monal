@@ -12,7 +12,10 @@
   <button id="create" type="button">Start a new synthetic test</button>
   <a id="same-test" target="_blank" rel="noopener" hidden>Open this test in another tab</a>
   <p id="status" role="status" aria-live="polite">Ready to create a disposable test.</p>
+  <p id="activity" aria-label="Operation progress"></p>
+  <p id="latest-result" role="status" aria-label="Latest result" aria-live="polite"></p>
   <div id="operations" hidden>
+    <p>To test messaging after a reload, choose <strong>Resume and exchange</strong>. <strong>Inspect saved identity</strong> only reads the saved state; it does not increase the revisions. Each result appears directly above these buttons.</p>
     <button data-action="exchange" type="button">Resume and exchange</button>
     <button data-action="inspect" type="button">Inspect saved identity</button>
     <button data-action="hold" type="button">Hold an uncommitted change</button>
